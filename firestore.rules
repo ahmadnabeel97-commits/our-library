@@ -1,0 +1,68 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function memberPath(libraryId, uid) {
+      return /databases/$(database)/documents/libraries/$(libraryId)/members/$(uid);
+    }
+
+    function isActiveMember(libraryId) {
+      return signedIn()
+        && exists(memberPath(libraryId, request.auth.uid))
+        && get(memberPath(libraryId, request.auth.uid)).data.active == true;
+    }
+
+    function isAdmin(libraryId) {
+      return isActiveMember(libraryId)
+        && get(memberPath(libraryId, request.auth.uid)).data.role == "admin";
+    }
+
+    match /libraries/{libraryId} {
+      allow get: if isActiveMember(libraryId);
+      allow list: if false;
+      allow create, update, delete: if false;
+
+      match /members/{memberId} {
+        // A signed-in user may check only their own membership document.
+        // Active members may read the member directory.
+        allow get: if signedIn()
+          && (request.auth.uid == memberId || isActiveMember(libraryId));
+        allow list: if isActiveMember(libraryId);
+
+        // Only an existing administrator can approve a new member.
+        // Admin role assignment is intentionally disabled from the client.
+        allow create: if isAdmin(libraryId)
+          && request.resource.data.keys().hasOnly([
+            "uid", "email", "displayName", "role", "active", "createdAt", "createdBy"
+          ])
+          && request.resource.data.uid == memberId
+          && request.resource.data.role == "member"
+          && request.resource.data.active == true
+          && request.resource.data.createdBy == request.auth.uid
+          && request.resource.data.email is string
+          && request.resource.data.displayName is string;
+
+        // Admins can update member profile/active state, but cannot change roles.
+        allow update: if isAdmin(libraryId)
+          && request.resource.data.role == resource.data.role
+          && request.resource.data.uid == resource.data.uid
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(["email", "displayName", "active"]);
+
+        // Membership records are deactivated, not deleted.
+        allow delete: if false;
+      }
+
+      // Future Stage 1B+ collections are not open by default.
+      // Add explicit, validated rules for books, locations, journals, loans, etc.
+      match /{collectionName}/{document=**} {
+        allow read, write: if false;
+      }
+    }
+  }
+}

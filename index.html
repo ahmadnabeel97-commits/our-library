@@ -232,7 +232,7 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
 import {
-  getFirestore, collection, doc, getDoc, onSnapshot, serverTimestamp, setDoc
+  getFirestore, collection, doc, getDoc, onSnapshot, serverTimestamp, setDoc, updateDoc
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
 
 /*
@@ -308,18 +308,57 @@ async function getLibraryDetails() {
 // The new member must already have created their own Firebase Authentication account.
 async function approveMember({ uid, email, displayName, adminUid }) {
   const cleanUid = uid.trim();
-  if (!cleanUid || cleanUid.length < 10) throw new Error("Enter a valid Firebase user ID.");
-  if (cleanUid === adminUid) throw new Error("You are already a library member.");
+  const cleanEmail = email.trim().toLowerCase();
+  const cleanName = displayName.trim();
+
+  if (!cleanUid || cleanUid.length < 10) {
+    throw new Error("Enter a valid Firebase user ID.");
+  }
+  if (cleanUid === adminUid) {
+    throw new Error("You are already a library member.");
+  }
+  if (!cleanEmail || !cleanName) {
+    throw new Error("Enter the new member's email and display name.");
+  }
+
   const ref = doc(db, "libraries", LIBRARY_ID, "members", cleanUid);
+  const existing = await getDoc(ref);
+
+  if (existing.exists()) {
+    const member = existing.data();
+
+    // Do not try to create the same membership again.
+    // This avoids a permission error when an active member is submitted twice.
+    if (member.active === true && member.role === "member" && member.uid === cleanUid) {
+      return { alreadyActive: true };
+    }
+
+    // Existing records are updated only in fields permitted by firestore.rules.
+    // Never change a member's role, UID, original creation time, or creator.
+    if (member.role !== "member" || member.uid !== cleanUid) {
+      throw new Error("A membership record already exists for this ID and needs administrator review.");
+    }
+
+    await updateDoc(ref, {
+      email: cleanEmail,
+      displayName: cleanName,
+      active: true
+    });
+    return { reactivated: true };
+  }
+
+  // A brand-new membership is created only when no document exists.
   await setDoc(ref, {
     uid: cleanUid,
-    email: email.trim().toLowerCase(),
-    displayName: displayName.trim(),
+    email: cleanEmail,
+    displayName: cleanName,
     role: "member",
     active: true,
     createdAt: serverTimestamp(),
     createdBy: adminUid
   });
+
+  return { approved: true };
 }
 
 function observeMembers(callback, onError) {
@@ -479,14 +518,22 @@ $("#invite-form").addEventListener("submit", async (event) => {
   button.disabled = true;
   message("#invite-message", "Approving membership…");
   try {
-    await approveMember({
+    const result = await approveMember({
       uid: form.get("uid"),
       email: form.get("email"),
       displayName: form.get("displayName"),
       adminUid: currentUser.uid
     });
+
     event.currentTarget.reset();
-    message("#invite-message", "Membership approved. The new member can now log in.", "success");
+
+    if (result.alreadyActive) {
+      message("#invite-message", "This person is already an active library member. No changes were needed.", "success");
+    } else if (result.reactivated) {
+      message("#invite-message", "Existing membership reactivated successfully.", "success");
+    } else {
+      message("#invite-message", "Membership approved. The new member can now log in.", "success");
+    }
   } catch (error) {
     message("#invite-message", friendlyError(error), "error");
   } finally {

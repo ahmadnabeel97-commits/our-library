@@ -78,6 +78,11 @@ h3 { font-family:"Playfair Display",serif; font-size:19px; margin:0; }
 .welcome-row h1 { font-size:42px; margin-bottom:8px; }
 .welcome-row .eyebrow { margin-bottom:10px; }
 .stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:18px; }
+.loan-overdue { border-color:#e7b9b9; background:#fff8f7; }
+.loan-overdue strong { color:#a44949; }
+.loan-date-input { border:1px solid var(--line); border-radius:8px; padding:7px; font:inherit; font-size:11px; max-width:145px; }
+.loan-status { display:inline-block; margin-top:6px; font-size:10px; font-weight:700; color:var(--green); }
+.loan-status.overdue { color:#a44949; }
 .stat-card { padding:20px; box-shadow:none; }
 .stat-label,.stat-card small { display:block; color:var(--muted); font-size:11px; }
 .stat-card strong { display:block; font-family:"Playfair Display",serif; font-size:24px; margin:9px 0 5px; }
@@ -225,16 +230,20 @@ h3 { font-family:"Playfair Display",serif; font-size:19px; margin:0; }
         <article class="stat-card"><span class="stat-label">Library</span><strong id="library-name">Our Library</strong><small>Shared collection</small></article>
         <article class="stat-card"><span class="stat-label">Your role</span><strong id="member-role">Member</strong><small>Access level</small></article>
         <article class="stat-card"><span class="stat-label">Membership</span><strong class="status-active">Active</strong><small>Account connected</small></article>
+        <article class="stat-card"><span class="stat-label">Currently borrowed</span><strong id="loan-stat-borrowed">0</strong><small>Active loans</small></article>
+        <article class="stat-card"><span class="stat-label">Overdue</span><strong id="loan-stat-overdue">0</strong><small>Past their due date</small></article>
+        <article class="stat-card"><span class="stat-label">Returned</span><strong id="loan-stat-returned">0</strong><small>Recorded returns</small></article>
       </div>
       <div class="content-grid">
         <article class="panel">
-          <p class="eyebrow">STAGE 1B</p>
+          <p class="eyebrow">STAGES 1B–3</p>
           <h2>Your shared bookshelf starts here.</h2>
           <p class="muted">Add the books you own, record each physical copy, and organize where everything lives. Ahmad and Sadia have equal permissions for library management.</p>
           <div class="feature-list">
             <div><span class="check">✓</span><span>Shared book catalogue</span></div>
             <div><span class="check">✓</span><span>Multiple physical copies per book</span></div>
             <div><span class="check">✓</span><span>Rooms, bookshelves and shelf locations</span></div>
+            <div><span class="check">✓</span><span>Borrowing, returns and loan history</span></div>
           </div>
         </article>
         <article id="admin-panel" class="panel hidden">
@@ -258,6 +267,7 @@ h3 { font-family:"Playfair Display",serif; font-size:19px; margin:0; }
           <button class="library-tab active" type="button" data-library-tab="books">Books</button>
           <button class="library-tab" type="button" data-library-tab="copies">Physical copies</button>
           <button class="library-tab" type="button" data-library-tab="locations">Locations</button>
+          <button class="library-tab" type="button" data-library-tab="borrowing">Borrowing & returns</button>
         </div>
         <section id="discover-section" class="library-section hidden">
           <p class="eyebrow">STAGE 2 · BOOK DISCOVERY</p><h2>Discover books</h2>
@@ -296,7 +306,7 @@ h3 { font-family:"Playfair Display",serif; font-size:19px; margin:0; }
             <label>Book *<select name="bookId" required><option value="">Add a book first</option></select></label>
             <label>Copy label<input name="copyLabel" maxlength="60" placeholder="e.g. Copy 1"></label>
             <label>Condition<select name="condition"><option>Good</option><option>Like new</option><option>Fair</option><option>Poor</option></select></label>
-            <label>Status<select name="status"><option>Available</option><option>Reading</option><option>Loaned</option><option>Repair</option></select></label>
+            <label>Status<select name="status"><option>Available</option><option>Reading</option><option>Repair</option></select></label>
             <label class="wide">Location<select name="locationId"><option value="">Not assigned yet</option></select></label>
             <label class="wide">Notes<textarea name="notes" maxlength="1000"></textarea></label>
             <div class="library-actions wide"><button class="primary-button" type="submit" id="copy-submit">Add copy</button><button class="secondary-button" type="button" id="copy-cancel">Clear form</button></div>
@@ -304,6 +314,23 @@ h3 { font-family:"Playfair Display",serif; font-size:19px; margin:0; }
           <p id="copy-message" class="message" role="status"></p>
           <div class="members-heading"><h3>Copies</h3><span id="copy-count" class="library-count">0 copies</span></div>
           <div id="copies-list" class="library-list"><div class="empty-state">No physical copies yet.</div></div>
+        </section>
+        <section id="borrowing-section" class="library-section hidden">
+          <p class="eyebrow">STAGE 3 · BORROWING & RETURNS</p><h2>Borrow a book</h2>
+          <p class="muted">Record who borrowed a physical copy and when it is due. Only available copies can be borrowed.</p>
+          <form id="loan-form" class="library-form">
+            <label class="wide">Available physical copy *<select name="copyId" required><option value="">Loading available copies…</option></select></label>
+            <label>Borrower name *<input name="borrowerName" maxlength="120" required placeholder="Name of the borrower"></label>
+            <label>Borrowing date *<input name="borrowedAt" type="date" required></label>
+            <label>Due date *<input name="dueAt" type="date" required></label>
+            <label class="wide">Notes (optional)<textarea name="notes" maxlength="1000" placeholder="Any condition or borrowing notes"></textarea></label>
+            <div class="library-actions wide"><button class="primary-button" type="submit" id="loan-submit">Record borrowing</button><button class="secondary-button" type="button" id="loan-cancel">Clear form</button></div>
+          </form>
+          <p id="loan-message" class="message" role="status"></p>
+          <div class="members-heading"><h3>Currently borrowed</h3><span id="active-loan-count" class="library-count">0 active</span></div>
+          <div id="active-loans-list" class="library-list"><div class="empty-state">No active borrowing records.</div></div>
+          <div class="members-heading"><h3>Return history</h3><span id="returned-loan-count" class="library-count">0 returned</span></div>
+          <div id="returned-loans-list" class="library-list"><div class="empty-state">Returned books will appear here.</div></div>
         </section>
         <section id="locations-section" class="library-section hidden">
           <p class="eyebrow">WHERE YOUR BOOKS LIVE</p><h2>Locations</h2><p class="muted">Build your hierarchy from room to bookshelf to individual shelf.</p>
@@ -334,7 +361,7 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
 import {
-  getFirestore, collection, doc, getDoc, onSnapshot, serverTimestamp, setDoc, updateDoc, addDoc, deleteDoc
+  getFirestore, collection, doc, getDoc, onSnapshot, serverTimestamp, setDoc, updateDoc, addDoc, deleteDoc, runTransaction, Timestamp, deleteField
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
 
 /*
@@ -658,8 +685,8 @@ $("#pending-signout").addEventListener("click", logoutAccount);
 $("#signout-button").addEventListener("click", logoutAccount);
 
 
-// Stage 1B: shared catalogue, physical copies and hierarchical locations.
-const libraryCollections = { books: [], copies: [], locations: [] };
+// Stage 1B + Stage 3: shared catalogue, locations, borrowing and returns.
+const libraryCollections = { books: [], copies: [], locations: [], loans: [] };
 let libraryUnsubscribers = [];
 const libraryPath = (name) => collection(db, "libraries", LIBRARY_ID, name);
 const clean = (value) => String(value ?? "").trim();
@@ -671,7 +698,7 @@ function stopLibraryListeners() {
 }
 function startLibraryListeners() {
   stopLibraryListeners();
-  ["books", "copies", "locations"].forEach((name) => {
+  ["books", "copies", "locations", "loans"].forEach((name) => {
     const unsubscribe = onSnapshot(libraryPath(name), (snapshot) => {
       libraryCollections[name] = snapshot.docs.map((item) => ({ id: item.id, ...item.data() }));
       renderLibrary();
@@ -687,7 +714,7 @@ function displayLocation(locationId) {
   return parent ? `${parent.name} → ${location.name}` : location.name;
 }
 function renderLibrary() {
-  renderBooks(); renderCopies(); renderLocations(); refreshLibrarySelects();
+  renderBooks(); renderCopies(); renderLocations(); renderLoans(); refreshLibrarySelects();
 }
 function renderBooks() {
   const list = $("#books-list");
@@ -714,7 +741,7 @@ function renderCopies() {
     const book = libraryCollections.books.find((item) => item.id === copy.bookId);
     const item = document.createElement("div"); item.className = "library-item";
     const details = document.createElement("div"); const title = document.createElement("strong"); title.textContent = `${book?.title || "Unknown book"}${copy.copyLabel ? ` — ${copy.copyLabel}` : ""}`;
-    const meta = document.createElement("small"); meta.textContent = `${copy.condition || "Condition not set"} · ${copy.status || "Status not set"} · ${displayLocation(copy.locationId)}`;
+    const meta = document.createElement("small"); meta.textContent = `${copy.condition || "Condition not set"} · ${copy.status || "Status not set"} · ${displayLocation(copy.locationId)}${copy.status === "Loaned" && !copy.activeLoanId ? " · No linked loan record — review this legacy status" : ""}`;
     details.append(title, meta); const actions = document.createElement("div"); actions.className = "library-actions";
     actions.append(makeActionButton("Edit", "edit-copy", copy.id), makeActionButton("Delete", "delete-copy", copy.id, true));
     item.append(details, actions); list.append(item);
@@ -733,6 +760,64 @@ function renderLocations() {
     item.append(details, actions); list.append(item);
   });
 }
+function localDateInputValue(date = new Date()) {
+  const year = date.getFullYear(); const month = String(date.getMonth() + 1).padStart(2, "0"); const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+function dateInputToTimestamp(value) {
+  const [year, month, day] = value.split("-").map(Number);
+  return Timestamp.fromDate(new Date(year, month - 1, day, 12, 0, 0));
+}
+function timestampToDateInput(value) {
+  if (!value) return "";
+  const date = typeof value.toDate === "function" ? value.toDate() : new Date(value);
+  return Number.isNaN(date.getTime()) ? "" : localDateInputValue(date);
+}
+function formatLibraryDate(value) {
+  const input = timestampToDateInput(value);
+  if (!input) return "—";
+  const [year, month, day] = input.split("-").map(Number);
+  return new Date(year, month - 1, day, 12).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+}
+function todayLocal() { return localDateInputValue(new Date()); }
+function renderLoans() {
+  const active = libraryCollections.loans.filter((loan) => loan.status === "Borrowed").sort((a,b) => timestampToDateInput(a.dueAt).localeCompare(timestampToDateInput(b.dueAt)));
+  const returned = libraryCollections.loans.filter((loan) => loan.status === "Returned").sort((a,b) => timestampToDateInput(b.returnedAt).localeCompare(timestampToDateInput(a.returnedAt)));
+  const today = todayLocal();
+  const overdue = active.filter((loan) => timestampToDateInput(loan.dueAt) < today);
+  $("#loan-stat-borrowed").textContent = String(active.length);
+  $("#loan-stat-overdue").textContent = String(overdue.length);
+  $("#loan-stat-returned").textContent = String(returned.length);
+  $("#active-loan-count").textContent = `${active.length} active`;
+  $("#returned-loan-count").textContent = `${returned.length} returned`;
+  const activeList = $("#active-loans-list"); activeList.replaceChildren();
+  if (!active.length) activeList.innerHTML = '<div class="empty-state">No books are currently borrowed.</div>';
+  active.forEach((loan) => {
+    const copy = libraryCollections.copies.find((item) => item.id === loan.copyId);
+    const book = libraryCollections.books.find((item) => item.id === loan.bookId);
+    const isOverdue = timestampToDateInput(loan.dueAt) < today;
+    const item = document.createElement("div"); item.className = `library-item${isOverdue ? " loan-overdue" : ""}`;
+    const details = document.createElement("div");
+    const title = document.createElement("strong"); title.textContent = `${loan.bookTitle || book?.title || "Unknown book"}${loan.copyLabel || copy?.copyLabel ? ` — ${loan.copyLabel || copy?.copyLabel}` : ""}`;
+    const meta = document.createElement("small"); meta.textContent = `Borrower: ${loan.borrowerName} · Borrowed: ${formatLibraryDate(loan.borrowedAt)} · Due: ${formatLibraryDate(loan.dueAt)}${loan.notes ? ` · ${loan.notes}` : ""}`;
+    const status = document.createElement("span"); status.className = `loan-status${isOverdue ? " overdue" : ""}`; status.textContent = isOverdue ? "OVERDUE" : "BORROWED";
+    details.append(title, meta, status);
+    const actions = document.createElement("div"); actions.className = "library-actions";
+    const returnDate = document.createElement("input"); returnDate.type = "date"; returnDate.className = "loan-date-input"; returnDate.value = today; returnDate.setAttribute("aria-label", "Return date"); returnDate.dataset.returnDateFor = loan.id;
+    const returnButton = makeActionButton("Record return", "return-loan", loan.id); returnButton.classList.remove("small-button"); returnButton.classList.add("primary-button");
+    actions.append(returnDate, returnButton); item.append(details, actions); activeList.append(item);
+  });
+  const returnedList = $("#returned-loans-list"); returnedList.replaceChildren();
+  if (!returned.length) returnedList.innerHTML = '<div class="empty-state">Returned books will appear here. Records are retained as history.</div>';
+  returned.forEach((loan) => {
+    const copy = libraryCollections.copies.find((item) => item.id === loan.copyId);
+    const book = libraryCollections.books.find((item) => item.id === loan.bookId);
+    const item = document.createElement("div"); item.className = "library-item";
+    const details = document.createElement("div"); const title = document.createElement("strong"); title.textContent = `${loan.bookTitle || book?.title || "Unknown book"}${loan.copyLabel || copy?.copyLabel ? ` — ${loan.copyLabel || copy?.copyLabel}` : ""}`;
+    const meta = document.createElement("small"); meta.textContent = `Borrower: ${loan.borrowerName} · Borrowed: ${formatLibraryDate(loan.borrowedAt)} · Due: ${formatLibraryDate(loan.dueAt)} · Returned: ${formatLibraryDate(loan.returnedAt)}`;
+    details.append(title, meta); item.append(details); returnedList.append(item);
+  });
+}
 function makeActionButton(label, action, id, danger = false) {
   const button = document.createElement("button"); button.type = "button"; button.className = `small-button${danger ? " danger" : ""}`;
   button.textContent = label; button.dataset.action = action; button.dataset.id = id; return button;
@@ -746,6 +831,11 @@ function refreshLibrarySelects() {
   locationSelect.replaceChildren(new Option("Not assigned yet", ""));
   libraryCollections.locations.forEach((location) => locationSelect.add(new Option(`${location.name} (${location.type})`, location.id)));
   if (libraryCollections.locations.some((location) => location.id === selectedLocation)) locationSelect.value = selectedLocation;
+  const copySelect = $("#loan-form [name=copyId]"); const selectedCopy = copySelect.value;
+  const availableCopies = libraryCollections.copies.filter((copy) => copy.status === "Available");
+  copySelect.replaceChildren(new Option(availableCopies.length ? "Choose an available copy" : "No available copies", ""));
+  availableCopies.forEach((copy) => { const book = libraryCollections.books.find((item) => item.id === copy.bookId); copySelect.add(new Option(`${book?.title || "Unknown book"}${copy.copyLabel ? ` — ${copy.copyLabel}` : ""}`, copy.id)); });
+  if (availableCopies.some((copy) => copy.id === selectedCopy)) copySelect.value = selectedCopy;
   const parentSelect = $("#location-form [name=parentId]"); const selectedParent = parentSelect.value;
   parentSelect.replaceChildren(new Option("No parent (top level)", ""));
   libraryCollections.locations.forEach((location) => parentSelect.add(new Option(`${location.name} (${location.type})`, location.id)));
@@ -824,14 +914,58 @@ $("#book-form").addEventListener("submit", async (event) => {
   catch (error) { message("#book-message", friendlyError(error), "error"); } finally { button.disabled = false; }
 });
 $("#copy-form").addEventListener("submit", async (event) => {
-  event.preventDefault(); const form = event.currentTarget; const values = new FormData(form); const id = clean(values.get("recordId")); const bookId = clean(values.get("bookId"));
+  event.preventDefault(); const form = event.currentTarget; const values = new FormData(form); const id = clean(values.get("recordId"));
   const button = $("#copy-submit"); button.disabled = true;
-  try { if (!libraryCollections.books.some((book) => book.id === bookId)) throw new Error("Choose a book from the catalogue first.");
-    const data = { bookId, condition: clean(values.get("condition")), status: clean(values.get("status")), updatedAt: serverTimestamp(), updatedBy: currentUser.uid };
+  try {
+    const existingCopy = id ? libraryCollections.copies.find((copy) => copy.id === id) : null;
+    const bookId = existingCopy?.status === "Loaned" ? existingCopy.bookId : clean(values.get("bookId"));
+    if (!libraryCollections.books.some((book) => book.id === bookId)) throw new Error("Choose a book from the catalogue first.");
+    const status = existingCopy?.status === "Loaned" ? "Loaned" : clean(values.get("status"));
+    const data = { bookId, condition: clean(values.get("condition")), status, updatedAt: serverTimestamp(), updatedBy: currentUser.uid };
     for (const key of ["copyLabel", "locationId", "notes"]) { const value = clean(values.get(key)); if (value) data[key] = value; }
-    await saveRecord("copies", id, data); resetEditor("#copy-form", "#copy-message", "#copy-submit", "Add copy"); message("#copy-message", id ? "Physical copy updated." : "Physical copy added.", "success");
+    await saveRecord("copies", id, data); $("#copy-form").elements.bookId.disabled = false; $("#copy-form").elements.status.disabled = false; resetEditor("#copy-form", "#copy-message", "#copy-submit", "Add copy"); message("#copy-message", id ? "Physical copy updated." : "Physical copy added.", "success");
   } catch (error) { message("#copy-message", friendlyError(error), "error"); } finally { button.disabled = false; }
 });
+$("#loan-form").elements.borrowedAt.value = todayLocal();
+$("#loan-form").elements.dueAt.value = todayLocal();
+$("#loan-cancel").addEventListener("click", () => { $("#loan-form").reset(); $("#loan-form").elements.borrowedAt.value = todayLocal(); $("#loan-form").elements.dueAt.value = todayLocal(); message("#loan-message", ""); });
+$("#loan-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const form = event.currentTarget; const values = new FormData(form);
+  const copyId = clean(values.get("copyId")); const borrowerName = clean(values.get("borrowerName"));
+  const borrowedAt = clean(values.get("borrowedAt")); const dueAt = clean(values.get("dueAt")); const notes = clean(values.get("notes"));
+  const button = $("#loan-submit"); button.disabled = true;
+  try {
+    if (!copyId || !borrowerName || !borrowedAt || !dueAt) throw new Error("Complete all required borrowing fields.");
+    if (dueAt < borrowedAt) throw new Error("The due date cannot be earlier than the borrowing date.");
+    const copyRef = doc(db, "libraries", LIBRARY_ID, "copies", copyId);
+    const loanRef = doc(libraryPath("loans"));
+    await runTransaction(db, async (transaction) => {
+      const copySnapshot = await transaction.get(copyRef);
+      if (!copySnapshot.exists()) throw new Error("This physical copy no longer exists.");
+      const copy = copySnapshot.data();
+      if (copy.status !== "Available") throw new Error("This copy is no longer available. Refresh and choose another copy.");
+      const bookRef = doc(db, "libraries", LIBRARY_ID, "books", copy.bookId);
+      const bookSnapshot = await transaction.get(bookRef);
+      if (!bookSnapshot.exists()) throw new Error("The book connected to this copy could not be found.");
+      const now = serverTimestamp();
+      const loanData = {
+        copyId, bookId: copy.bookId, bookTitle: bookSnapshot.data().title || "Unknown book",
+        borrowerName, borrowedAt: dateInputToTimestamp(borrowedAt), dueAt: dateInputToTimestamp(dueAt),
+        returnedAt: null, status: "Borrowed", createdBy: currentUser.uid,
+        createdAt: now, updatedBy: currentUser.uid, updatedAt: now
+      };
+      if (copy.copyLabel) loanData.copyLabel = copy.copyLabel;
+      if (notes) loanData.notes = notes;
+      transaction.set(loanRef, loanData);
+      transaction.update(copyRef, { status: "Loaned", activeLoanId: loanRef.id, updatedBy: currentUser.uid, updatedAt: now });
+    });
+    form.reset(); form.elements.borrowedAt.value = todayLocal(); form.elements.dueAt.value = todayLocal();
+    message("#loan-message", "Borrowing recorded. The physical copy is now marked as Loaned.", "success");
+  } catch (error) { message("#loan-message", friendlyError(error), "error"); }
+  finally { button.disabled = false; }
+});
+
 $("#location-form").elements.type.addEventListener("change", (event) => {
   const type = event.target.value; const parent = $("#location-form [name=parentId]");
   [...parent.options].forEach((option) => { if (!option.value) return; const location = libraryCollections.locations.find((item) => item.id === option.value); option.disabled = type === "bookshelf" ? location?.type !== "room" : type === "shelf" ? location?.type !== "bookshelf" : true; });
@@ -851,12 +985,12 @@ $("#location-form").addEventListener("submit", async (event) => {
 });
 function isDescendant(candidateId, ancestorId) { let current = libraryCollections.locations.find((item) => item.id === candidateId); while (current?.parentId) { if (current.parentId === ancestorId) return true; current = libraryCollections.locations.find((item) => item.id === current.parentId); } return false; }
 $("#book-cancel").addEventListener("click", () => resetEditor("#book-form", "#book-message", "#book-submit", "Add book"));
-$("#copy-cancel").addEventListener("click", () => resetEditor("#copy-form", "#copy-message", "#copy-submit", "Add copy"));
+$("#copy-cancel").addEventListener("click", () => { $("#copy-form").elements.bookId.disabled = false; $("#copy-form").elements.status.disabled = false; [...$("#copy-form").elements.status.options].filter((option) => option.dataset.legacy === "true").forEach((option) => option.remove()); resetEditor("#copy-form", "#copy-message", "#copy-submit", "Add copy"); });
 $("#location-cancel").addEventListener("click", () => resetEditor("#location-form", "#location-message", "#location-submit", "Add location"));
 $("#book-search").addEventListener("input", renderBooks);
 document.querySelectorAll("[data-library-tab]").forEach((button) => button.addEventListener("click", () => {
   document.querySelectorAll("[data-library-tab]").forEach((tab) => tab.classList.toggle("active", tab === button));
-  ["discover", "books", "copies", "locations"].forEach((name) => $(`#${name}-section`).classList.toggle("hidden", button.dataset.libraryTab !== name));
+  ["discover", "books", "copies", "locations", "borrowing"].forEach((name) => $(`#${name}-section`).classList.toggle("hidden", button.dataset.libraryTab !== name));
 }));
 document.querySelector(".library-tools").addEventListener("click", async (event) => {
   const button = event.target.closest("button[data-action]"); if (!button) return; const { action, id } = button.dataset;
@@ -877,10 +1011,33 @@ document.querySelector(".library-tools").addEventListener("click", async (event)
       form.scrollIntoView({ behavior: "smooth", block: "center" });
     }
     if (action === "edit-book") { const item = libraryCollections.books.find((entry) => entry.id === id); if (!item) return; const form = $("#book-form"); for (const key of ["title", "author", "genre", "isbn", "publisher", "publicationYear", "coverUrl", "description"]) form.elements[key].value = item[key] ?? ""; form.elements.recordId.value = id; $("#book-submit").textContent = "Save book"; form.scrollIntoView({ behavior: "smooth", block: "center" }); }
-    if (action === "edit-copy") { const item = libraryCollections.copies.find((entry) => entry.id === id); if (!item) return; const form = $("#copy-form"); for (const key of ["bookId", "copyLabel", "condition", "status", "locationId", "notes"]) form.elements[key].value = item[key] ?? ""; form.elements.recordId.value = id; $("#copy-submit").textContent = "Save copy"; document.querySelector('[data-library-tab="copies"]').click(); form.scrollIntoView({ behavior: "smooth", block: "center" }); }
+    if (action === "edit-copy") { const item = libraryCollections.copies.find((entry) => entry.id === id); if (!item) return; const form = $("#copy-form"); const statusSelect = form.elements.status; [...statusSelect.options].filter((option) => option.dataset.legacy === "true").forEach((option) => option.remove()); if (item.status === "Loaned") { const legacy = new Option("Loaned (managed by borrowing)", "Loaned"); legacy.disabled = true; legacy.dataset.legacy = "true"; statusSelect.add(legacy); } for (const key of ["bookId", "copyLabel", "condition", "status", "locationId", "notes"]) form.elements[key].value = item[key] ?? ""; form.elements.bookId.disabled = item.status === "Loaned"; form.elements.status.disabled = item.status === "Loaned"; form.elements.recordId.value = id; $("#copy-submit").textContent = "Save copy"; document.querySelector('[data-library-tab="copies"]').click(); form.scrollIntoView({ behavior: "smooth", block: "center" }); }
     if (action === "edit-location") { const item = libraryCollections.locations.find((entry) => entry.id === id); if (!item) return; const form = $("#location-form"); for (const key of ["name", "type", "parentId", "notes"]) form.elements[key].value = item[key] ?? ""; form.elements.recordId.value = id; $("#location-submit").textContent = "Save location"; document.querySelector('[data-library-tab="locations"]').click(); form.scrollIntoView({ behavior: "smooth", block: "center" }); }
+    if (action === "return-loan") {
+      const loan = libraryCollections.loans.find((item) => item.id === id);
+      const returnDateInput = document.querySelector(`[data-return-date-for="${CSS.escape(id)}"]`);
+      const returnDate = returnDateInput?.value;
+      if (!loan || loan.status !== "Borrowed") throw new Error("This borrowing record is no longer active. Refresh the page.");
+      if (!returnDate) throw new Error("Choose a return date first.");
+      if (returnDate > todayLocal()) throw new Error("The return date cannot be in the future.");
+      if (returnDate < timestampToDateInput(loan.borrowedAt)) throw new Error("The return date cannot be earlier than the borrowing date.");
+      const copyRef = doc(db, "libraries", LIBRARY_ID, "copies", loan.copyId);
+      const loanRef = doc(db, "libraries", LIBRARY_ID, "loans", id);
+      await runTransaction(db, async (transaction) => {
+        const loanSnapshot = await transaction.get(loanRef);
+        if (!loanSnapshot.exists() || loanSnapshot.data().status !== "Borrowed") throw new Error("This loan has already been returned or changed.");
+        const copySnapshot = await transaction.get(copyRef);
+        if (!copySnapshot.exists()) throw new Error("The physical copy record is missing. The loan was not changed.");
+        const copy = copySnapshot.data();
+        if (copy.status !== "Loaned" || copy.activeLoanId !== id) throw new Error("The copy and loan records do not match. No changes were made.");
+        const now = serverTimestamp();
+        transaction.update(loanRef, { status: "Returned", returnedAt: dateInputToTimestamp(returnDate), updatedBy: currentUser.uid, updatedAt: now });
+        transaction.update(copyRef, { status: "Available", activeLoanId: deleteField(), updatedBy: currentUser.uid, updatedAt: now });
+      });
+      showToast("Return recorded. The copy is available again.");
+    }
     if (action === "delete-book") { if (libraryCollections.copies.some((copy) => copy.bookId === id)) { showToast("Delete this book's physical copies first."); return; } if (!confirm("Delete this book from the catalogue? This cannot be undone.")) return; await deleteDoc(doc(db, "libraries", LIBRARY_ID, "books", id)); showToast("Book deleted."); }
-    if (action === "delete-copy") { if (!confirm("Delete this physical copy?")) return; await deleteDoc(doc(db, "libraries", LIBRARY_ID, "copies", id)); showToast("Physical copy deleted."); }
+    if (action === "delete-copy") { const copy = libraryCollections.copies.find((item) => item.id === id); if (copy?.status === "Loaned" || copy?.activeLoanId) { showToast("This copy has an active loan and cannot be deleted."); return; } if (!confirm("Delete this physical copy?")) return; await deleteDoc(doc(db, "libraries", LIBRARY_ID, "copies", id)); showToast("Physical copy deleted."); }
     if (action === "delete-location") { if (libraryCollections.locations.some((item) => item.parentId === id) || libraryCollections.copies.some((copy) => copy.locationId === id)) { showToast("Move child locations and physical copies first."); return; } if (!confirm("Delete this location?")) return; await deleteDoc(doc(db, "libraries", LIBRARY_ID, "locations", id)); showToast("Location deleted."); }
   } catch (error) { showToast(friendlyError(error)); }
 });

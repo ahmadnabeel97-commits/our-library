@@ -117,6 +117,17 @@ h3 { font-family:"Playfair Display",serif; font-size:19px; margin:0; }
 .small-button { border:0; border-radius:8px; padding:7px 10px; background:var(--lavender-soft); color:var(--lavender-dark); font-size:11px; font-weight:700; }
 .small-button.danger { background:#f8eaea; color:#a44949; }
 .empty-state { padding:18px; text-align:center; color:var(--muted); font-size:13px; background:#f8f5f8; border-radius:12px; }
+
+.discovery-form { display:flex; gap:10px; margin:16px 0; }
+.discovery-form input { flex:1; min-width:0; border:1px solid var(--line); border-radius:10px; padding:12px; background:#fff; color:var(--ink); font:inherit; font-size:13px; }
+.discovery-results { display:grid; gap:12px; margin-top:16px; }
+.discovery-item { display:grid; grid-template-columns:76px minmax(0,1fr); gap:14px; padding:13px; border:1px solid var(--line); border-radius:12px; background:#fff; }
+.discovery-cover { width:76px; height:108px; object-fit:contain; border-radius:5px; background:#f4f0f6; color:var(--muted); }
+.discovery-item strong { display:block; font-size:13px; line-height:1.45; }
+.discovery-item small { display:block; color:var(--muted); font-size:11px; line-height:1.6; margin:4px 0 9px; overflow-wrap:anywhere; }
+.discovery-item .library-actions { margin-top:7px; }
+@media (max-width:520px) { .discovery-form { flex-direction:column; } .discovery-item { grid-template-columns:60px minmax(0,1fr); gap:10px; } .discovery-cover { width:60px; height:90px; } }
+
 .library-count { color:var(--muted); font-size:11px; }
 @media(max-width:650px) { .library-form { grid-template-columns:1fr; } .library-form .wide { grid-column:auto; } .library-item { flex-direction:column; } }
 
@@ -243,10 +254,22 @@ h3 { font-family:"Playfair Display",serif; font-size:19px; margin:0; }
       </div>
       <section class="library-tools">
         <div class="library-tabs" role="tablist" aria-label="Library management">
+          <button class="library-tab" type="button" data-library-tab="discover">Discover books</button>
           <button class="library-tab active" type="button" data-library-tab="books">Books</button>
           <button class="library-tab" type="button" data-library-tab="copies">Physical copies</button>
           <button class="library-tab" type="button" data-library-tab="locations">Locations</button>
         </div>
+        <section id="discover-section" class="library-section hidden">
+          <p class="eyebrow">STAGE 2 · BOOK DISCOVERY</p><h2>Discover books</h2>
+          <p class="muted">Search Open Library by title, author or ISBN. Choose a result to fill the book form; nothing is saved until you confirm it.</p>
+          <form id="discovery-form" class="discovery-form">
+            <input id="discovery-query" type="search" maxlength="160" placeholder="Try a title, author or ISBN…" aria-label="Search online books" required>
+            <button class="primary-button" id="discovery-submit" type="submit">Search books</button>
+          </form>
+          <p id="discovery-message" class="message" role="status" aria-live="polite"></p>
+          <div id="discovery-results" class="discovery-results"><div class="empty-state">Search online to discover book details.</div></div>
+          <p class="muted">Book metadata supplied by <a href="https://openlibrary.org/" target="_blank" rel="noopener">Open Library</a>. Results may be incomplete; check the edition and ISBN before adding.</p>
+        </section>
         <section id="books-section" class="library-section">
           <p class="eyebrow">BOOK CATALOGUE</p><h2>Books</h2><p class="muted">Add each distinct book once. You can attach multiple physical copies to it.</p>
           <form id="book-form" class="library-form">
@@ -742,10 +765,62 @@ async function saveRecord(collectionName, id, data) {
   if (id) await updateDoc(doc(db, "libraries", LIBRARY_ID, collectionName, id), data);
   else await addDoc(libraryPath(collectionName), auditCreate(data));
 }
+// Stage 2: human-triggered book discovery using the public Open Library Search API.
+let discoveryResults = [];
+let lastDiscoveryRequestAt = 0;
+function normalizeBookText(value) { return clean(value).toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim(); }
+function findBookDuplicate(candidate) {
+  const isbn = clean(candidate.isbn).replace(/[-\s]/g, "");
+  const title = normalizeBookText(candidate.title);
+  const author = normalizeBookText(candidate.author);
+  return libraryCollections.books.find((book) => {
+    const existingIsbn = clean(book.isbn).replace(/[-\s]/g, "");
+    if (isbn && existingIsbn && isbn === existingIsbn) return true;
+    return title && author && normalizeBookText(book.title) === title && normalizeBookText(book.author) === author;
+  });
+}
+function renderDiscoveryResults(items) {
+  const container = $("#discovery-results"); container.replaceChildren();
+  if (!items.length) { container.innerHTML = '<div class="empty-state">No matching books found. Try a different title, author or ISBN.</div>'; return; }
+  items.forEach((item, index) => {
+    const card = document.createElement("article"); card.className = "discovery-item";
+    const cover = document.createElement("img"); cover.className = "discovery-cover"; cover.alt = `Cover of ${item.title || "book"}`; cover.loading = "lazy";
+    if (item.cover_i) { cover.src = `https://covers.openlibrary.org/b/id/${encodeURIComponent(item.cover_i)}-M.jpg`; } else { cover.alt = "No cover available"; }
+    cover.onerror = () => { cover.removeAttribute("src"); cover.alt = "No cover available"; };
+    const details = document.createElement("div");
+    const title = document.createElement("strong"); title.textContent = item.title || "Untitled book";
+    const meta = document.createElement("small");
+    const authorText = Array.isArray(item.author_name) ? item.author_name.join(", ") : "Author unknown";
+    const publisherText = Array.isArray(item.publisher) && item.publisher.length ? item.publisher[0] : "Publisher not listed";
+    const isbnText = Array.isArray(item.isbn) && item.isbn.length ? item.isbn[0] : "ISBN not listed";
+    meta.textContent = `${authorText} · ${item.first_publish_year || "Year unknown"} · ${publisherText} · ${isbnText}`;
+    const actions = document.createElement("div"); actions.className = "library-actions";
+    const use = document.createElement("button"); use.type = "button"; use.className = "small-button"; use.textContent = "Use these details"; use.dataset.action = "use-discovery"; use.dataset.index = String(index);
+    const link = document.createElement("a"); link.href = `https://openlibrary.org${item.key || ""}`; link.target = "_blank"; link.rel = "noopener"; link.textContent = "View source"; link.className = "muted"; link.style.fontSize = "11px";
+    actions.append(use, link); details.append(title, meta, actions); card.append(cover, details); container.append(card);
+  });
+}
+$("#discovery-form").addEventListener("submit", async (event) => {
+  event.preventDefault(); const query = clean($("#discovery-query").value); if (!query) return;
+  const button = $("#discovery-submit"); button.disabled = true; message("#discovery-message", "Searching Open Library…");
+  try {
+    const wait = Math.max(0, 1100 - (Date.now() - lastDiscoveryRequestAt));
+    if (wait) await new Promise((resolve) => setTimeout(resolve, wait));
+    lastDiscoveryRequestAt = Date.now();
+    const params = new URLSearchParams({ q: query, fields: "key,title,author_name,first_publish_year,isbn,publisher,cover_i,edition_count", limit: "20" });
+    const response = await fetch(`https://openlibrary.org/search.json?${params.toString()}`, { headers: { "Accept": "application/json" } });
+    if (!response.ok) throw new Error(`Book search failed (HTTP ${response.status}). Please try again later.`);
+    const data = await response.json(); discoveryResults = Array.isArray(data.docs) ? data.docs : [];
+    renderDiscoveryResults(discoveryResults);
+    message("#discovery-message", `${Number(data.num_found || 0).toLocaleString()} matching records found. Showing up to ${discoveryResults.length}.`, "success");
+  } catch (error) { message("#discovery-message", error.message || "Unable to search books right now.", "error"); }
+  finally { button.disabled = false; }
+});
+
 $("#book-form").addEventListener("submit", async (event) => {
   event.preventDefault(); const form = event.currentTarget; const values = new FormData(form); const id = clean(values.get("recordId"));
   const button = $("#book-submit"); button.disabled = true;
-  try { if (!clean(values.get("title")) || !clean(values.get("author"))) throw new Error("Enter both the book title and author."); await saveRecord("books", id, bookPayload(values)); resetEditor("#book-form", "#book-message", "#book-submit", "Add book"); message("#book-message", id ? "Book updated successfully." : "Book added successfully.", "success"); }
+  try { if (!clean(values.get("title")) || !clean(values.get("author"))) throw new Error("Enter both the book title and author."); const candidate = { title: values.get("title"), author: values.get("author"), isbn: values.get("isbn") }; const duplicate = !id ? findBookDuplicate(candidate) : null; if (duplicate) throw new Error(`This book may already exist: ${duplicate.title} — ${duplicate.author}. Edit the existing record instead of adding a duplicate.`); await saveRecord("books", id, bookPayload(values)); resetEditor("#book-form", "#book-message", "#book-submit", "Add book"); message("#book-message", id ? "Book updated successfully." : "Book added successfully.", "success"); }
   catch (error) { message("#book-message", friendlyError(error), "error"); } finally { button.disabled = false; }
 });
 $("#copy-form").addEventListener("submit", async (event) => {
@@ -781,11 +856,26 @@ $("#location-cancel").addEventListener("click", () => resetEditor("#location-for
 $("#book-search").addEventListener("input", renderBooks);
 document.querySelectorAll("[data-library-tab]").forEach((button) => button.addEventListener("click", () => {
   document.querySelectorAll("[data-library-tab]").forEach((tab) => tab.classList.toggle("active", tab === button));
-  ["books", "copies", "locations"].forEach((name) => $(`#${name}-section`).classList.toggle("hidden", button.dataset.libraryTab !== name));
+  ["discover", "books", "copies", "locations"].forEach((name) => $(`#${name}-section`).classList.toggle("hidden", button.dataset.libraryTab !== name));
 }));
 document.querySelector(".library-tools").addEventListener("click", async (event) => {
   const button = event.target.closest("button[data-action]"); if (!button) return; const { action, id } = button.dataset;
   try {
+    if (action === "use-discovery") {
+      const item = discoveryResults[Number(button.dataset.index)]; if (!item) return;
+      const authors = Array.isArray(item.author_name) ? item.author_name.join(", ") : "";
+      const candidate = { title: item.title || "", author: authors, isbn: Array.isArray(item.isbn) ? item.isbn[0] || "" : "" };
+      const duplicate = findBookDuplicate(candidate);
+      if (duplicate) { message("#discovery-message", `This may already be in your collection: ${duplicate.title} — ${duplicate.author}. Check your Books tab before adding another copy.`, "error"); return; }
+      const form = $("#book-form"); form.reset(); form.elements.recordId.value = "";
+      form.elements.title.value = candidate.title; form.elements.author.value = candidate.author;
+      form.elements.isbn.value = candidate.isbn; form.elements.publisher.value = Array.isArray(item.publisher) ? item.publisher[0] || "" : "";
+      form.elements.publicationYear.value = item.first_publish_year || "";
+      form.elements.coverUrl.value = item.cover_i ? `https://covers.openlibrary.org/b/id/${encodeURIComponent(item.cover_i)}-L.jpg` : "";
+      $("#book-submit").textContent = "Add book"; document.querySelector('[data-library-tab="books"]').click();
+      message("#book-message", "Details filled from Open Library. Review them and click Add book to save.", "success");
+      form.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
     if (action === "edit-book") { const item = libraryCollections.books.find((entry) => entry.id === id); if (!item) return; const form = $("#book-form"); for (const key of ["title", "author", "genre", "isbn", "publisher", "publicationYear", "coverUrl", "description"]) form.elements[key].value = item[key] ?? ""; form.elements.recordId.value = id; $("#book-submit").textContent = "Save book"; form.scrollIntoView({ behavior: "smooth", block: "center" }); }
     if (action === "edit-copy") { const item = libraryCollections.copies.find((entry) => entry.id === id); if (!item) return; const form = $("#copy-form"); for (const key of ["bookId", "copyLabel", "condition", "status", "locationId", "notes"]) form.elements[key].value = item[key] ?? ""; form.elements.recordId.value = id; $("#copy-submit").textContent = "Save copy"; document.querySelector('[data-library-tab="copies"]').click(); form.scrollIntoView({ behavior: "smooth", block: "center" }); }
     if (action === "edit-location") { const item = libraryCollections.locations.find((entry) => entry.id === id); if (!item) return; const form = $("#location-form"); for (const key of ["name", "type", "parentId", "notes"]) form.elements[key].value = item[key] ?? ""; form.elements.recordId.value = id; $("#location-submit").textContent = "Save location"; document.querySelector('[data-library-tab="locations"]').click(); form.scrollIntoView({ behavior: "smooth", block: "center" }); }

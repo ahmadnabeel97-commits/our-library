@@ -1,0 +1,266 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function memberPath(libraryId, uid) {
+      return /databases/$(database)/documents/libraries/$(libraryId)/members/$(uid);
+    }
+
+    function isActiveMember(libraryId) {
+      return signedIn()
+        && exists(memberPath(libraryId, request.auth.uid))
+        && get(memberPath(libraryId, request.auth.uid)).data.active == true;
+    }
+
+    function isAdmin(libraryId) {
+      return isActiveMember(libraryId)
+        && get(memberPath(libraryId, request.auth.uid)).data.role == "admin";
+    }
+
+    function validAuditCreate() {
+      return request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    function validAuditUpdate() {
+      return request.resource.data.createdBy == resource.data.createdBy
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    function copyPath(libraryId, copyId) {
+      return /databases/$(database)/documents/libraries/$(libraryId)/copies/$(copyId);
+    }
+
+    function loanPath(libraryId, loanId) {
+      return /databases/$(database)/documents/libraries/$(libraryId)/loans/$(loanId);
+    }
+
+    match /libraries/{libraryId} {
+      allow get: if isActiveMember(libraryId);
+      allow list: if false;
+      allow create, update, delete: if false;
+
+      match /members/{memberId} {
+        allow get: if signedIn()
+          && (request.auth.uid == memberId || isActiveMember(libraryId));
+        allow list: if isActiveMember(libraryId);
+
+        allow create: if isAdmin(libraryId)
+          && request.resource.data.keys().hasOnly([
+            "uid", "email", "displayName", "role", "active", "createdAt", "createdBy"
+          ])
+          && request.resource.data.uid == memberId
+          && request.resource.data.role == "member"
+          && request.resource.data.active == true
+          && request.resource.data.createdBy == request.auth.uid
+          && request.resource.data.email is string
+          && request.resource.data.displayName is string;
+
+        allow update: if isAdmin(libraryId)
+          && request.resource.data.role == resource.data.role
+          && request.resource.data.uid == resource.data.uid
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(["email", "displayName", "active"]);
+
+        allow delete: if false;
+      }
+
+      match /books/{bookId} {
+        allow read: if isActiveMember(libraryId);
+        allow create: if isActiveMember(libraryId)
+          && request.resource.data.keys().hasAll(["title", "author", "createdAt", "createdBy", "updatedAt", "updatedBy"])
+          && request.resource.data.keys().hasOnly([
+            "title", "author", "genre", "isbn", "publisher", "publicationYear",
+            "coverUrl", "description", "createdAt", "createdBy", "updatedAt", "updatedBy"
+          ])
+          && request.resource.data.title is string
+          && request.resource.data.title.size() > 0
+          && request.resource.data.title.size() <= 180
+          && request.resource.data.author is string
+          && request.resource.data.author.size() > 0
+          && request.resource.data.author.size() <= 140
+          && validAuditCreate();
+        allow update: if isActiveMember(libraryId)
+          && request.resource.data.keys().hasAll(["title", "author", "createdAt", "createdBy", "updatedAt", "updatedBy"])
+          && request.resource.data.keys().hasOnly([
+            "title", "author", "genre", "isbn", "publisher", "publicationYear",
+            "coverUrl", "description", "createdAt", "createdBy", "updatedAt", "updatedBy"
+          ])
+          && request.resource.data.title is string
+          && request.resource.data.title.size() > 0
+          && request.resource.data.title.size() <= 180
+          && request.resource.data.author is string
+          && request.resource.data.author.size() > 0
+          && request.resource.data.author.size() <= 140
+          && validAuditUpdate();
+        allow delete: if isActiveMember(libraryId);
+      }
+
+      match /copies/{copyId} {
+        allow read: if isActiveMember(libraryId);
+        allow create: if isActiveMember(libraryId)
+          && request.resource.data.keys().hasAll(["bookId", "condition", "status", "createdAt", "createdBy", "updatedAt", "updatedBy"])
+          && request.resource.data.keys().hasOnly([
+            "bookId", "copyLabel", "condition", "status", "locationId", "notes",
+            "createdAt", "createdBy", "updatedAt", "updatedBy"
+          ])
+          && request.resource.data.bookId is string
+          && request.resource.data.condition in ["Like new", "Good", "Fair", "Poor"]
+          && request.resource.data.status in ["Available", "Reading", "Repair"]
+          && validAuditCreate();
+
+        // Ordinary edits may change descriptive fields/status among non-loan states.
+        // Loaned/Available transitions require a matching atomic loan transaction.
+        allow update: if isActiveMember(libraryId)
+          && request.resource.data.keys().hasAll(["bookId", "condition", "status", "createdAt", "createdBy", "updatedAt", "updatedBy"])
+          && request.resource.data.keys().hasOnly([
+            "bookId", "copyLabel", "condition", "status", "locationId", "notes", "activeLoanId",
+            "createdAt", "createdBy", "updatedAt", "updatedBy"
+          ])
+          && request.resource.data.bookId is string
+          && request.resource.data.condition in ["Like new", "Good", "Fair", "Poor"]
+          && validAuditUpdate()
+          && (
+            (
+              request.resource.data.status in ["Available", "Reading", "Repair"]
+              && resource.data.status in ["Available", "Reading", "Repair"]
+              && !resource.data.keys().hasAny(["activeLoanId"])
+              && !request.resource.data.keys().hasAny(["activeLoanId"])
+            )
+            ||
+            (
+              resource.data.status == "Available"
+              && !resource.data.keys().hasAny(["activeLoanId"])
+              && request.resource.data.bookId == resource.data.bookId
+              && request.resource.data.status == "Loaned"
+              && request.resource.data.activeLoanId is string
+              && existsAfter(loanPath(libraryId, request.resource.data.activeLoanId))
+              && getAfter(loanPath(libraryId, request.resource.data.activeLoanId)).data.copyId == copyId
+              && getAfter(loanPath(libraryId, request.resource.data.activeLoanId)).data.status == "Borrowed"
+            )
+            ||
+            (
+              resource.data.status == "Loaned"
+              && resource.data.activeLoanId is string
+              && request.resource.data.bookId == resource.data.bookId
+              && request.resource.data.status == "Available"
+              && !request.resource.data.keys().hasAny(["activeLoanId"])
+              && getAfter(loanPath(libraryId, resource.data.activeLoanId)).data.status == "Returned"
+              && getAfter(loanPath(libraryId, resource.data.activeLoanId)).data.returnedAt is timestamp
+            )
+            ||
+            (
+              resource.data.status == "Loaned"
+              && request.resource.data.status == "Loaned"
+              && request.resource.data.bookId == resource.data.bookId
+              && request.resource.data.get("activeLoanId", null) == resource.data.get("activeLoanId", null)
+            )
+          );
+
+        allow delete: if isActiveMember(libraryId)
+          && resource.data.status != "Loaned"
+          && !resource.data.keys().hasAny(["activeLoanId"]);
+      }
+
+      match /locations/{locationId} {
+        allow read: if isActiveMember(libraryId);
+        allow create: if isActiveMember(libraryId)
+          && request.resource.data.keys().hasAll(["name", "type", "createdAt", "createdBy", "updatedAt", "updatedBy"])
+          && request.resource.data.keys().hasOnly([
+            "name", "type", "parentId", "notes", "createdAt", "createdBy", "updatedAt", "updatedBy"
+          ])
+          && request.resource.data.name is string
+          && request.resource.data.name.size() > 0
+          && request.resource.data.name.size() <= 100
+          && request.resource.data.type in ["room", "bookshelf", "shelf"]
+          && validAuditCreate();
+        allow update: if isActiveMember(libraryId)
+          && request.resource.data.keys().hasAll(["name", "type", "createdAt", "createdBy", "updatedAt", "updatedBy"])
+          && request.resource.data.keys().hasOnly([
+            "name", "type", "parentId", "notes", "createdAt", "createdBy", "updatedAt", "updatedBy"
+          ])
+          && request.resource.data.name is string
+          && request.resource.data.name.size() > 0
+          && request.resource.data.name.size() <= 100
+          && request.resource.data.type in ["room", "bookshelf", "shelf"]
+          && validAuditUpdate();
+        allow delete: if isActiveMember(libraryId);
+      }
+
+      match /loans/{loanId} {
+        allow read: if isActiveMember(libraryId);
+        allow create: if isActiveMember(libraryId)
+          && request.resource.data.keys().hasAll([
+            "copyId", "bookId", "bookTitle", "borrowerName", "borrowedAt", "dueAt", "returnedAt", "status",
+            "createdBy", "createdAt", "updatedBy", "updatedAt"
+          ])
+          && request.resource.data.keys().hasOnly([
+            "copyId", "bookId", "bookTitle", "copyLabel", "borrowerName", "borrowedAt", "dueAt", "returnedAt", "status", "notes",
+            "createdBy", "createdAt", "updatedBy", "updatedAt"
+          ])
+          && request.resource.data.copyId is string
+          && request.resource.data.bookId is string
+          && request.resource.data.bookTitle is string
+          && request.resource.data.bookTitle.size() > 0
+          && request.resource.data.bookTitle.size() <= 180
+          && (!request.resource.data.keys().hasAny(["copyLabel"]) || request.resource.data.copyLabel is string)
+          && (!request.resource.data.keys().hasAny(["notes"]) || (request.resource.data.notes is string && request.resource.data.notes.size() <= 1000))
+          && request.resource.data.borrowerName is string
+          && request.resource.data.borrowerName.size() > 0
+          && request.resource.data.borrowerName.size() <= 120
+          && request.resource.data.borrowedAt is timestamp
+          && request.resource.data.dueAt is timestamp
+          && request.resource.data.dueAt >= request.resource.data.borrowedAt
+          && request.resource.data.returnedAt == null
+          && request.resource.data.status == "Borrowed"
+          && request.resource.data.createdBy == request.auth.uid
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.updatedBy == request.auth.uid
+          && request.resource.data.updatedAt == request.time
+          && exists(copyPath(libraryId, request.resource.data.copyId))
+          && get(copyPath(libraryId, request.resource.data.copyId)).data.bookId == request.resource.data.bookId
+          && get(copyPath(libraryId, request.resource.data.copyId)).data.status == "Available"
+          && getAfter(copyPath(libraryId, request.resource.data.copyId)).data.status == "Loaned"
+          && getAfter(copyPath(libraryId, request.resource.data.copyId)).data.bookId == request.resource.data.bookId
+          && getAfter(copyPath(libraryId, request.resource.data.copyId)).data.activeLoanId == loanId;
+
+        allow update: if isActiveMember(libraryId)
+          && resource.data.status == "Borrowed"
+          && request.resource.data.status == "Returned"
+          && request.resource.data.returnedAt is timestamp
+          && request.resource.data.returnedAt >= resource.data.borrowedAt
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status", "returnedAt", "updatedBy", "updatedAt"])
+          && request.resource.data.copyId == resource.data.copyId
+          && request.resource.data.bookId == resource.data.bookId
+          && request.resource.data.bookTitle == resource.data.bookTitle
+          && request.resource.data.get("copyLabel", null) == resource.data.get("copyLabel", null)
+          && request.resource.data.get("notes", null) == resource.data.get("notes", null)
+          && request.resource.data.borrowerName == resource.data.borrowerName
+          && request.resource.data.borrowedAt == resource.data.borrowedAt
+          && request.resource.data.dueAt == resource.data.dueAt
+          && request.resource.data.createdBy == resource.data.createdBy
+          && request.resource.data.createdAt == resource.data.createdAt
+          && request.resource.data.updatedBy == request.auth.uid
+          && request.resource.data.updatedAt == request.time
+          && getAfter(copyPath(libraryId, resource.data.copyId)).data.status == "Available"
+          && !getAfter(copyPath(libraryId, resource.data.copyId)).data.keys().hasAny(["activeLoanId"]);
+
+        allow delete: if false;
+      }
+
+      // All other collections remain closed unless explicitly added later.
+      match /{collectionName}/{document=**} {
+        allow read, write: if false;
+      }
+    }
+  }
+}

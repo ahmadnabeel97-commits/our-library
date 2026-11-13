@@ -513,8 +513,9 @@ function showDashboard(membership, library) {
 $("#invite-form").addEventListener("submit", async (event) => {
   event.preventDefault();
   if (!currentUser) return;
-  const form = new FormData(event.currentTarget);
-  const button = event.currentTarget.querySelector("button[type=submit]");
+  const formElement = event.currentTarget;
+  const form = new FormData(formElement);
+  const button = formElement.querySelector("button[type=submit]");
   button.disabled = true;
   message("#invite-message", "Approving membership…");
   try {
@@ -525,7 +526,7 @@ $("#invite-form").addEventListener("submit", async (event) => {
       adminUid: currentUser.uid
     });
 
-    event.currentTarget.reset();
+    formElement.reset();
 
     if (result.alreadyActive) {
       message("#invite-message", "This person is already an active library member. No changes were needed.", "success");

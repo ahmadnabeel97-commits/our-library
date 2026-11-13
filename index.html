@@ -96,6 +96,30 @@ h3 { font-family:"Playfair Display",serif; font-size:19px; margin:0; }
 .dashboard-footer { color:var(--muted); font-size:11px; text-align:center; padding-top:32px; }
 .dashboard-footer span { padding:0 7px; }
 .toast { position:fixed; bottom:22px; left:50%; transform:translateX(-50%); background:var(--plum); color:white; padding:12px 18px; border-radius:12px; font-size:12px; box-shadow:var(--shadow); max-width:calc(100% - 30px); }
+
+.library-tools { margin-top:18px; display:grid; gap:18px; }
+.library-tabs { display:flex; flex-wrap:wrap; gap:8px; margin:18px 0; }
+.library-tab { border:1px solid var(--line); border-radius:999px; padding:10px 15px; background:#fff; color:var(--muted); font-weight:700; font-size:12px; }
+.library-tab.active { background:var(--plum); color:#fff; border-color:var(--plum); }
+.library-section { background:rgba(255,254,250,.92); border:1px solid rgba(232,225,235,.9); border-radius:18px; padding:22px; }
+.library-section h2 { margin-bottom:6px; }
+.library-form { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin:16px 0; }
+.library-form label { display:grid; gap:6px; color:#514958; font-size:12px; font-weight:600; }
+.library-form input,.library-form select,.library-form textarea,.search-input { width:100%; border:1px solid var(--line); border-radius:10px; padding:11px 12px; background:#fff; color:var(--ink); font:inherit; font-size:13px; }
+.library-form textarea { min-height:76px; resize:vertical; }
+.library-form .wide { grid-column:1/-1; }
+.library-actions { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+.library-list { display:grid; gap:9px; margin-top:14px; }
+.library-item { display:flex; justify-content:space-between; align-items:flex-start; gap:14px; padding:13px; border:1px solid var(--line); border-radius:12px; background:#fff; }
+.library-item strong { display:block; font-size:13px; }
+.library-item small { display:block; color:var(--muted); font-size:11px; line-height:1.6; margin-top:4px; overflow-wrap:anywhere; }
+.library-item .library-actions { flex-shrink:0; }
+.small-button { border:0; border-radius:8px; padding:7px 10px; background:var(--lavender-soft); color:var(--lavender-dark); font-size:11px; font-weight:700; }
+.small-button.danger { background:#f8eaea; color:#a44949; }
+.empty-state { padding:18px; text-align:center; color:var(--muted); font-size:13px; background:#f8f5f8; border-radius:12px; }
+.library-count { color:var(--muted); font-size:11px; }
+@media(max-width:650px) { .library-form { grid-template-columns:1fr; } .library-form .wide { grid-column:auto; } .library-item { flex-direction:column; } }
+
 @media (max-width:800px) {
   .app-shell { width:min(100% - 28px, 560px); padding-top:16px; }
   .topbar { margin-bottom:24px; }
@@ -193,14 +217,13 @@ h3 { font-family:"Playfair Display",serif; font-size:19px; margin:0; }
       </div>
       <div class="content-grid">
         <article class="panel">
-          <p class="eyebrow">STAGE 1A</p>
-          <h2>Foundation is connected.</h2>
-          <p class="muted">Authentication and shared-library membership are working. Book management and the bookshelf will arrive in the next development stage.</p>
+          <p class="eyebrow">STAGE 1B</p>
+          <h2>Your shared bookshelf starts here.</h2>
+          <p class="muted">Add the books you own, record each physical copy, and organize where everything lives. Ahmad and Sadia have equal permissions for library management.</p>
           <div class="feature-list">
-            <div><span class="check">✓</span><span>Individual account authentication</span></div>
-            <div><span class="check">✓</span><span>Shared library membership</span></div>
-            <div><span class="check">✓</span><span>Role-based access control</span></div>
-            <div><span class="check">→</span><span>Book catalog — next stage</span></div>
+            <div><span class="check">✓</span><span>Shared book catalogue</span></div>
+            <div><span class="check">✓</span><span>Multiple physical copies per book</span></div>
+            <div><span class="check">✓</span><span>Rooms, bookshelves and shelf locations</span></div>
           </div>
         </article>
         <article id="admin-panel" class="panel hidden">
@@ -218,6 +241,62 @@ h3 { font-family:"Playfair Display",serif; font-size:19px; margin:0; }
           <ul id="members-list" class="members-list"></ul>
         </article>
       </div>
+      <section class="library-tools">
+        <div class="library-tabs" role="tablist" aria-label="Library management">
+          <button class="library-tab active" type="button" data-library-tab="books">Books</button>
+          <button class="library-tab" type="button" data-library-tab="copies">Physical copies</button>
+          <button class="library-tab" type="button" data-library-tab="locations">Locations</button>
+        </div>
+        <section id="books-section" class="library-section">
+          <p class="eyebrow">BOOK CATALOGUE</p><h2>Books</h2><p class="muted">Add each distinct book once. You can attach multiple physical copies to it.</p>
+          <form id="book-form" class="library-form">
+            <input type="hidden" name="recordId">
+            <label>Book title *<input name="title" maxlength="180" required></label>
+            <label>Author *<input name="author" maxlength="140" required></label>
+            <label>Genre<input name="genre" maxlength="80" placeholder="e.g. Fiction"></label>
+            <label>ISBN<input name="isbn" maxlength="30"></label>
+            <label>Publisher<input name="publisher" maxlength="120"></label>
+            <label>Publication year<input name="publicationYear" type="number" min="0" max="2100"></label>
+            <label class="wide">Cover image URL (optional)<input name="coverUrl" type="url" placeholder="https://..."></label>
+            <label class="wide">Description / notes<textarea name="description" maxlength="2000"></textarea></label>
+            <div class="library-actions wide"><button class="primary-button" type="submit" id="book-submit">Add book</button><button class="secondary-button" type="button" id="book-cancel">Clear form</button></div>
+          </form>
+          <p id="book-message" class="message" role="status"></p>
+          <input id="book-search" class="search-input" type="search" placeholder="Search by title, author, ISBN or genre…" aria-label="Search books">
+          <div class="members-heading"><h3>Collection</h3><span id="book-count" class="library-count">0 books</span></div>
+          <div id="books-list" class="library-list"><div class="empty-state">Loading books…</div></div>
+        </section>
+        <section id="copies-section" class="library-section hidden">
+          <p class="eyebrow">YOUR PHYSICAL COLLECTION</p><h2>Physical copies</h2><p class="muted">Each entry represents one actual copy you can locate and track independently.</p>
+          <form id="copy-form" class="library-form">
+            <input type="hidden" name="recordId">
+            <label>Book *<select name="bookId" required><option value="">Add a book first</option></select></label>
+            <label>Copy label<input name="copyLabel" maxlength="60" placeholder="e.g. Copy 1"></label>
+            <label>Condition<select name="condition"><option>Good</option><option>Like new</option><option>Fair</option><option>Poor</option></select></label>
+            <label>Status<select name="status"><option>Available</option><option>Reading</option><option>Loaned</option><option>Repair</option></select></label>
+            <label class="wide">Location<select name="locationId"><option value="">Not assigned yet</option></select></label>
+            <label class="wide">Notes<textarea name="notes" maxlength="1000"></textarea></label>
+            <div class="library-actions wide"><button class="primary-button" type="submit" id="copy-submit">Add copy</button><button class="secondary-button" type="button" id="copy-cancel">Clear form</button></div>
+          </form>
+          <p id="copy-message" class="message" role="status"></p>
+          <div class="members-heading"><h3>Copies</h3><span id="copy-count" class="library-count">0 copies</span></div>
+          <div id="copies-list" class="library-list"><div class="empty-state">No physical copies yet.</div></div>
+        </section>
+        <section id="locations-section" class="library-section hidden">
+          <p class="eyebrow">WHERE YOUR BOOKS LIVE</p><h2>Locations</h2><p class="muted">Build your hierarchy from room to bookshelf to individual shelf.</p>
+          <form id="location-form" class="library-form">
+            <input type="hidden" name="recordId">
+            <label>Location name *<input name="name" maxlength="100" required placeholder="e.g. Bedroom bookshelf"></label>
+            <label>Location type<select name="type"><option value="room">Room</option><option value="bookshelf">Bookshelf</option><option value="shelf">Shelf</option></select></label>
+            <label class="wide">Parent location<select name="parentId"><option value="">No parent (top level)</option></select></label>
+            <label class="wide">Notes<textarea name="notes" maxlength="500"></textarea></label>
+            <div class="library-actions wide"><button class="primary-button" type="submit" id="location-submit">Add location</button><button class="secondary-button" type="button" id="location-cancel">Clear form</button></div>
+          </form>
+          <p id="location-message" class="message" role="status"></p>
+          <div class="members-heading"><h3>Location structure</h3><span id="location-count" class="library-count">0 locations</span></div>
+          <div id="locations-list" class="library-list"><div class="empty-state">No locations yet.</div></div>
+        </section>
+      </section>
       <footer class="dashboard-footer">Our Library <span>·</span> Private shared space</footer>
     </section>
 
@@ -232,7 +311,7 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
 import {
-  getFirestore, collection, doc, getDoc, onSnapshot, serverTimestamp, setDoc, updateDoc
+  getFirestore, collection, doc, getDoc, onSnapshot, serverTimestamp, setDoc, updateDoc, addDoc, deleteDoc
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
 
 /*
@@ -492,6 +571,7 @@ function showDashboard(membership, library) {
   $("#member-role").textContent = membership.role === "admin" ? "Administrator" : "Member";
   $("#library-name").textContent = library.name || LIBRARY_NAME;
   $("#admin-panel").classList.toggle("hidden", membership.role !== "admin");
+  startLibraryListeners();
   if (membership.role === "admin") {
     stopMemberListener();
     memberUnsubscribe = observeMembers((members) => {
@@ -554,8 +634,170 @@ $("#pending-refresh").addEventListener("click", refreshMembership);
 $("#pending-signout").addEventListener("click", logoutAccount);
 $("#signout-button").addEventListener("click", logoutAccount);
 
+
+// Stage 1B: shared catalogue, physical copies and hierarchical locations.
+const libraryCollections = { books: [], copies: [], locations: [] };
+let libraryUnsubscribers = [];
+const libraryPath = (name) => collection(db, "libraries", LIBRARY_ID, name);
+const clean = (value) => String(value ?? "").trim();
+const setFormMessage = (selector, text, type = "") => message(selector, text, type);
+const escapeText = (value) => String(value ?? "");
+function stopLibraryListeners() {
+  libraryUnsubscribers.forEach((unsubscribe) => unsubscribe());
+  libraryUnsubscribers = [];
+}
+function startLibraryListeners() {
+  stopLibraryListeners();
+  ["books", "copies", "locations"].forEach((name) => {
+    const unsubscribe = onSnapshot(libraryPath(name), (snapshot) => {
+      libraryCollections[name] = snapshot.docs.map((item) => ({ id: item.id, ...item.data() }));
+      renderLibrary();
+    }, (error) => showToast(`${name} could not be loaded: ${friendlyError(error)}`));
+    libraryUnsubscribers.push(unsubscribe);
+  });
+}
+function displayLocation(locationId) {
+  if (!locationId) return "Not assigned";
+  const location = libraryCollections.locations.find((item) => item.id === locationId);
+  if (!location) return "Unknown location";
+  const parent = libraryCollections.locations.find((item) => item.id === location.parentId);
+  return parent ? `${parent.name} → ${location.name}` : location.name;
+}
+function renderLibrary() {
+  renderBooks(); renderCopies(); renderLocations(); refreshLibrarySelects();
+}
+function renderBooks() {
+  const list = $("#books-list");
+  const term = clean($("#book-search").value).toLowerCase();
+  const books = libraryCollections.books.filter((book) => [book.title, book.author, book.isbn, book.genre].some((value) => escapeText(value).toLowerCase().includes(term)));
+  $("#book-count").textContent = `${libraryCollections.books.length} book${libraryCollections.books.length === 1 ? "" : "s"}`;
+  list.replaceChildren();
+  if (!books.length) { list.innerHTML = '<div class="empty-state">No matching books yet. Add your first book above.</div>'; return; }
+  books.sort((a,b) => escapeText(a.title).localeCompare(escapeText(b.title))).forEach((book) => {
+    const item = document.createElement("div"); item.className = "library-item";
+    const details = document.createElement("div");
+    const title = document.createElement("strong"); title.textContent = book.title || "Untitled book";
+    const meta = document.createElement("small"); meta.textContent = [book.author, book.genre, book.isbn ? `ISBN: ${book.isbn}` : "", book.publicationYear || ""].filter(Boolean).join(" · ");
+    details.append(title, meta);
+    const actions = document.createElement("div"); actions.className = "library-actions";
+    actions.append(makeActionButton("Edit", "edit-book", book.id), makeActionButton("Delete", "delete-book", book.id, true));
+    item.append(details, actions); list.append(item);
+  });
+}
+function renderCopies() {
+  const list = $("#copies-list"); $("#copy-count").textContent = `${libraryCollections.copies.length} copies`; list.replaceChildren();
+  if (!libraryCollections.copies.length) { list.innerHTML = '<div class="empty-state">No physical copies yet. Add a book, then register its copies here.</div>'; return; }
+  libraryCollections.copies.forEach((copy) => {
+    const book = libraryCollections.books.find((item) => item.id === copy.bookId);
+    const item = document.createElement("div"); item.className = "library-item";
+    const details = document.createElement("div"); const title = document.createElement("strong"); title.textContent = `${book?.title || "Unknown book"}${copy.copyLabel ? ` — ${copy.copyLabel}` : ""}`;
+    const meta = document.createElement("small"); meta.textContent = `${copy.condition || "Condition not set"} · ${copy.status || "Status not set"} · ${displayLocation(copy.locationId)}`;
+    details.append(title, meta); const actions = document.createElement("div"); actions.className = "library-actions";
+    actions.append(makeActionButton("Edit", "edit-copy", copy.id), makeActionButton("Delete", "delete-copy", copy.id, true));
+    item.append(details, actions); list.append(item);
+  });
+}
+function renderLocations() {
+  const list = $("#locations-list"); $("#location-count").textContent = `${libraryCollections.locations.length} locations`; list.replaceChildren();
+  if (!libraryCollections.locations.length) { list.innerHTML = '<div class="empty-state">No locations yet. Start by adding a room.</div>'; return; }
+  const rank = { room: 0, bookshelf: 1, shelf: 2 };
+  [...libraryCollections.locations].sort((a,b) => (rank[a.type] ?? 9) - (rank[b.type] ?? 9) || escapeText(a.name).localeCompare(escapeText(b.name))).forEach((location) => {
+    const item = document.createElement("div"); item.className = "library-item"; const details = document.createElement("div");
+    const title = document.createElement("strong"); title.textContent = location.name;
+    const meta = document.createElement("small"); meta.textContent = `${location.type || "location"} · ${displayLocation(location.parentId)}`;
+    details.append(title, meta); const actions = document.createElement("div"); actions.className = "library-actions";
+    actions.append(makeActionButton("Edit", "edit-location", location.id), makeActionButton("Delete", "delete-location", location.id, true));
+    item.append(details, actions); list.append(item);
+  });
+}
+function makeActionButton(label, action, id, danger = false) {
+  const button = document.createElement("button"); button.type = "button"; button.className = `small-button${danger ? " danger" : ""}`;
+  button.textContent = label; button.dataset.action = action; button.dataset.id = id; return button;
+}
+function refreshLibrarySelects() {
+  const bookSelect = $("#copy-form [name=bookId]"); const selectedBook = bookSelect.value;
+  bookSelect.replaceChildren(new Option(libraryCollections.books.length ? "Choose a book" : "Add a book first", ""));
+  libraryCollections.books.sort((a,b) => escapeText(a.title).localeCompare(escapeText(b.title))).forEach((book) => bookSelect.add(new Option(`${book.title} — ${book.author}`, book.id)));
+  if (libraryCollections.books.some((book) => book.id === selectedBook)) bookSelect.value = selectedBook;
+  const locationSelect = $("#copy-form [name=locationId]"); const selectedLocation = locationSelect.value;
+  locationSelect.replaceChildren(new Option("Not assigned yet", ""));
+  libraryCollections.locations.forEach((location) => locationSelect.add(new Option(`${location.name} (${location.type})`, location.id)));
+  if (libraryCollections.locations.some((location) => location.id === selectedLocation)) locationSelect.value = selectedLocation;
+  const parentSelect = $("#location-form [name=parentId]"); const selectedParent = parentSelect.value;
+  parentSelect.replaceChildren(new Option("No parent (top level)", ""));
+  libraryCollections.locations.forEach((location) => parentSelect.add(new Option(`${location.name} (${location.type})`, location.id)));
+  if (libraryCollections.locations.some((location) => location.id === selectedParent)) parentSelect.value = selectedParent;
+}
+function resetEditor(formSelector, messageSelector, buttonSelector, label) {
+  $(formSelector).reset(); $(formSelector).elements.recordId.value = ""; $(buttonSelector).textContent = label; if (messageSelector) message(messageSelector, "");
+}
+function bookPayload(form) {
+  const data = { title: clean(form.get("title")), author: clean(form.get("author")), updatedAt: serverTimestamp(), updatedBy: currentUser.uid };
+  for (const key of ["genre", "isbn", "publisher", "coverUrl", "description"]) { const value = clean(form.get(key)); if (value) data[key] = value; }
+  const year = clean(form.get("publicationYear")); if (year) data.publicationYear = Number(year);
+  return data;
+}
+function auditCreate(data) { return { ...data, createdAt: serverTimestamp(), createdBy: currentUser.uid }; }
+async function saveRecord(collectionName, id, data) {
+  if (id) await updateDoc(doc(db, "libraries", LIBRARY_ID, collectionName, id), data);
+  else await addDoc(libraryPath(collectionName), auditCreate(data));
+}
+$("#book-form").addEventListener("submit", async (event) => {
+  event.preventDefault(); const form = event.currentTarget; const values = new FormData(form); const id = clean(values.get("recordId"));
+  const button = $("#book-submit"); button.disabled = true;
+  try { if (!clean(values.get("title")) || !clean(values.get("author"))) throw new Error("Enter both the book title and author."); await saveRecord("books", id, bookPayload(values)); resetEditor("#book-form", "#book-message", "#book-submit", "Add book"); message("#book-message", id ? "Book updated successfully." : "Book added successfully.", "success"); }
+  catch (error) { message("#book-message", friendlyError(error), "error"); } finally { button.disabled = false; }
+});
+$("#copy-form").addEventListener("submit", async (event) => {
+  event.preventDefault(); const form = event.currentTarget; const values = new FormData(form); const id = clean(values.get("recordId")); const bookId = clean(values.get("bookId"));
+  const button = $("#copy-submit"); button.disabled = true;
+  try { if (!libraryCollections.books.some((book) => book.id === bookId)) throw new Error("Choose a book from the catalogue first.");
+    const data = { bookId, condition: clean(values.get("condition")), status: clean(values.get("status")), updatedAt: serverTimestamp(), updatedBy: currentUser.uid };
+    for (const key of ["copyLabel", "locationId", "notes"]) { const value = clean(values.get(key)); if (value) data[key] = value; }
+    await saveRecord("copies", id, data); resetEditor("#copy-form", "#copy-message", "#copy-submit", "Add copy"); message("#copy-message", id ? "Physical copy updated." : "Physical copy added.", "success");
+  } catch (error) { message("#copy-message", friendlyError(error), "error"); } finally { button.disabled = false; }
+});
+$("#location-form").elements.type.addEventListener("change", (event) => {
+  const type = event.target.value; const parent = $("#location-form [name=parentId]");
+  [...parent.options].forEach((option) => { if (!option.value) return; const location = libraryCollections.locations.find((item) => item.id === option.value); option.disabled = type === "bookshelf" ? location?.type !== "room" : type === "shelf" ? location?.type !== "bookshelf" : true; });
+});
+$("#location-form").addEventListener("submit", async (event) => {
+  event.preventDefault(); const form = event.currentTarget; const values = new FormData(form); const id = clean(values.get("recordId")); const type = clean(values.get("type")); const parentId = clean(values.get("parentId"));
+  const button = $("#location-submit"); button.disabled = true;
+  try {
+    if (type === "room" && parentId) throw new Error("A room must be a top-level location.");
+    if (type === "bookshelf" && (!parentId || libraryCollections.locations.find((item) => item.id === parentId)?.type !== "room")) throw new Error("Choose a room as the parent of a bookshelf.");
+    if (type === "shelf" && (!parentId || libraryCollections.locations.find((item) => item.id === parentId)?.type !== "bookshelf")) throw new Error("Choose a bookshelf as the parent of a shelf.");
+    if (id && (id === parentId || isDescendant(parentId, id))) throw new Error("A location cannot be placed inside itself or one of its descendants.");
+    const data = { name: clean(values.get("name")), type, updatedAt: serverTimestamp(), updatedBy: currentUser.uid };
+    if (!data.name) throw new Error("Enter a location name."); if (parentId) data.parentId = parentId; const notes = clean(values.get("notes")); if (notes) data.notes = notes;
+    await saveRecord("locations", id, data); resetEditor("#location-form", "#location-message", "#location-submit", "Add location"); message("#location-message", id ? "Location updated." : "Location added.", "success");
+  } catch (error) { message("#location-message", friendlyError(error), "error"); } finally { button.disabled = false; }
+});
+function isDescendant(candidateId, ancestorId) { let current = libraryCollections.locations.find((item) => item.id === candidateId); while (current?.parentId) { if (current.parentId === ancestorId) return true; current = libraryCollections.locations.find((item) => item.id === current.parentId); } return false; }
+$("#book-cancel").addEventListener("click", () => resetEditor("#book-form", "#book-message", "#book-submit", "Add book"));
+$("#copy-cancel").addEventListener("click", () => resetEditor("#copy-form", "#copy-message", "#copy-submit", "Add copy"));
+$("#location-cancel").addEventListener("click", () => resetEditor("#location-form", "#location-message", "#location-submit", "Add location"));
+$("#book-search").addEventListener("input", renderBooks);
+document.querySelectorAll("[data-library-tab]").forEach((button) => button.addEventListener("click", () => {
+  document.querySelectorAll("[data-library-tab]").forEach((tab) => tab.classList.toggle("active", tab === button));
+  ["books", "copies", "locations"].forEach((name) => $(`#${name}-section`).classList.toggle("hidden", button.dataset.libraryTab !== name));
+}));
+document.querySelector(".library-tools").addEventListener("click", async (event) => {
+  const button = event.target.closest("button[data-action]"); if (!button) return; const { action, id } = button.dataset;
+  try {
+    if (action === "edit-book") { const item = libraryCollections.books.find((entry) => entry.id === id); if (!item) return; const form = $("#book-form"); for (const key of ["title", "author", "genre", "isbn", "publisher", "publicationYear", "coverUrl", "description"]) form.elements[key].value = item[key] ?? ""; form.elements.recordId.value = id; $("#book-submit").textContent = "Save book"; form.scrollIntoView({ behavior: "smooth", block: "center" }); }
+    if (action === "edit-copy") { const item = libraryCollections.copies.find((entry) => entry.id === id); if (!item) return; const form = $("#copy-form"); for (const key of ["bookId", "copyLabel", "condition", "status", "locationId", "notes"]) form.elements[key].value = item[key] ?? ""; form.elements.recordId.value = id; $("#copy-submit").textContent = "Save copy"; document.querySelector('[data-library-tab="copies"]').click(); form.scrollIntoView({ behavior: "smooth", block: "center" }); }
+    if (action === "edit-location") { const item = libraryCollections.locations.find((entry) => entry.id === id); if (!item) return; const form = $("#location-form"); for (const key of ["name", "type", "parentId", "notes"]) form.elements[key].value = item[key] ?? ""; form.elements.recordId.value = id; $("#location-submit").textContent = "Save location"; document.querySelector('[data-library-tab="locations"]').click(); form.scrollIntoView({ behavior: "smooth", block: "center" }); }
+    if (action === "delete-book") { if (libraryCollections.copies.some((copy) => copy.bookId === id)) { showToast("Delete this book's physical copies first."); return; } if (!confirm("Delete this book from the catalogue? This cannot be undone.")) return; await deleteDoc(doc(db, "libraries", LIBRARY_ID, "books", id)); showToast("Book deleted."); }
+    if (action === "delete-copy") { if (!confirm("Delete this physical copy?")) return; await deleteDoc(doc(db, "libraries", LIBRARY_ID, "copies", id)); showToast("Physical copy deleted."); }
+    if (action === "delete-location") { if (libraryCollections.locations.some((item) => item.parentId === id) || libraryCollections.copies.some((copy) => copy.locationId === id)) { showToast("Move child locations and physical copies first."); return; } if (!confirm("Delete this location?")) return; await deleteDoc(doc(db, "libraries", LIBRARY_ID, "locations", id)); showToast("Location deleted."); }
+  } catch (error) { showToast(friendlyError(error)); }
+});
+
 observeAuth(async (user) => {
   stopMemberListener();
+  stopLibraryListeners();
   currentUser = user;
   if (!user) {
     setConnection("Not signed in");

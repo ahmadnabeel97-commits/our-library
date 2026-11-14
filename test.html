@@ -1,0 +1,1692 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#12141A">
+  <meta name="description" content="A shared personal library for two readers.">
+  <title>Our Library</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&family=Noto+Sans+Bengali:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+:root {
+  color-scheme: dark;
+  --lime: #10E764;
+  --green: #059669;
+  --obsidian: #12141A;
+  --white: #F8FAFC;
+  --bg: #12141A;
+  --surface: #1A1D26;
+  --surface-2: #222632;
+  --inset: #0E1015;
+  --line: rgba(248,250,252,.09);
+  --line-strong: rgba(248,250,252,.18);
+  --text: #F8FAFC;
+  --muted: rgba(248,250,252,.64);
+  --faint: rgba(248,250,252,.42);
+  --warn: #F5B942;
+  --danger: #FF6B6B;
+  --teal: #2DD4BF;
+  --radius: 16px;
+  --font-display: "Space Grotesk", "Inter", "Noto Sans Bengali", system-ui, sans-serif;
+  --font-body: "Inter", "Noto Sans Bengali", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; min-height: 100vh; color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.5;
+  background: radial-gradient(900px 520px at 10% -10%, rgba(16,231,100,.13), transparent 60%), radial-gradient(700px 420px at 100% 0%, rgba(5,150,105,.12), transparent 60%), var(--bg);
+  background-attachment: fixed; -webkit-font-smoothing: antialiased;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+.hidden { display: none !important; }
+h1, h2, h3, p { margin-top: 0; }
+h1, h2, h3 { font-family: var(--font-display); letter-spacing: -.02em; }
+h1 { font-size: clamp(30px, 4.6vw, 54px); line-height: 1.05; margin-bottom: 14px; }
+h1 em { font-style: normal; color: var(--lime); }
+h2 { font-size: 22px; margin-bottom: 6px; }
+h3 { font-size: 16px; margin: 0; }
+a { color: var(--lime); }
+.muted { color: var(--muted); }
+.eyebrow { color: var(--lime); text-transform: uppercase; letter-spacing: .14em; font-size: 11px; font-weight: 700; margin: 0 0 10px; }
+.shell { width: min(1240px, calc(100% - 32px)); margin: 0 auto; padding: 20px 0 40px; }
+
+/* Top bar */
+.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text); }
+.brand-mark { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--lime); color: #04140A; font-family: var(--font-display); font-weight: 700; letter-spacing: -.04em; box-shadow: 0 0 0 4px rgba(16,231,100,.14), 0 10px 30px rgba(16,231,100,.25); }
+.brand strong { display: block; font-family: var(--font-display); font-size: 18px; line-height: 1.1; }
+.brand small { display: block; color: var(--faint); font-size: 11px; margin-top: 2px; }
+.connection-pill { white-space: nowrap; display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: rgba(248,250,252,.04); color: var(--muted); border-radius: 99px; padding: 6px 12px; font-size: 12px; }
+.connection-pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 10px var(--lime); }
+
+/* Buttons and fields */
+.primary-button { background: var(--lime); color: #04140A; border: 0; border-radius: 12px; padding: 11px 18px; font-weight: 700; transition: background .15s, transform .15s, box-shadow .15s; }
+.primary-button:hover { background: var(--green); box-shadow: 0 8px 24px rgba(5,150,105,.35); transform: translateY(-1px); }
+.secondary-button { background: transparent; border: 1px solid var(--line-strong); border-radius: 12px; padding: 10px 16px; font-weight: 600; transition: border-color .15s, color .15s; }
+.secondary-button:hover { border-color: var(--lime); color: var(--lime); }
+.text-button { background: none; border: 0; color: var(--muted); padding: 6px 2px; font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
+.text-button:hover { color: var(--lime); }
+.small-button { border: 1px solid var(--line-strong); background: rgba(248,250,252,.04); border-radius: 9px; padding: 6px 11px; font-size: 12px; font-weight: 600; transition: border-color .15s, color .15s; }
+.small-button:hover { border-color: var(--lime); color: var(--lime); }
+.small-button.danger:hover { border-color: var(--danger); color: var(--danger); }
+button:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+input, select, textarea { width: 100%; background: var(--inset); border: 1px solid var(--line); border-radius: 11px; padding: 10px 12px; }
+input::placeholder, textarea::placeholder { color: var(--faint); }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--lime); box-shadow: 0 0 0 3px rgba(16,231,100,.16); }
+textarea { min-height: 90px; resize: vertical; }
+select option { background: var(--surface); color: var(--text); }
+label { display: grid; gap: 6px; font-size: 12px; font-weight: 600; color: var(--muted); }
+.message { min-height: 20px; margin: 10px 0 0; font-size: 13px; color: var(--muted); }
+.message.success { color: var(--lime); }
+.message.error { color: var(--danger); }
+
+/* Auth */
+.auth-layout { display: grid; grid-template-columns: 1.1fr .9fr; align-items: center; gap: 64px; min-height: 560px; }
+.intro-copy { color: var(--muted); font-size: 17px; max-width: 460px; }
+.intro-points { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 22px 0 0; }
+.intro-points li { border: 1px solid var(--line-strong); border-radius: 99px; padding: 6px 13px; font-size: 13px; color: var(--muted); }
+.spines { display: flex; align-items: flex-end; gap: 8px; height: 140px; margin-top: 40px; }
+.spines span { width: 26px; border-radius: 6px 6px 3px 3px; background: linear-gradient(180deg, rgba(248,250,252,.14), rgba(248,250,252,.04)); border: 1px solid var(--line); }
+.spines span:nth-child(1) { height: 70%; } .spines span:nth-child(2) { height: 92%; } .spines span:nth-child(3) { height: 58%; }
+.spines span:nth-child(4) { height: 100%; background: linear-gradient(180deg, var(--lime), var(--green)); border: 0; box-shadow: 0 0 40px rgba(16,231,100,.35); }
+.spines span:nth-child(5) { height: 76%; } .spines span:nth-child(6) { height: 88%; } .spines span:nth-child(7) { height: 64%; }
+.auth-card, .panel, .status-view { background: linear-gradient(180deg, rgba(248,250,252,.035), rgba(248,250,252,.015)), var(--surface); border: 1px solid var(--line); border-radius: 20px; box-shadow: 0 24px 60px rgba(0,0,0,.35); }
+.auth-card { padding: 28px; }
+.auth-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: var(--inset); border-radius: 12px; margin-bottom: 22px; }
+.tab { border: 0; background: transparent; color: var(--muted); border-radius: 9px; padding: 9px; font-weight: 600; }
+.tab.active { background: var(--surface-2); color: var(--text); box-shadow: inset 0 0 0 1px var(--line-strong); }
+.auth-form { display: grid; gap: 14px; }
+.auth-form h2 { margin-bottom: 0; }
+.status-view { max-width: 560px; margin: 40px auto; padding: 36px; text-align: center; }
+.status-icon { font-size: 34px; margin-bottom: 8px; }
+.uid-box { display: flex; align-items: center; gap: 10px; background: var(--inset); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin: 16px 0; text-align: left; }
+.uid-box code { flex: 1; word-break: break-all; font-size: 12px; color: var(--lime); }
+
+/* App layout */
+.app-layout { display: grid; grid-template-columns: 216px minmax(0, 1fr); gap: 28px; align-items: start; }
+.sidebar { position: sticky; top: 20px; display: grid; gap: 14px; }
+.side-nav { display: grid; gap: 4px; padding: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; }
+.nav-item { display: flex; align-items: center; gap: 12px; width: 100%; border: 0; background: transparent; color: var(--muted); padding: 11px 12px; border-radius: 12px; font-weight: 600; font-size: 14px; text-align: left; position: relative; transition: background .15s, color .15s; }
+.nav-item svg { width: 19px; height: 19px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.nav-item:hover { background: rgba(248,250,252,.05); color: var(--text); }
+.nav-item.active { background: rgba(16,231,100,.1); color: var(--lime); }
+.nav-item.active::before { content: ""; position: absolute; left: -8px; top: 10px; bottom: 10px; width: 3px; border-radius: 3px; background: var(--lime); }
+.side-user { padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; display: grid; gap: 2px; }
+.side-user span { font-weight: 600; font-size: 13px; }
+.side-user small { color: var(--lime); font-size: 11px; text-transform: uppercase; letter-spacing: .1em; font-weight: 700; }
+.library-tools { display: block; min-width: 0; }
+.library-section { display: grid; gap: 18px; }
+.section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.section-head h2 { font-size: 28px; margin: 0; }
+.section-head p { margin: 4px 0 0; }
+.panel { padding: 22px; }
+.panel-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+.panel-head h2 { margin: 0; font-size: 18px; }
+.members-heading { display: flex; align-items: center; justify-content: space-between; margin: 8px 0 12px; }
+.library-count { color: var(--muted); font-size: 12px; background: rgba(248,250,252,.05); border: 1px solid var(--line); padding: 3px 10px; border-radius: 99px; }
+
+/* Home */
+.hero { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.hero h1 { font-size: clamp(28px, 3.6vw, 44px); margin-bottom: 6px; }
+.home-search { display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 16px; background: var(--surface); border: 1px solid var(--line-strong); border-radius: 16px; box-shadow: 0 0 0 5px rgba(16,231,100,.04); }
+.home-search:focus-within { border-color: var(--lime); box-shadow: 0 0 0 5px rgba(16,231,100,.12); }
+.home-search svg, .search-wrap svg { width: 18px; height: 18px; flex: none; fill: none; stroke: var(--faint); stroke-width: 2; stroke-linecap: round; }
+.home-search input { border: 0; background: transparent; box-shadow: none !important; padding: 8px 4px; font-size: 16px; }
+.stats-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+.stat-card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; display: grid; gap: 2px; }
+.stat-label { color: var(--muted); font-size: 12px; font-weight: 600; }
+.stat-card strong { font-family: var(--font-display); font-size: 32px; line-height: 1.1; letter-spacing: -.03em; }
+.stat-card small { color: var(--faint); font-size: 12px; }
+.stat-card.alert { border-color: rgba(255,107,107,.45); background: linear-gradient(180deg, rgba(255,107,107,.1), transparent), var(--surface); }
+.stat-card.alert strong { color: var(--danger); }
+.home-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.home-main, .home-side { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; min-width: 0; }
+.panel { min-width: 0; }
+.attention-list { display: grid; gap: 8px; }
+.attention-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 14px; background: var(--inset); border: 1px solid var(--line); border-radius: 12px; }
+.attention-row strong { display: block; font-size: 14px; }
+.attention-row small { color: var(--muted); }
+.attention-row.overdue { border-color: rgba(255,107,107,.4); }
+.pill { white-space: nowrap; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 99px; background: rgba(245,185,66,.14); color: var(--warn); }
+.attention-row.overdue .pill { background: rgba(255,107,107,.14); color: var(--danger); }
+.shelf { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x proximity; }
+.shelf-item { flex: none; width: 112px; border: 0; background: none; text-align: left; padding: 0; scroll-snap-align: start; }
+.shelf-item .cover { width: 112px; transition: transform .2s; }
+.shelf-item:hover .cover { transform: translateY(-4px); }
+.shelf-item span { display: block; margin-top: 8px; font-size: 12px; font-weight: 600; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.quick-actions { display: grid; gap: 8px; margin-top: 12px; }
+.quick-actions button { justify-content: flex-start; text-align: left; }
+.status-bar { display: flex; height: 12px; border-radius: 99px; overflow: hidden; background: var(--inset); gap: 2px; margin: 14px 0 12px; }
+.seg { min-width: 6px; }
+.seg-Available, .dot-Available { background: var(--lime); }
+.seg-Loaned, .dot-Loaned { background: var(--warn); }
+.seg-Reading, .dot-Reading { background: var(--teal); }
+.seg-Repair, .dot-Repair { background: var(--danger); }
+.status-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; font-size: 12px; color: var(--muted); }
+.status-legend span { display: flex; align-items: center; gap: 7px; }
+.status-legend i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.chip { border: 1px solid var(--line-strong); background: transparent; border-radius: 99px; padding: 6px 13px; font-size: 13px; color: var(--muted); }
+.chip:hover { border-color: var(--lime); color: var(--lime); }
+
+/* Catalogue */
+.editor { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
+.editor > summary { list-style: none; cursor: pointer; padding: 14px 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.editor > summary::-webkit-details-marker { display: none; }
+.editor > summary::before { content: "+"; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 7px; background: var(--lime); color: #04140A; font-weight: 700; }
+.editor[open] > summary::before { content: "−"; }
+.editor-body { padding: 0 18px 18px; }
+.library-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 6px 0 4px; }
+.library-form .wide { grid-column: 1 / -1; }
+.library-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.toolbar { display: grid; gap: 12px; }
+.toolbar-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.search-wrap { flex: 1 1 260px; display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--line-strong); border-radius: 12px; padding: 0 12px; }
+.search-wrap:focus-within { border-color: var(--lime); box-shadow: 0 0 0 3px rgba(16,231,100,.14); }
+.search-wrap input { border: 0; background: transparent; box-shadow: none !important; padding: 11px 0; }
+#book-sort { width: auto; min-width: 150px; background: var(--surface); }
+.count-badge { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 99px; background: var(--lime); color: #04140A; font-size: 11px; font-weight: 700; margin-left: 6px; }
+.view-switch { display: inline-flex; padding: 3px; gap: 3px; background: var(--surface); border: 1px solid var(--line-strong); border-radius: 12px; }
+.view-switch button { display: grid; place-items: center; width: 38px; height: 34px; border: 0; background: transparent; color: var(--muted); border-radius: 9px; }
+.view-switch button[aria-pressed="true"] { background: rgba(16,231,100,.14); color: var(--lime); }
+.view-switch svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.advanced { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; padding: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; align-items: end; }
+.advanced .adv-actions { display: flex; justify-content: flex-end; }
+.books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 22px 18px; }
+.book-tile { display: grid; grid-template-rows: auto auto; align-content: start; gap: 8px; }
+.tile-hit { border: 0; background: none; padding: 0; text-align: left; display: block; align-self: start; width: 100%; }
+.cover { position: relative; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden; background: var(--surface-2); box-shadow: 0 14px 28px rgba(0,0,0,.4); border: 1px solid var(--line); transition: transform .2s, box-shadow .2s, border-color .2s; }
+.cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cover.no-image { display: grid; grid-template-columns: minmax(0, 1fr); place-items: end start; padding: 14px; background: linear-gradient(150deg, hsl(var(--hue, 150) 46% 24%), hsl(var(--hue, 150) 38% 11%)); }
+.shelf-item .cover.no-image { padding: 10px; }
+.shelf-item .cover.no-image span { font-size: 12.5px; }
+.cover.no-image span { overflow-wrap: anywhere; font-family: var(--font-display); font-weight: 700; font-size: 15px; line-height: 1.2; color: var(--white); display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+.cover.no-image::after { content: ""; position: absolute; left: 14px; top: 14px; width: 26px; height: 3px; border-radius: 2px; background: var(--lime); }
+.tile-hit:hover .cover { transform: translateY(-4px); border-color: rgba(16,231,100,.55); box-shadow: 0 18px 36px rgba(0,0,0,.5), 0 0 0 1px rgba(16,231,100,.3); }
+.tile-info { display: grid; gap: 3px; padding-top: 10px; }
+.tile-info strong { font-size: 14px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.tile-info .author { color: var(--muted); font-size: 13px; }
+.tile-info small { color: var(--faint); font-size: 12px; }
+.badge { justify-self: start; margin-top: 4px; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 99px; }
+.badge.ok { background: rgba(16,231,100,.14); color: var(--lime); }
+.badge.warn { background: rgba(245,185,66,.14); color: var(--warn); }
+.badge.none { background: rgba(248,250,252,.07); color: var(--muted); }
+.tile-actions { display: flex; gap: 6px; }
+.books-list-view { display: grid; gap: 10px; }
+.books-list-view .book-tile { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px 10px 10px; }
+.books-list-view .tile-hit { display: flex; gap: 14px; align-items: center; min-width: 0; }
+.books-list-view .cover { width: 46px; flex: none; border-radius: 7px; box-shadow: none; }
+.books-list-view .cover.no-image { padding: 5px; }
+.books-list-view .cover.no-image span { font-size: 6px; -webkit-line-clamp: 4; }
+.books-list-view .cover.no-image::after { display: none; }
+.books-list-view .tile-info { padding: 0; }
+.books-list-view .tile-hit:hover .cover { transform: none; }
+.library-list { display: grid; gap: 10px; }
+.library-item { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+.library-item > div:first-child { min-width: 0; display: grid; gap: 3px; }
+.library-item strong { font-size: 14px; }
+.library-item small { color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+.library-item.loan-overdue { border-color: rgba(255,107,107,.45); }
+.loan-status { justify-self: start; font-size: 10px; letter-spacing: .1em; font-weight: 700; padding: 3px 9px; border-radius: 99px; background: rgba(245,185,66,.14); color: var(--warn); }
+.loan-status.overdue { background: rgba(255,107,107,.14); color: var(--danger); }
+.loan-date-input { width: auto; padding: 8px 10px; }
+.empty-state { padding: 26px 18px; text-align: center; color: var(--muted); background: rgba(248,250,252,.025); border: 1px dashed var(--line-strong); border-radius: 14px; font-size: 14px; }
+.empty-state .library-actions { justify-content: center; margin-top: 12px; }
+
+/* Discovery */
+.discovery-form { display: flex; gap: 10px; }
+.discovery-options { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin: 4px 0 10px; }
+.discovery-options label { display: inline-flex; gap: 6px; align-items: center; color: var(--muted); font-size: 13px; }
+.discovery-options select { width: auto; }
+.sources-panel { margin: 0 0 12px; }
+.sources-panel .editor-body { display: grid; gap: 10px; }
+.sources-panel input[type=password] { flex: 1; min-width: 0; }
+.source-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.source-badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--lime); background: rgba(16,231,100,.08); }
+
+.discovery-results { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+.discovery-item { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 14px; padding: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+.discovery-item > div { display: grid; gap: 4px; align-content: start; }
+.discovery-item small { color: var(--muted); }
+.discovery-cover { width: 72px; height: 108px; object-fit: cover; border-radius: 8px; background: var(--inset); border: 1px solid var(--line); font-size: 10px; color: var(--faint); }
+.members-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.members-list li { display: flex; justify-content: space-between; gap: 10px; padding: 10px 14px; background: var(--inset); border-radius: 10px; border: 1px solid var(--line); }
+.members-list small { color: var(--muted); }
+.compact-form { margin-top: 16px; }
+
+/* Dialog */
+.book-dialog { width: min(640px, calc(100% - 24px)); max-height: calc(100% - 32px); padding: 0; border: 1px solid var(--line-strong); border-radius: 22px; background: var(--surface); color: var(--text); box-shadow: 0 40px 100px rgba(0,0,0,.6); }
+.book-dialog::backdrop { background: rgba(8,9,12,.72); backdrop-filter: blur(4px); }
+.dialog-card { padding: 24px; position: relative; }
+.icon-button { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--line-strong); background: var(--inset); }
+.icon-button:hover { border-color: var(--lime); color: var(--lime); }
+.dialog-top { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 20px; margin-bottom: 18px; padding-right: 30px; }
+.dialog-top h2 { font-size: 24px; }
+.dialog-meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+.dialog-meta span { font-size: 12px; padding: 4px 10px; border: 1px solid var(--line-strong); border-radius: 99px; color: var(--muted); }
+.dialog-desc { color: var(--muted); font-size: 14px; white-space: pre-wrap; }
+.dialog-card h3 { margin: 18px 0 10px; }
+.dialog-copy { display: flex; justify-content: space-between; gap: 10px; align-items: center; padding: 10px 12px; background: var(--inset); border: 1px solid var(--line); border-radius: 10px; margin-bottom: 8px; font-size: 13px; }
+.dialog-copy small { color: var(--muted); display: block; }
+.dialog-actions { margin-top: 18px; }
+
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 50; background: var(--lime); color: #04140A; padding: 11px 18px; border-radius: 12px; font-weight: 600; font-size: 14px; box-shadow: 0 16px 40px rgba(0,0,0,.45); max-width: calc(100% - 32px); }
+
+@media (max-width: 1060px) {
+  .stats-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .home-grid { grid-template-columns: 1fr; }
+  .advanced { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 860px) {
+  .shell { width: calc(100% - 24px); padding-bottom: 96px; }
+  .auth-layout { grid-template-columns: 1fr; gap: 28px; min-height: 0; }
+  .spines { height: 90px; margin-top: 24px; }
+  .app-layout { grid-template-columns: 1fr; }
+  .sidebar { position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: 40; padding: 0; }
+  .side-nav { display: flex; justify-content: space-around; gap: 0; border-radius: 0; border: 0; border-top: 1px solid var(--line-strong); background: rgba(18,20,26,.94); backdrop-filter: blur(14px); padding: 6px 6px calc(6px + env(safe-area-inset-bottom)); }
+  .nav-item { flex-direction: column; gap: 3px; padding: 7px 2px; font-size: 10px; text-align: center; flex: 1 1 0; min-width: 0; justify-content: center; }
+  .nav-item.active::before { display: none; }
+  .side-user { display: none; }
+  .toast { bottom: 92px; }
+  .discovery-results { grid-template-columns: 1fr; }
+}
+@media (max-width: 620px) {
+  .brand small { display: none; }
+  .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stat-card:last-child { grid-column: 1 / -1; }
+  .library-form, .advanced { grid-template-columns: 1fr; }
+  .library-item { flex-direction: column; align-items: stretch; }
+  .books-list-view .book-tile { grid-template-columns: 1fr; gap: 10px; }
+  .books-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 12px; }
+  .discovery-form { flex-direction: column; }
+  .hero { flex-direction: column; }
+  .dialog-top { grid-template-columns: 96px minmax(0, 1fr); gap: 14px; }
+  .auth-card { padding: 22px; }
+  #book-sort { flex: 1 1 140px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Our Library home">
+        <span class="brand-mark">OL</span>
+        <span><strong>Our Library</strong><small>Shared. Tracked. Always in sync.</small></span>
+      </a>
+      <span id="connection-state" class="connection-pill">Connecting…</span>
+    </header>
+
+    <section id="auth-view" class="auth-layout">
+      <div class="intro-panel">
+        <p class="eyebrow">Two readers · one library</p>
+        <h1>Every book.<br><em>One smart shelf.</em></h1>
+        <p class="intro-copy">Catalogue what you own, see what's available at a glance, and track every loan — together, in real time.</p>
+        <ul class="intro-points"><li>Live availability</li><li>Loan tracking</li><li>Instant book discovery</li></ul>
+        <div class="spines" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+
+      <div class="auth-card">
+        <div class="auth-tabs" role="tablist" aria-label="Account access">
+          <button class="tab active" id="show-login" type="button">Log in</button>
+          <button class="tab" id="show-register" type="button">Create account</button>
+        </div>
+        <form id="login-form" class="auth-form">
+          <h2>Welcome back</h2>
+          <p class="muted">Log in to your shared library.</p>
+          <label>Email address<input name="email" type="email" autocomplete="email" required></label>
+          <label>Password<input name="password" type="password" autocomplete="current-password" minlength="6" required></label>
+          <button class="primary-button" type="submit">Log in</button>
+          <button class="text-button" id="forgot-password" type="button">Forgot password?</button>
+        </form>
+        <form id="register-form" class="auth-form hidden">
+          <h2>Create your account</h2>
+          <p class="muted">You'll need an approved membership to enter the library.</p>
+          <label>Your name<input name="displayName" type="text" autocomplete="name" maxlength="60" required></label>
+          <label>Email address<input name="email" type="email" autocomplete="email" required></label>
+          <label>Password<input name="password" type="password" autocomplete="new-password" minlength="6" required></label>
+          <button class="primary-button" type="submit">Create account</button>
+        </form>
+        <p id="auth-message" class="message" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section id="pending-view" class="status-view hidden">
+      <div class="status-icon">⌛</div>
+      <p class="eyebrow">Membership pending</p>
+      <h1 style="font-size:34px">Almost there.</h1>
+      <p>Your account is ready, but it hasn't been added to <strong>Our Library</strong> yet.</p>
+      <p class="muted">Ask the library administrator to approve your membership. Share your user ID below.</p>
+      <div class="uid-box"><code id="pending-uid"></code><button id="copy-uid" class="secondary-button" type="button">Copy ID</button></div>
+      <p id="pending-message" class="message" role="status"></p>
+      <div class="library-actions" style="justify-content:center">
+        <button id="pending-refresh" class="primary-button" type="button">Check membership again</button>
+        <button id="pending-signout" class="text-button" type="button">Log out</button>
+      </div>
+    </section>
+
+    <section id="app-view" class="app-layout hidden">
+      <aside class="sidebar">
+        <nav class="side-nav" role="tablist" aria-label="Library navigation">
+          <button class="nav-item library-tab active" type="button" data-library-tab="home"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg>Home</button>
+          <button class="nav-item library-tab" type="button" data-library-tab="books"><svg viewBox="0 0 24 24"><path d="M4 4h5v16H4zM11 4h5v16h-5zM18.2 6.2l2.8.8-3.9 13-2.8-.8z"/></svg>Books</button>
+          <button class="nav-item library-tab" type="button" data-library-tab="discover"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/></svg>Discover</button>
+          <button class="nav-item library-tab" type="button" data-library-tab="copies"><svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5"/></svg>Copies</button>
+          <button class="nav-item library-tab" type="button" data-library-tab="borrowing"><svg viewBox="0 0 24 24"><path d="M4 8h14l-3-3M20 16H6l3 3"/></svg>Borrowing</button>
+          <button class="nav-item library-tab" type="button" data-library-tab="locations"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Locations</button>
+          <button class="nav-item library-tab hidden" id="members-tab" type="button" data-library-tab="members"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5M17 5.5a3.2 3.2 0 010 6M21.5 20c-.3-2.3-1.4-3.8-3-4.6"/></svg>Members</button>
+        </nav>
+        <div class="side-user"><span id="library-name">Our Library</span><small id="member-role">Member</small></div>
+      </aside>
+
+      <div class="library-tools">
+        <section id="home-section" class="library-section">
+          <div class="hero">
+            <div>
+              <p class="eyebrow">Overview</p>
+              <h1><span id="greeting-word">Welcome</span>, <span id="member-name">Reader</span></h1>
+              <p class="muted">Here's what's happening in your library today.</p>
+            </div>
+            <button id="signout-button" class="secondary-button" type="button">Log out</button>
+          </div>
+          <form id="home-search-form" class="home-search" role="search">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/></svg>
+            <input id="home-search" type="search" maxlength="160" placeholder="Search your library by title, author, ISBN or genre…" aria-label="Search your library">
+            <button class="primary-button" type="submit">Search</button>
+          </form>
+          <div class="stats-grid">
+            <article class="stat-card"><span class="stat-label">Books</span><strong id="stat-books">0</strong><small>in the catalogue</small></article>
+            <article class="stat-card"><span class="stat-label">Copies ready</span><strong id="stat-copies">0/0</strong><small>available to borrow</small></article>
+            <article class="stat-card"><span class="stat-label">On loan</span><strong id="loan-stat-borrowed">0</strong><small>active loans</small></article>
+            <article class="stat-card"><span class="stat-label">Overdue</span><strong id="loan-stat-overdue">0</strong><small>past their due date</small></article>
+            <article class="stat-card"><span class="stat-label">Returned</span><strong id="loan-stat-returned">0</strong><small>in your history</small></article>
+          </div>
+          <div class="home-grid">
+            <div class="home-main">
+              <article class="panel">
+                <div class="panel-head"><h2>Needs attention</h2><button class="text-button" type="button" data-goto="borrowing">Open borrowing</button></div>
+                <div id="attention-list" class="attention-list"></div>
+              </article>
+              <article class="panel">
+                <div class="panel-head"><h2>Recently added</h2><button class="text-button" type="button" data-goto="books">View all books</button></div>
+                <div id="recent-shelf" class="shelf"></div>
+              </article>
+            </div>
+            <aside class="home-side">
+              <article class="panel">
+                <h2>Quick actions</h2>
+                <div class="quick-actions">
+                  <button class="primary-button" type="button" data-goto="books" data-open-editor="true">Add a book</button>
+                  <button class="secondary-button" type="button" data-goto="discover">Discover books online</button>
+                  <button class="secondary-button" type="button" data-goto="borrowing">Record a borrowing</button>
+                </div>
+              </article>
+              <article class="panel">
+                <h2>Collection health</h2>
+                <div id="status-bar" class="status-bar" aria-hidden="true"></div>
+                <div id="status-legend" class="status-legend"></div>
+              </article>
+              <article class="panel">
+                <h2>Browse by genre</h2>
+                <div id="genre-chips" class="chips"></div>
+              </article>
+            </aside>
+          </div>
+        </section>
+
+        <section id="books-section" class="library-section hidden">
+          <div class="section-head">
+            <div><h2>Books</h2><p class="muted">Add each distinct book once, then attach its physical copies.</p></div>
+            <span id="book-count" class="library-count">0 books</span>
+          </div>
+          <details id="book-editor" class="editor">
+            <summary>Add or edit a book</summary>
+            <div class="editor-body">
+              <form id="book-form" class="library-form">
+                <input type="hidden" name="recordId">
+                <label>Book title *<input name="title" maxlength="180" required></label>
+                <label>Author *<input name="author" maxlength="140" required></label>
+                <label>Genre<input name="genre" maxlength="80" placeholder="e.g. Fiction" list="genre-options"></label>
+                <label>ISBN<input name="isbn" maxlength="30"></label>
+                <label>Publisher<input name="publisher" maxlength="120"></label>
+                <label>Publication year<input name="publicationYear" type="number" min="0" max="2100"></label>
+                <label class="wide">Cover image URL (optional)<input name="coverUrl" type="url" placeholder="https://..."></label>
+                <label class="wide">Description / notes<textarea name="description" maxlength="2000"></textarea></label>
+                <div class="library-actions wide"><button class="primary-button" type="submit" id="book-submit">Add book</button><button class="secondary-button" type="button" id="book-cancel">Clear form</button></div>
+              </form>
+              <p id="book-message" class="message" role="status"></p>
+            </div>
+          </details>
+          <datalist id="genre-options"></datalist>
+          <div class="toolbar" id="book-toolbar">
+            <div class="toolbar-row">
+              <div class="search-wrap">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/></svg>
+                <input id="book-search" class="search-input" type="search" placeholder="Search title, author, ISBN, genre…" aria-label="Search books">
+              </div>
+              <select id="book-sort" aria-label="Sort books">
+                <option value="title">Title A–Z</option>
+                <option value="author">Author A–Z</option>
+                <option value="recent">Recently added</option>
+                <option value="year-new">Newest published</option>
+              </select>
+              <button type="button" id="filters-toggle" class="secondary-button" aria-expanded="false" aria-controls="advanced-panel">Filters<span id="filter-count" class="count-badge hidden">0</span></button>
+              <div class="view-switch" role="group" aria-label="Catalogue view">
+                <button type="button" id="view-grid" aria-pressed="true" title="Tile view" aria-label="Tile view"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg></button>
+                <button type="button" id="view-list" aria-pressed="false" title="List view" aria-label="List view"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg></button>
+              </div>
+            </div>
+            <div id="advanced-panel" class="advanced hidden">
+              <label>Title<input id="adv-title" placeholder="Contains…"></label>
+              <label>Author<input id="adv-author" placeholder="Contains…"></label>
+              <label>Genre<input id="adv-genre" placeholder="Contains…" list="genre-options"></label>
+              <label>ISBN<input id="adv-isbn" placeholder="Contains…"></label>
+              <label>Publisher<input id="adv-publisher" placeholder="Contains…"></label>
+              <label>Year from<input id="adv-year-from" type="number" min="0" max="2100" placeholder="e.g. 1990"></label>
+              <label>Year to<input id="adv-year-to" type="number" min="0" max="2100" placeholder="e.g. 2024"></label>
+              <label>Copy availability
+                <select id="adv-availability">
+                  <option value="any">Any</option>
+                  <option value="available">Available now</option>
+                  <option value="unavailable">All copies unavailable</option>
+                  <option value="nocopies">No copies registered</option>
+                </select>
+              </label>
+              <div class="adv-actions" style="grid-column:1/-1"><button type="button" id="filters-reset" class="secondary-button">Clear all filters</button></div>
+            </div>
+          </div>
+          <div id="books-list" class="books-grid"><div class="empty-state">Loading books…</div></div>
+          <dialog id="book-dialog" class="book-dialog" aria-label="Book details">
+            <div class="dialog-card">
+              <button type="button" id="book-dialog-close" class="icon-button" aria-label="Close">✕</button>
+              <div id="book-dialog-body"></div>
+            </div>
+          </dialog>
+        </section>
+
+        <section id="discover-section" class="library-section hidden">
+          <div class="section-head"><div><h2>Discover books</h2><p class="muted">Search Google Books, Open Library and Hardcover by title, author or ISBN, in Bengali or English. Pick a result to fill the book form. Nothing is saved until you confirm.</p></div></div>
+          <form id="discovery-form" class="discovery-form">
+            <input id="discovery-query" type="search" maxlength="160" placeholder="Try a title, author or ISBN…" aria-label="Search online books" required>
+            <button class="primary-button" id="discovery-submit" type="submit">Search books</button>
+          </form>
+          <div class="discovery-options">
+            <label>Language <select id="discovery-language" aria-label="Language filter"><option value="all">All languages</option><option value="bn">Bengali</option><option value="en">English</option></select></label>
+            <label><input type="checkbox" id="src-google" checked> Google Books</label>
+            <label><input type="checkbox" id="src-openlibrary" checked> Open Library</label>
+            <label><input type="checkbox" id="src-hardcover" disabled> Hardcover</label>
+          </div>
+          <p id="discovery-counts" class="muted" style="font-size:13px;margin:0 0 8px" aria-live="polite"></p>
+          <details id="sources-panel" class="editor sources-panel">
+            <summary>Sources and Hardcover token</summary>
+            <div class="editor-body">
+              <p class="muted" style="font-size:13px;margin:0">Paste your Hardcover token once. It is kept only in this browser on this device, never in the library database or the code. <a href="https://hardcover.app/account/api" target="_blank" rel="noopener">Create or renew a token</a>. Tokens expire, so renew it if Hardcover stops working.</p>
+              <div class="discovery-form"><input id="hardcover-token" type="password" autocomplete="off" spellcheck="false" placeholder="Paste Hardcover token" aria-label="Hardcover token"><button type="button" class="primary-button" id="hardcover-save">Save token</button></div>
+              <div class="library-actions"><button type="button" class="small-button" id="hardcover-test">Test connection</button><button type="button" class="small-button danger" id="hardcover-remove">Remove token</button></div>
+              <p id="hardcover-status" class="message" role="status" aria-live="polite"></p>
+            </div>
+          </details>
+          <p id="discovery-message" class="message" role="status" aria-live="polite"></p>
+          <div id="discovery-results" class="discovery-results"><div class="empty-state">Search online to discover book details.</div></div>
+          <p class="muted" style="font-size:12px">Book metadata supplied by <a href="https://books.google.com/" target="_blank" rel="noopener">Google Books</a>, <a href="https://openlibrary.org/" target="_blank" rel="noopener">Open Library</a> and <a href="https://hardcover.app/" target="_blank" rel="noopener">Hardcover</a>. Results may be incomplete; check the edition and ISBN before adding.</p>
+        </section>
+
+        <section id="copies-section" class="library-section hidden">
+          <div class="section-head"><div><h2>Physical copies</h2><p class="muted">Each entry is one actual copy you can locate and track independently.</p></div><span id="copy-count" class="library-count">0 copies</span></div>
+          <details class="editor" open>
+            <summary>Add or edit a copy</summary>
+            <div class="editor-body">
+              <form id="copy-form" class="library-form">
+                <input type="hidden" name="recordId">
+                <label>Book *<select name="bookId" required><option value="">Add a book first</option></select></label>
+                <label>Copy label<input name="copyLabel" maxlength="60" placeholder="e.g. Copy 1"></label>
+                <label>Condition<select name="condition"><option>Good</option><option>Like new</option><option>Fair</option><option>Poor</option></select></label>
+                <label>Status<select name="status"><option>Available</option><option>Reading</option><option>Repair</option></select></label>
+                <label class="wide">Location<select name="locationId"><option value="">Not assigned yet</option></select></label>
+                <label class="wide">Notes<textarea name="notes" maxlength="1000"></textarea></label>
+                <div class="library-actions wide"><button class="primary-button" type="submit" id="copy-submit">Add copy</button><button class="secondary-button" type="button" id="copy-cancel">Clear form</button></div>
+              </form>
+              <p id="copy-message" class="message" role="status"></p>
+            </div>
+          </details>
+          <div id="copies-list" class="library-list"><div class="empty-state">No physical copies yet.</div></div>
+        </section>
+
+        <section id="borrowing-section" class="library-section hidden">
+          <div class="section-head"><div><h2>Borrowing &amp; returns</h2><p class="muted">Record who borrowed a copy and when it's due. Only available copies can be borrowed.</p></div></div>
+          <details class="editor" open>
+            <summary>Record a borrowing</summary>
+            <div class="editor-body">
+              <form id="loan-form" class="library-form">
+                <label class="wide">Available physical copy *<select name="copyId" required><option value="">Loading available copies…</option></select></label>
+                <label>Borrower name *<input name="borrowerName" maxlength="120" required placeholder="Name of the borrower"></label>
+                <label>Borrowing date *<input name="borrowedAt" type="date" required></label>
+                <label>Due date *<input name="dueAt" type="date" required></label>
+                <label class="wide">Notes (optional)<textarea name="notes" maxlength="1000" placeholder="Any condition or borrowing notes"></textarea></label>
+                <div class="library-actions wide"><button class="primary-button" type="submit" id="loan-submit">Record borrowing</button><button class="secondary-button" type="button" id="loan-cancel">Clear form</button></div>
+              </form>
+              <p id="loan-message" class="message" role="status"></p>
+            </div>
+          </details>
+          <div class="members-heading"><h3>Currently borrowed</h3><span id="active-loan-count" class="library-count">0 active</span></div>
+          <div id="active-loans-list" class="library-list"><div class="empty-state">No active borrowing records.</div></div>
+          <div class="members-heading"><h3>Return history</h3><span id="returned-loan-count" class="library-count">0 returned</span></div>
+          <div id="returned-loans-list" class="library-list"><div class="empty-state">Returned books will appear here.</div></div>
+        </section>
+
+        <section id="locations-section" class="library-section hidden">
+          <div class="section-head"><div><h2>Locations</h2><p class="muted">Build your hierarchy from room to bookshelf to individual shelf.</p></div><span id="location-count" class="library-count">0 locations</span></div>
+          <details class="editor" open>
+            <summary>Add or edit a location</summary>
+            <div class="editor-body">
+              <form id="location-form" class="library-form">
+                <input type="hidden" name="recordId">
+                <label>Location name *<input name="name" maxlength="100" required placeholder="e.g. Bedroom bookshelf"></label>
+                <label>Location type<select name="type"><option value="room">Room</option><option value="bookshelf">Bookshelf</option><option value="shelf">Shelf</option></select></label>
+                <label class="wide">Parent location<select name="parentId"><option value="">No parent (top level)</option></select></label>
+                <label class="wide">Notes<textarea name="notes" maxlength="500"></textarea></label>
+                <div class="library-actions wide"><button class="primary-button" type="submit" id="location-submit">Add location</button><button class="secondary-button" type="button" id="location-cancel">Clear form</button></div>
+              </form>
+              <p id="location-message" class="message" role="status"></p>
+            </div>
+          </details>
+          <div id="locations-list" class="library-list"><div class="empty-state">No locations yet.</div></div>
+        </section>
+
+        <section id="members-section" class="library-section hidden">
+          <div class="section-head"><div><h2>Members</h2><p class="muted">Administration. Only administrators can see this page.</p></div></div>
+          <article id="admin-panel" class="panel">
+            <h2>Invite a reader</h2>
+            <p class="muted">The other person must first create an account in Our Library. Then add their Firebase user ID here.</p>
+            <form id="invite-form" class="auth-form compact-form">
+              <label>New member's user ID<input name="uid" type="text" autocapitalize="off" spellcheck="false" required></label>
+              <label>Account email<input name="email" type="email" required></label>
+              <label>Display name<input name="displayName" type="text" maxlength="60" required></label>
+              <button class="primary-button" type="submit">Approve membership</button>
+            </form>
+            <p id="invite-message" class="message" role="status"></p>
+            <div class="members-heading"><h3>Library members</h3><span id="member-count" class="library-count">0</span></div>
+            <ul id="members-list" class="members-list"></ul>
+          </article>
+        </section>
+      </div>
+    </section>
+
+    <div id="global-message" class="toast hidden" role="status" aria-live="polite"></div>
+  </main>
+  <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
+import {
+  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  signOut as firebaseSignOut, sendPasswordResetEmail, updateProfile,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
+import {
+  getFirestore, collection, doc, getDoc, onSnapshot, serverTimestamp, setDoc, updateDoc, addDoc, deleteDoc, runTransaction, Timestamp, deleteField
+} from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+
+/*
+  OUR LIBRARY — FIREBASE CONFIGURATION
+  Paste the config object from Firebase Console below.
+  Do not paste service-account keys or private server credentials here.
+*/
+const firebaseConfig = {
+  apiKey: "AIzaSyB1S6Q9z6-wJPfklUc1fWs_pO6jlaAbXe0",
+  authDomain: "our-library-ab84e.firebaseapp.com",
+  projectId: "our-library-ab84e",
+  storageBucket: "our-library-ab84e.firebasestorage.app",
+  messagingSenderId: "40216860407",
+  appId: "1:40216860407:web:e0cc0537074b9a3ae665f2",
+
+};
+
+const LIBRARY_ID = "our_library";
+const LIBRARY_NAME = "Our Library";
+const requiredConfig = ["apiKey", "authDomain", "projectId", "appId"];
+const isConfigured = requiredConfig.every((key) => {
+  const value = firebaseConfig[key];
+  return typeof value === "string" && value.length > 0 &&
+    !value.startsWith("PASTE_") && !value.startsWith("YOUR_");
+});
+if (!isConfigured) {
+  document.getElementById("connection-state").textContent = "Setup required";
+  document.getElementById("auth-message").textContent =
+    "First, paste your Firebase Web App configuration into the firebaseConfig section in this HTML file.";
+  throw new Error("Firebase is not configured. Edit the firebaseConfig section in index.html.");
+}
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+async function registerAccount({ displayName, email, password }) {
+  const credential = await createUserWithEmailAndPassword(auth, email.trim(), password);
+  await updateProfile(credential.user, { displayName: displayName.trim() });
+  return credential.user;
+}
+
+async function loginAccount({ email, password }) {
+  const credential = await signInWithEmailAndPassword(auth, email.trim(), password);
+  return credential.user;
+}
+
+async function logoutAccount() {
+  return firebaseSignOut(auth);
+}
+
+async function resetPassword(email) {
+  return sendPasswordResetEmail(auth, email.trim());
+}
+
+function observeAuth(callback) {
+  return onAuthStateChanged(auth, callback);
+}
+
+const libraryRef = doc(db, "libraries", LIBRARY_ID);
+
+async function getMembership(uid) {
+  const ref = doc(db, "libraries", LIBRARY_ID, "members", uid);
+  const snapshot = await getDoc(ref);
+  return snapshot.exists() ? { id: snapshot.id, ...snapshot.data() } : null;
+}
+
+async function getLibraryDetails() {
+  const snapshot = await getDoc(libraryRef);
+  return snapshot.exists() ? snapshot.data() : null;
+}
+
+// This write is allowed only when Firestore rules confirm the caller is an active admin.
+// The new member must already have created their own Firebase Authentication account.
+async function approveMember({ uid, email, displayName, adminUid }) {
+  const cleanUid = uid.trim();
+  const cleanEmail = email.trim().toLowerCase();
+  const cleanName = displayName.trim();
+
+  if (!cleanUid || cleanUid.length < 10) {
+    throw new Error("Enter a valid Firebase user ID.");
+  }
+  if (cleanUid === adminUid) {
+    throw new Error("You are already a library member.");
+  }
+  if (!cleanEmail || !cleanName) {
+    throw new Error("Enter the new member's email and display name.");
+  }
+
+  const ref = doc(db, "libraries", LIBRARY_ID, "members", cleanUid);
+  const existing = await getDoc(ref);
+
+  if (existing.exists()) {
+    const member = existing.data();
+
+    // Do not try to create the same membership again.
+    // This avoids a permission error when an active member is submitted twice.
+    if (member.active === true && member.role === "member" && member.uid === cleanUid) {
+      return { alreadyActive: true };
+    }
+
+    // Existing records are updated only in fields permitted by firestore.rules.
+    // Never change a member's role, UID, original creation time, or creator.
+    if (member.role !== "member" || member.uid !== cleanUid) {
+      throw new Error("A membership record already exists for this ID and needs administrator review.");
+    }
+
+    await updateDoc(ref, {
+      email: cleanEmail,
+      displayName: cleanName,
+      active: true
+    });
+    return { reactivated: true };
+  }
+
+  // A brand-new membership is created only when no document exists.
+  await setDoc(ref, {
+    uid: cleanUid,
+    email: cleanEmail,
+    displayName: cleanName,
+    role: "member",
+    active: true,
+    createdAt: serverTimestamp(),
+    createdBy: adminUid
+  });
+
+  return { approved: true };
+}
+
+function observeMembers(callback, onError) {
+  const ref = collection(db, "libraries", LIBRARY_ID, "members");
+  return onSnapshot(ref, (snapshot) => {
+    callback(snapshot.docs.map((item) => ({ id: item.id, ...item.data() })));
+  }, onError);
+}
+
+const $ = (selector) => document.querySelector(selector);
+const views = ["#auth-view", "#pending-view", "#app-view"];
+let currentUser = null;
+let memberUnsubscribe = null;
+
+function showView(selector) {
+  views.forEach((view) => $(view).classList.toggle("hidden", view !== selector));
+}
+function message(selector, text, type = "") {
+  const node = $(selector);
+  node.textContent = text;
+  node.className = `message ${type}`.trim();
+}
+function friendlyError(error) {
+  const code = error?.code || "";
+  const messages = {
+    "auth/email-already-in-use": "An account already exists with this email.",
+    "auth/invalid-email": "Please enter a valid email address.",
+    "auth/invalid-credential": "Email or password is incorrect.",
+    "auth/weak-password": "Choose a stronger password (at least 6 characters).",
+    "auth/too-many-requests": "Too many attempts. Please wait and try again.",
+    "permission-denied": "Permission denied. Check membership and Firestore security rules.",
+    "unavailable": "The service is temporarily unavailable. Check your connection."
+  };
+  return messages[code] || error?.message || "Something went wrong. Please try again.";
+}
+function showToast(text) {
+  const node = $("#global-message");
+  node.textContent = text;
+  node.classList.remove("hidden");
+  window.setTimeout(() => node.classList.add("hidden"), 2800);
+}
+function stopMemberListener() {
+  if (memberUnsubscribe) memberUnsubscribe();
+  memberUnsubscribe = null;
+}
+function setConnection(text) {
+  $("#connection-state").textContent = text;
+}
+
+$("#show-login").addEventListener("click", () => switchAuthMode("login"));
+$("#show-register").addEventListener("click", () => switchAuthMode("register"));
+function switchAuthMode(mode) {
+  const login = mode === "login";
+  $("#login-form").classList.toggle("hidden", !login);
+  $("#register-form").classList.toggle("hidden", login);
+  $("#show-login").classList.toggle("active", login);
+  $("#show-register").classList.toggle("active", !login);
+  message("#auth-message", "");
+}
+
+$("#login-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const form = new FormData(event.currentTarget);
+  const button = event.currentTarget.querySelector("button[type=submit]");
+  button.disabled = true;
+  message("#auth-message", "Logging in…");
+  try {
+    await loginAccount({ email: form.get("email"), password: form.get("password") });
+  } catch (error) {
+    message("#auth-message", friendlyError(error), "error");
+  } finally {
+    button.disabled = false;
+  }
+});
+
+$("#register-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const form = new FormData(event.currentTarget);
+  const button = event.currentTarget.querySelector("button[type=submit]");
+  button.disabled = true;
+  message("#auth-message", "Creating your account…");
+  try {
+    await registerAccount({
+      displayName: form.get("displayName"),
+      email: form.get("email"),
+      password: form.get("password")
+    });
+    message("#auth-message", "Account created. Checking library membership…", "success");
+  } catch (error) {
+    message("#auth-message", friendlyError(error), "error");
+  } finally {
+    button.disabled = false;
+  }
+});
+
+$("#forgot-password").addEventListener("click", async () => {
+  const email = $("#login-form").elements.email.value.trim();
+  if (!email) return message("#auth-message", "Enter your email address first.", "error");
+  try {
+    await resetPassword(email);
+    message("#auth-message", "If an account exists, a password-reset email has been sent.", "success");
+  } catch (error) {
+    message("#auth-message", friendlyError(error), "error");
+  }
+});
+
+async function refreshMembership() {
+  if (!currentUser) return;
+  message("#pending-message", "Checking membership…");
+  try {
+    const membership = await getMembership(currentUser.uid);
+    if (!membership || membership.active !== true) {
+      showView("#pending-view");
+      $("#pending-uid").textContent = currentUser.uid;
+      message("#pending-message", "Your membership has not been approved yet.");
+      return;
+    }
+    const library = await getLibraryDetails();
+    if (!library) throw new Error("Library setup is incomplete. Ask the administrator to finish Firebase setup.");
+    showDashboard(membership, library);
+  } catch (error) {
+    showView("#pending-view");
+    $("#pending-uid").textContent = currentUser.uid;
+    message("#pending-message", friendlyError(error), "error");
+  }
+}
+
+function showDashboard(membership, library) {
+  showView("#app-view");
+  $("#member-name").textContent = membership.displayName || currentUser.displayName || "Reader";
+  $("#member-role").textContent = membership.role === "admin" ? "Administrator" : "Member";
+  $("#library-name").textContent = library.name || LIBRARY_NAME;
+  $("#members-tab").classList.toggle("hidden", membership.role !== "admin");
+  setGreeting();
+  if (membership.role !== "admin" && !$("#members-section").classList.contains("hidden")) goTab("home");
+  startLibraryListeners();
+  if (membership.role === "admin") {
+    stopMemberListener();
+    memberUnsubscribe = observeMembers((members) => {
+      $("#member-count").textContent = String(members.length);
+      $("#members-list").replaceChildren();
+      members.forEach((member) => {
+        const li = document.createElement("li");
+        const left = document.createElement("span");
+        const right = document.createElement("small");
+        left.textContent = member.displayName || member.email || member.uid;
+        right.textContent = `${member.role || "member"} · ${member.active ? "active" : "inactive"}`;
+        li.append(left, right);
+        $("#members-list").append(li);
+      });
+    }, (error) => message("#invite-message", friendlyError(error), "error"));
+  }
+}
+
+$("#invite-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!currentUser) return;
+  const formElement = event.currentTarget;
+  const form = new FormData(formElement);
+  const button = formElement.querySelector("button[type=submit]");
+  button.disabled = true;
+  message("#invite-message", "Approving membership…");
+  try {
+    const result = await approveMember({
+      uid: form.get("uid"),
+      email: form.get("email"),
+      displayName: form.get("displayName"),
+      adminUid: currentUser.uid
+    });
+
+    formElement.reset();
+
+    if (result.alreadyActive) {
+      message("#invite-message", "This person is already an active library member. No changes were needed.", "success");
+    } else if (result.reactivated) {
+      message("#invite-message", "Existing membership reactivated successfully.", "success");
+    } else {
+      message("#invite-message", "Membership approved. The new member can now log in.", "success");
+    }
+  } catch (error) {
+    message("#invite-message", friendlyError(error), "error");
+  } finally {
+    button.disabled = false;
+  }
+});
+
+$("#copy-uid").addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText(currentUser.uid);
+    message("#pending-message", "User ID copied. Send it to the library administrator.", "success");
+  } catch {
+    message("#pending-message", "Select and copy the user ID above.", "error");
+  }
+});
+$("#pending-refresh").addEventListener("click", refreshMembership);
+$("#pending-signout").addEventListener("click", logoutAccount);
+$("#signout-button").addEventListener("click", logoutAccount);
+
+
+// Stage 1B + Stage 3: shared catalogue, locations, borrowing and returns.
+const libraryCollections = { books: [], copies: [], locations: [], loans: [] };
+let libraryUnsubscribers = [];
+const libraryPath = (name) => collection(db, "libraries", LIBRARY_ID, name);
+const clean = (value) => String(value ?? "").trim();
+const setFormMessage = (selector, text, type = "") => message(selector, text, type);
+const escapeText = (value) => String(value ?? "");
+function stopLibraryListeners() {
+  libraryUnsubscribers.forEach((unsubscribe) => unsubscribe());
+  libraryUnsubscribers = [];
+}
+function startLibraryListeners() {
+  stopLibraryListeners();
+  ["books", "copies", "locations", "loans"].forEach((name) => {
+    const unsubscribe = onSnapshot(libraryPath(name), (snapshot) => {
+      libraryCollections[name] = snapshot.docs.map((item) => ({ id: item.id, ...item.data() }));
+      renderLibrary();
+    }, (error) => showToast(`${name} could not be loaded: ${friendlyError(error)}`));
+    libraryUnsubscribers.push(unsubscribe);
+  });
+}
+function displayLocation(locationId) {
+  if (!locationId) return "Not assigned";
+  const location = libraryCollections.locations.find((item) => item.id === locationId);
+  if (!location) return "Unknown location";
+  const parent = libraryCollections.locations.find((item) => item.id === location.parentId);
+  return parent ? `${parent.name} → ${location.name}` : location.name;
+}
+function renderLibrary() {
+  renderBooks(); renderCopies(); renderLocations(); renderLoans(); renderHome(); refreshLibrarySelects();
+}
+// ---- Catalogue: tiles / list view, combined search and filters ----
+const bookView = { mode: "grid" };
+try { const savedView = localStorage.getItem("ourLibrary.bookView"); if (savedView === "list" || savedView === "grid") bookView.mode = savedView; } catch { /* storage unavailable */ }
+
+function safeUrl(value) {
+  try { const url = new URL(value); return url.protocol === "https:" || url.protocol === "http:" ? url.href : ""; } catch { return ""; }
+}
+function hueFor(text) {
+  let hash = 0;
+  for (const ch of escapeText(text)) hash = (hash * 31 + ch.codePointAt(0)) % 360;
+  return 140 + (hash % 40);
+}
+function makeCover(book) {
+  const wrap = document.createElement("div"); wrap.className = "cover";
+  const fallback = () => {
+    wrap.classList.add("no-image"); wrap.style.setProperty("--hue", String(hueFor(book.title)));
+    const label = document.createElement("span"); label.textContent = book.title || "Untitled book";
+    wrap.replaceChildren(label);
+  };
+  const url = safeUrl(clean(book.coverUrl));
+  if (!url) { fallback(); return wrap; }
+  const img = document.createElement("img");
+  img.loading = "lazy"; img.alt = `Cover of ${book.title || "book"}`; img.referrerPolicy = "no-referrer";
+  img.addEventListener("error", fallback, { once: true });
+  img.src = url; wrap.append(img);
+  return wrap;
+}
+function bookCreatedMs(book) {
+  const created = book.createdAt;
+  return created && typeof created.toMillis === "function" ? created.toMillis() : Number.MAX_SAFE_INTEGER;
+}
+function emptyStats() { return { total: 0, available: 0, loaned: 0 }; }
+function copiesByBook() {
+  const map = new Map();
+  libraryCollections.copies.forEach((copy) => {
+    const stats = map.get(copy.bookId) || emptyStats();
+    stats.total += 1;
+    if (copy.status === "Available") stats.available += 1;
+    if (copy.status === "Loaned") stats.loaned += 1;
+    map.set(copy.bookId, stats);
+  });
+  return map;
+}
+function availabilityBadge(stats) {
+  const badge = document.createElement("span"); badge.className = "badge";
+  if (!stats.total) { badge.classList.add("none"); badge.textContent = "No copies"; }
+  else if (stats.available > 0) { badge.classList.add("ok"); badge.textContent = stats.total === 1 ? "Available" : `${stats.available} of ${stats.total} available`; }
+  else { badge.classList.add("warn"); badge.textContent = stats.loaned === stats.total ? "On loan" : "Unavailable"; }
+  return badge;
+}
+function getBookFilters() {
+  const text = (id) => clean($(`#${id}`).value).toLowerCase();
+  return {
+    term: clean($("#book-search").value).toLowerCase(),
+    title: text("adv-title"), author: text("adv-author"), genre: text("adv-genre"),
+    isbn: text("adv-isbn").replace(/[-\s]/g, ""), publisher: text("adv-publisher"),
+    yearFrom: Number($("#adv-year-from").value) || null, yearTo: Number($("#adv-year-to").value) || null,
+    availability: $("#adv-availability").value, sort: $("#book-sort").value
+  };
+}
+function activeFilterCount(filters) {
+  return [filters.title, filters.author, filters.genre, filters.isbn, filters.publisher].filter(Boolean).length
+    + (filters.yearFrom ? 1 : 0) + (filters.yearTo ? 1 : 0) + (filters.availability !== "any" ? 1 : 0);
+}
+function textHas(value, needle) { return !needle || escapeText(value).toLowerCase().includes(needle); }
+function bookMatches(book, filters, stats) {
+  if (filters.term && ![book.title, book.author, book.isbn, book.genre, book.publisher].some((value) => textHas(value, filters.term))) return false;
+  if (!textHas(book.title, filters.title) || !textHas(book.author, filters.author) || !textHas(book.genre, filters.genre) || !textHas(book.publisher, filters.publisher)) return false;
+  if (filters.isbn && !escapeText(book.isbn).toLowerCase().replace(/[-\s]/g, "").includes(filters.isbn)) return false;
+  const year = Number(book.publicationYear) || null;
+  if ((filters.yearFrom || filters.yearTo) && !year) return false;
+  if (filters.yearFrom && year < filters.yearFrom) return false;
+  if (filters.yearTo && year > filters.yearTo) return false;
+  if (filters.availability === "available" && stats.available < 1) return false;
+  if (filters.availability === "unavailable" && !(stats.total > 0 && stats.available === 0)) return false;
+  if (filters.availability === "nocopies" && stats.total !== 0) return false;
+  return true;
+}
+function resetBookFilters() {
+  ["book-search", "adv-title", "adv-author", "adv-genre", "adv-isbn", "adv-publisher", "adv-year-from", "adv-year-to"].forEach((id) => { $(`#${id}`).value = ""; });
+  $("#adv-availability").value = "any";
+  renderBooks();
+}
+function makeBookTile(book, stats) {
+  const tile = document.createElement("article"); tile.className = "book-tile";
+  const hit = document.createElement("button"); hit.type = "button"; hit.className = "tile-hit";
+  hit.dataset.action = "view-book"; hit.dataset.id = book.id; hit.setAttribute("aria-label", `View details for ${book.title || "book"}`);
+  const info = document.createElement("div"); info.className = "tile-info";
+  const title = document.createElement("strong"); title.textContent = book.title || "Untitled book";
+  const author = document.createElement("span"); author.className = "author"; author.textContent = book.author || "Author unknown";
+  const meta = document.createElement("small"); meta.textContent = [book.genre, book.publicationYear].filter(Boolean).join(" · ");
+  info.append(title, author);
+  if (meta.textContent) info.append(meta);
+  info.append(availabilityBadge(stats));
+  hit.append(makeCover(book), info);
+  const actions = document.createElement("div"); actions.className = "tile-actions";
+  actions.append(makeActionButton("Edit", "edit-book", book.id), makeActionButton("Delete", "delete-book", book.id, true));
+  tile.append(hit, actions);
+  return tile;
+}
+function renderBooks() {
+  const list = $("#books-list");
+  const filters = getBookFilters();
+  const byBook = copiesByBook();
+  const total = libraryCollections.books.length;
+  const compare = (a, b) => escapeText(a).localeCompare(escapeText(b));
+  const sorters = {
+    title: (a, b) => compare(a.title, b.title),
+    author: (a, b) => compare(a.author, b.author) || compare(a.title, b.title),
+    recent: (a, b) => bookCreatedMs(b) - bookCreatedMs(a),
+    "year-new": (a, b) => (Number(b.publicationYear) || 0) - (Number(a.publicationYear) || 0)
+  };
+  const matches = libraryCollections.books
+    .filter((book) => bookMatches(book, filters, byBook.get(book.id) || emptyStats()))
+    .sort(sorters[filters.sort] || sorters.title);
+  const filterCount = activeFilterCount(filters);
+  const isFiltered = filterCount > 0 || Boolean(filters.term);
+  $("#book-count").textContent = isFiltered ? `${matches.length} of ${total} book${total === 1 ? "" : "s"}` : `${total} book${total === 1 ? "" : "s"}`;
+  const badge = $("#filter-count"); badge.textContent = String(filterCount); badge.classList.toggle("hidden", filterCount === 0);
+  list.className = bookView.mode === "list" ? "books-list-view" : "books-grid";
+  list.replaceChildren();
+  if (!matches.length) {
+    const empty = document.createElement("div"); empty.className = "empty-state";
+    empty.style.gridColumn = "1 / -1";
+    const text = document.createElement("div");
+    const actions = document.createElement("div"); actions.className = "library-actions";
+    if (!total) {
+      text.textContent = "Your catalogue is empty. Add your first book or find one online.";
+      const add = document.createElement("button"); add.type = "button"; add.className = "primary-button"; add.textContent = "Add a book"; add.dataset.openEditor = "true"; add.dataset.goto = "books";
+      const discover = document.createElement("button"); discover.type = "button"; discover.className = "secondary-button"; discover.textContent = "Discover books"; discover.dataset.goto = "discover";
+      actions.append(add, discover);
+    } else {
+      text.textContent = "No books match your search and filters.";
+      const reset = document.createElement("button"); reset.type = "button"; reset.className = "secondary-button"; reset.textContent = "Clear all filters"; reset.dataset.resetFilters = "true";
+      actions.append(reset);
+    }
+    empty.append(text, actions); list.append(empty);
+    return;
+  }
+  matches.forEach((book) => list.append(makeBookTile(book, byBook.get(book.id) || emptyStats())));
+}
+
+function renderCopies() {
+  const list = $("#copies-list"); $("#copy-count").textContent = `${libraryCollections.copies.length} copies`; list.replaceChildren();
+  if (!libraryCollections.copies.length) { list.innerHTML = '<div class="empty-state">No physical copies yet. Add a book, then register its copies here.</div>'; return; }
+  libraryCollections.copies.forEach((copy) => {
+    const book = libraryCollections.books.find((item) => item.id === copy.bookId);
+    const item = document.createElement("div"); item.className = "library-item";
+    const details = document.createElement("div"); const title = document.createElement("strong"); title.textContent = `${book?.title || "Unknown book"}${copy.copyLabel ? ` — ${copy.copyLabel}` : ""}`;
+    const meta = document.createElement("small"); meta.textContent = `${copy.condition || "Condition not set"} · ${copy.status || "Status not set"} · ${displayLocation(copy.locationId)}${copy.status === "Loaned" && !copy.activeLoanId ? " · No linked loan record — review this legacy status" : ""}`;
+    details.append(title, meta); const actions = document.createElement("div"); actions.className = "library-actions";
+    actions.append(makeActionButton("Edit", "edit-copy", copy.id), makeActionButton("Delete", "delete-copy", copy.id, true));
+    item.append(details, actions); list.append(item);
+  });
+}
+function renderLocations() {
+  const list = $("#locations-list"); $("#location-count").textContent = `${libraryCollections.locations.length} locations`; list.replaceChildren();
+  if (!libraryCollections.locations.length) { list.innerHTML = '<div class="empty-state">No locations yet. Start by adding a room.</div>'; return; }
+  const rank = { room: 0, bookshelf: 1, shelf: 2 };
+  [...libraryCollections.locations].sort((a,b) => (rank[a.type] ?? 9) - (rank[b.type] ?? 9) || escapeText(a.name).localeCompare(escapeText(b.name))).forEach((location) => {
+    const item = document.createElement("div"); item.className = "library-item"; const details = document.createElement("div");
+    const title = document.createElement("strong"); title.textContent = location.name;
+    const meta = document.createElement("small"); meta.textContent = `${location.type || "location"} · ${displayLocation(location.parentId)}`;
+    details.append(title, meta); const actions = document.createElement("div"); actions.className = "library-actions";
+    actions.append(makeActionButton("Edit", "edit-location", location.id), makeActionButton("Delete", "delete-location", location.id, true));
+    item.append(details, actions); list.append(item);
+  });
+}
+function localDateInputValue(date = new Date()) {
+  const year = date.getFullYear(); const month = String(date.getMonth() + 1).padStart(2, "0"); const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+function dateInputToTimestamp(value) {
+  const [year, month, day] = value.split("-").map(Number);
+  return Timestamp.fromDate(new Date(year, month - 1, day, 12, 0, 0));
+}
+function timestampToDateInput(value) {
+  if (!value) return "";
+  const date = typeof value.toDate === "function" ? value.toDate() : new Date(value);
+  return Number.isNaN(date.getTime()) ? "" : localDateInputValue(date);
+}
+function formatLibraryDate(value) {
+  const input = timestampToDateInput(value);
+  if (!input) return "—";
+  const [year, month, day] = input.split("-").map(Number);
+  return new Date(year, month - 1, day, 12).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+}
+function todayLocal() { return localDateInputValue(new Date()); }
+function renderLoans() {
+  const active = libraryCollections.loans.filter((loan) => loan.status === "Borrowed").sort((a,b) => timestampToDateInput(a.dueAt).localeCompare(timestampToDateInput(b.dueAt)));
+  const returned = libraryCollections.loans.filter((loan) => loan.status === "Returned").sort((a,b) => timestampToDateInput(b.returnedAt).localeCompare(timestampToDateInput(a.returnedAt)));
+  const today = todayLocal();
+  const overdue = active.filter((loan) => timestampToDateInput(loan.dueAt) < today);
+  $("#loan-stat-borrowed").textContent = String(active.length);
+  $("#loan-stat-overdue").textContent = String(overdue.length);
+  $("#loan-stat-returned").textContent = String(returned.length);
+  $("#active-loan-count").textContent = `${active.length} active`;
+  $("#returned-loan-count").textContent = `${returned.length} returned`;
+  const activeList = $("#active-loans-list"); activeList.replaceChildren();
+  if (!active.length) activeList.innerHTML = '<div class="empty-state">No books are currently borrowed.</div>';
+  active.forEach((loan) => {
+    const copy = libraryCollections.copies.find((item) => item.id === loan.copyId);
+    const book = libraryCollections.books.find((item) => item.id === loan.bookId);
+    const isOverdue = timestampToDateInput(loan.dueAt) < today;
+    const item = document.createElement("div"); item.className = `library-item${isOverdue ? " loan-overdue" : ""}`;
+    const details = document.createElement("div");
+    const title = document.createElement("strong"); title.textContent = `${loan.bookTitle || book?.title || "Unknown book"}${loan.copyLabel || copy?.copyLabel ? ` — ${loan.copyLabel || copy?.copyLabel}` : ""}`;
+    const meta = document.createElement("small"); meta.textContent = `Borrower: ${loan.borrowerName} · Borrowed: ${formatLibraryDate(loan.borrowedAt)} · Due: ${formatLibraryDate(loan.dueAt)}${loan.notes ? ` · ${loan.notes}` : ""}`;
+    const status = document.createElement("span"); status.className = `loan-status${isOverdue ? " overdue" : ""}`; status.textContent = isOverdue ? "OVERDUE" : "BORROWED";
+    details.append(title, meta, status);
+    const actions = document.createElement("div"); actions.className = "library-actions";
+    const returnDate = document.createElement("input"); returnDate.type = "date"; returnDate.className = "loan-date-input"; returnDate.value = today; returnDate.setAttribute("aria-label", "Return date"); returnDate.dataset.returnDateFor = loan.id;
+    const returnButton = makeActionButton("Record return", "return-loan", loan.id); returnButton.classList.remove("small-button"); returnButton.classList.add("primary-button");
+    actions.append(returnDate, returnButton); item.append(details, actions); activeList.append(item);
+  });
+  const returnedList = $("#returned-loans-list"); returnedList.replaceChildren();
+  if (!returned.length) returnedList.innerHTML = '<div class="empty-state">Returned books will appear here. Records are retained as history.</div>';
+  returned.forEach((loan) => {
+    const copy = libraryCollections.copies.find((item) => item.id === loan.copyId);
+    const book = libraryCollections.books.find((item) => item.id === loan.bookId);
+    const item = document.createElement("div"); item.className = "library-item";
+    const details = document.createElement("div"); const title = document.createElement("strong"); title.textContent = `${loan.bookTitle || book?.title || "Unknown book"}${loan.copyLabel || copy?.copyLabel ? ` — ${loan.copyLabel || copy?.copyLabel}` : ""}`;
+    const meta = document.createElement("small"); meta.textContent = `Borrower: ${loan.borrowerName} · Borrowed: ${formatLibraryDate(loan.borrowedAt)} · Due: ${formatLibraryDate(loan.dueAt)} · Returned: ${formatLibraryDate(loan.returnedAt)}`;
+    details.append(title, meta); item.append(details); returnedList.append(item);
+  });
+}
+function makeActionButton(label, action, id, danger = false) {
+  const button = document.createElement("button"); button.type = "button"; button.className = `small-button${danger ? " danger" : ""}`;
+  button.textContent = label; button.dataset.action = action; button.dataset.id = id; return button;
+}
+function refreshLibrarySelects() {
+  const bookSelect = $("#copy-form [name=bookId]"); const selectedBook = bookSelect.value;
+  bookSelect.replaceChildren(new Option(libraryCollections.books.length ? "Choose a book" : "Add a book first", ""));
+  libraryCollections.books.sort((a,b) => escapeText(a.title).localeCompare(escapeText(b.title))).forEach((book) => bookSelect.add(new Option(`${book.title} — ${book.author}`, book.id)));
+  if (libraryCollections.books.some((book) => book.id === selectedBook)) bookSelect.value = selectedBook;
+  const locationSelect = $("#copy-form [name=locationId]"); const selectedLocation = locationSelect.value;
+  locationSelect.replaceChildren(new Option("Not assigned yet", ""));
+  libraryCollections.locations.forEach((location) => locationSelect.add(new Option(`${location.name} (${location.type})`, location.id)));
+  if (libraryCollections.locations.some((location) => location.id === selectedLocation)) locationSelect.value = selectedLocation;
+  const copySelect = $("#loan-form [name=copyId]"); const selectedCopy = copySelect.value;
+  const availableCopies = libraryCollections.copies.filter((copy) => copy.status === "Available");
+  copySelect.replaceChildren(new Option(availableCopies.length ? "Choose an available copy" : "No available copies", ""));
+  availableCopies.forEach((copy) => { const book = libraryCollections.books.find((item) => item.id === copy.bookId); copySelect.add(new Option(`${book?.title || "Unknown book"}${copy.copyLabel ? ` — ${copy.copyLabel}` : ""}`, copy.id)); });
+  if (availableCopies.some((copy) => copy.id === selectedCopy)) copySelect.value = selectedCopy;
+  const parentSelect = $("#location-form [name=parentId]"); const selectedParent = parentSelect.value;
+  parentSelect.replaceChildren(new Option("No parent (top level)", ""));
+  libraryCollections.locations.forEach((location) => parentSelect.add(new Option(`${location.name} (${location.type})`, location.id)));
+  if (libraryCollections.locations.some((location) => location.id === selectedParent)) parentSelect.value = selectedParent;
+}
+function resetEditor(formSelector, messageSelector, buttonSelector, label) {
+  $(formSelector).reset(); $(formSelector).elements.recordId.value = ""; $(buttonSelector).textContent = label; if (messageSelector) message(messageSelector, "");
+}
+function bookPayload(form) {
+  const data = { title: clean(form.get("title")), author: clean(form.get("author")), updatedAt: serverTimestamp(), updatedBy: currentUser.uid };
+  for (const key of ["genre", "isbn", "publisher", "coverUrl", "description"]) { const value = clean(form.get(key)); if (value) data[key] = value; }
+  const year = clean(form.get("publicationYear")); if (year) data.publicationYear = Number(year);
+  return data;
+}
+function auditCreate(data) { return { ...data, createdAt: serverTimestamp(), createdBy: currentUser.uid }; }
+async function saveRecord(collectionName, id, data) {
+  if (id) await updateDoc(doc(db, "libraries", LIBRARY_ID, collectionName, id), data);
+  else await addDoc(libraryPath(collectionName), auditCreate(data));
+}
+// Stage 2: human-triggered book discovery using the public Open Library Search API.
+let discoveryResults = [];
+let lastDiscoveryRequestAt = 0;
+function normalizeBookText(value) { return clean(value).normalize("NFC").toLocaleLowerCase().replace(/[^\p{L}\p{M}\p{N}]+/gu, " ").trim(); }
+const isbnDigits = (value) => String(value ?? "").replace(/[^0-9Xx]/g, "").toUpperCase();
+function toIsbn13(value) {
+  const d = isbnDigits(value);
+  if (/^\d{13}$/.test(d)) return d;
+  if (/^\d{9}[\dX]$/.test(d)) { const core = "978" + d.slice(0, 9); let sum = 0; for (let i = 0; i < 12; i++) sum += Number(core[i]) * (i % 2 ? 3 : 1); return core + String((10 - (sum % 10)) % 10); }
+  return "";
+}
+function findBookDuplicate(candidate) {
+  const isbn = toIsbn13(candidate.isbn) || isbnDigits(candidate.isbn);
+  const title = normalizeBookText(candidate.title);
+  const author = normalizeBookText(candidate.author);
+  return libraryCollections.books.find((book) => {
+    const existingIsbn = toIsbn13(book.isbn) || isbnDigits(book.isbn);
+    if (isbn && existingIsbn && isbn === existingIsbn) return true;
+    return title && author && normalizeBookText(book.title) === title && normalizeBookText(book.author) === author;
+  });
+}
+// Stage 4A (slice 1): multi-source discovery (Google Books + Open Library) with Bengali support.
+const DISCOVERY_LANG = { bn: { google: "bn", ol: "ben" }, en: { google: "en", ol: "eng" } };
+const SOURCE_NAMES = { google: "Google Books", openlibrary: "Open Library", hardcover: "Hardcover" };
+const pickIsbn = (list) => (Array.isArray(list) ? list : []).map(toIsbn13).find(Boolean) || "";
+const yearOf = (value) => { const m = String(value ?? "").match(/\d{4}/); return m ? Number(m[0]) : ""; };
+async function searchGoogleBooks(query, lang) {
+  const isbn = toIsbn13(query);
+  const params = new URLSearchParams({ q: isbn ? `isbn:${isbn}` : query, maxResults: "20", printType: "books" });
+  if (!isbn && DISCOVERY_LANG[lang]) params.set("langRestrict", DISCOVERY_LANG[lang].google);
+  const response = await fetch(`https://www.googleapis.com/books/v1/volumes?${params.toString()}`, { headers: { "Accept": "application/json" } });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  const data = await response.json();
+  return (Array.isArray(data.items) ? data.items : []).map((entry) => {
+    const info = entry.volumeInfo || {};
+    const ids = Array.isArray(info.industryIdentifiers) ? info.industryIdentifiers.map((x) => x.identifier) : [];
+    const cover = String(info.imageLinks?.thumbnail || info.imageLinks?.smallThumbnail || "");
+    return { title: clean(info.title) + (info.subtitle ? `: ${clean(info.subtitle)}` : ""), authors: Array.isArray(info.authors) ? info.authors.map(clean).filter(Boolean) : [], isbn: pickIsbn(ids), publisher: clean(info.publisher), year: yearOf(info.publishedDate), coverUrl: cover.replace(/^http:/, "https:").replace(/&edge=curl/, ""), description: clean(info.description), link: String(info.infoLink || ""), sources: ["google"] };
+  }).filter((item) => item.title);
+}
+async function searchOpenLibrary(query, lang) {
+  const wait = Math.max(0, 1100 - (Date.now() - lastDiscoveryRequestAt));
+  if (wait) await new Promise((resolve) => setTimeout(resolve, wait));
+  lastDiscoveryRequestAt = Date.now();
+  const params = new URLSearchParams({ q: query, fields: "key,title,author_name,first_publish_year,isbn,publisher,cover_i", limit: "20" });
+  if (DISCOVERY_LANG[lang]) params.set("language", DISCOVERY_LANG[lang].ol);
+  const response = await fetch(`https://openlibrary.org/search.json?${params.toString()}`, { headers: { "Accept": "application/json" } });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  const data = await response.json();
+  return (Array.isArray(data.docs) ? data.docs : []).map((doc) => ({ title: clean(doc.title), authors: Array.isArray(doc.author_name) ? doc.author_name.map(clean).filter(Boolean) : [], isbn: pickIsbn(doc.isbn), publisher: Array.isArray(doc.publisher) && doc.publisher.length ? clean(doc.publisher[0]) : "", year: yearOf(doc.first_publish_year), coverUrl: doc.cover_i ? `https://covers.openlibrary.org/b/id/${encodeURIComponent(doc.cover_i)}-M.jpg` : "", description: "", link: doc.key ? `https://openlibrary.org${doc.key}` : "", sources: ["openlibrary"] })).filter((item) => item.title);
+}
+// Stage 4A (slice 2): Hardcover. The token stays in this browser only (never in the code, database or repository).
+const HARDCOVER_TOKEN_KEY = "ourLibrary.hardcoverToken";
+let hardcoverTokenFallback = "";
+let lastHardcoverRequestAt = 0;
+const cleanHardcoverToken = (value) => String(value ?? "").trim().replace(/^bearer\s+/i, "").replace(/\s+/g, "");
+function getHardcoverToken() { let stored = ""; try { stored = localStorage.getItem(HARDCOVER_TOKEN_KEY) || ""; } catch { /* storage unavailable */ } return cleanHardcoverToken(stored || hardcoverTokenFallback); }
+function setHardcoverToken(token) { hardcoverTokenFallback = token; try { if (token) localStorage.setItem(HARDCOVER_TOKEN_KEY, token); else localStorage.removeItem(HARDCOVER_TOKEN_KEY); } catch { /* storage unavailable: the token lives in memory for this visit only */ } }
+const hasBengali = (text) => /[\u0980-\u09FF]/.test(String(text ?? ""));
+async function searchHardcover(query, lang) {
+  const token = getHardcoverToken();
+  if (!token) throw new Error("no token saved (open Sources and paste your Hardcover token)");
+  const wait = Math.max(0, 1100 - (Date.now() - lastHardcoverRequestAt));
+  if (wait) await new Promise((resolve) => setTimeout(resolve, wait));
+  lastHardcoverRequestAt = Date.now();
+  let response;
+  try {
+    response = await fetch("https://api.hardcover.app/v1/graphql", { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json", "Authorization": `Bearer ${token}` }, body: JSON.stringify({ query: 'query ($q: String!) { search(query: $q, query_type: "Book", per_page: 20, page: 1) { results } }', variables: { q: query } }) });
+  } catch { throw new Error("the browser could not reach Hardcover (it may be blocking the request)"); }
+  if (response.status === 401) throw new Error("Hardcover rejected the token (invalid or expired). Make a new one at hardcover.app/account/api");
+  if (response.status === 429) throw new Error("Hardcover rate limit reached. Wait a minute and try again");
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  const data = await response.json();
+  if (Array.isArray(data.errors) && data.errors.length) throw new Error(String(data.errors[0].message || "Hardcover error").slice(0, 120));
+  let results = data?.data?.search?.results; if (typeof results === "string") { try { results = JSON.parse(results); } catch { results = {}; } }
+  const hits = Array.isArray(results?.hits) ? results.hits : [];
+  return hits.map((hit) => {
+    const doc = hit.document || hit; const image = typeof doc.image === "string" ? doc.image : String(doc.image?.url || "");
+    return { title: clean(doc.title) + (doc.subtitle ? `: ${clean(doc.subtitle)}` : ""), authors: Array.isArray(doc.author_names) ? doc.author_names.map(clean).filter(Boolean) : [], isbn: pickIsbn(doc.isbns), publisher: "", year: yearOf(doc.release_year), coverUrl: image, description: clean(doc.description), link: doc.slug ? `https://hardcover.app/books/${encodeURIComponent(doc.slug)}` : "", sources: ["hardcover"] };
+  }).filter((item) => item.title).filter((item) => { const bn = hasBengali(item.title) || hasBengali(item.authors.join(" ")); return lang === "bn" ? bn : lang === "en" ? !bn : true; });
+}
+function mergeDiscovery(lists) {
+  const byIsbn = new Map(); const byTitle = new Map(); const merged = [];
+  lists.flat().forEach((item) => {
+    const titleKey = `${normalizeBookText(item.title)}|${normalizeBookText(item.authors[0] || "")}`;
+    const existing = (item.isbn && byIsbn.get(item.isbn)) || byTitle.get(titleKey);
+    if (!existing) { const copy = { ...item, sources: [...item.sources] }; merged.push(copy); if (copy.isbn) byIsbn.set(copy.isbn, copy); byTitle.set(titleKey, copy); return; }
+    for (const field of ["isbn", "publisher", "year", "coverUrl", "description", "link"]) if (!existing[field] && item[field]) existing[field] = item[field];
+    if (!existing.authors.length) existing.authors = item.authors;
+    item.sources.forEach((source) => { if (!existing.sources.includes(source)) existing.sources.push(source); });
+    if (existing.isbn) byIsbn.set(existing.isbn, existing);
+  });
+  return merged.sort((a, b) => b.sources.length - a.sources.length);
+}
+function renderDiscoveryResults(items) {
+  const container = $("#discovery-results"); container.replaceChildren();
+  if (!items.length) { container.innerHTML = '<div class="empty-state">No matching books found. Try a different title, author or ISBN, another language, or another source.</div>'; return; }
+  items.forEach((item, index) => {
+    const card = document.createElement("article"); card.className = "discovery-item";
+    const cover = document.createElement("img"); cover.className = "discovery-cover"; cover.alt = `Cover of ${item.title}`; cover.loading = "lazy";
+    const coverSrc = safeUrl(item.coverUrl); if (coverSrc) { cover.src = coverSrc; } else { cover.alt = "No cover available"; }
+    cover.onerror = () => { cover.removeAttribute("src"); cover.alt = "No cover available"; };
+    const details = document.createElement("div");
+    const title = document.createElement("strong"); title.textContent = item.title;
+    const meta = document.createElement("small");
+    meta.textContent = `${item.authors.length ? item.authors.join(", ") : "Author unknown"} · ${item.year || "Year unknown"} · ${item.publisher || "Publisher not listed"} · ${item.isbn || "ISBN not listed"}`;
+    const badges = document.createElement("div"); badges.className = "source-badges";
+    item.sources.forEach((source) => { const badge = document.createElement("span"); badge.className = "source-badge"; badge.textContent = SOURCE_NAMES[source] || source; badges.append(badge); });
+    const actions = document.createElement("div"); actions.className = "library-actions";
+    const use = document.createElement("button"); use.type = "button"; use.className = "small-button"; use.textContent = "Use these details"; use.dataset.action = "use-discovery"; use.dataset.index = String(index);
+    actions.append(use);
+    const linkHref = safeUrl(item.link);
+    if (linkHref) { const link = document.createElement("a"); link.href = linkHref; link.target = "_blank"; link.rel = "noopener"; link.textContent = "View source"; link.className = "muted"; link.style.fontSize = "11px"; actions.append(link); }
+    details.append(title, meta, badges, actions); card.append(cover, details); container.append(card);
+  });
+}
+$("#discovery-form").addEventListener("submit", async (event) => {
+  event.preventDefault(); const query = clean($("#discovery-query").value).normalize("NFC"); if (!query) return;
+  const lang = $("#discovery-language").value;
+  const wanted = []; if ($("#src-google").checked) wanted.push(["google", searchGoogleBooks]); if ($("#src-openlibrary").checked) wanted.push(["openlibrary", searchOpenLibrary]); if ($("#src-hardcover").checked) wanted.push(["hardcover", searchHardcover]);
+  if (!wanted.length) { message("#discovery-message", "Turn on at least one source.", "error"); return; }
+  const button = $("#discovery-submit"); button.disabled = true; message("#discovery-message", `Searching ${wanted.map(([key]) => SOURCE_NAMES[key]).join(" and ")}…`);
+  try {
+    const results = await Promise.allSettled(wanted.map(([, search]) => search(query, lang)));
+    const counts = []; const lists = []; let failed = 0;
+    results.forEach((result, i) => { const name = SOURCE_NAMES[wanted[i][0]]; if (result.status === "fulfilled") { lists.push(result.value); counts.push(`${name}: ${result.value.length}`); } else { failed += 1; counts.push(`${name}: failed (${result.reason?.message || "error"})`); } });
+    $("#discovery-counts").textContent = counts.join(" · ");
+    if (failed === wanted.length) { message("#discovery-message", "No source could be reached. Please try again later.", "error"); return; }
+    discoveryResults = mergeDiscovery(lists); renderDiscoveryResults(discoveryResults);
+    message("#discovery-message", `${discoveryResults.length} books shown after combining sources. Nothing is saved until you confirm.`, "success");
+  } catch (error) { message("#discovery-message", error.message || "Unable to search books right now.", "error"); }
+  finally { button.disabled = false; }
+});
+
+// Hardcover token panel
+function refreshHardcoverStatus() {
+  const has = !!getHardcoverToken(); $("#src-hardcover").disabled = !has; if (!has) $("#src-hardcover").checked = false;
+  message("#hardcover-status", has ? "A Hardcover token is saved on this device." : "No Hardcover token saved yet.", has ? "success" : "");
+}
+$("#hardcover-save").addEventListener("click", () => {
+  const token = cleanHardcoverToken($("#hardcover-token").value);
+  if (token.length < 20) { message("#hardcover-status", "That does not look like a Hardcover token. Paste the whole token.", "error"); return; }
+  setHardcoverToken(token); $("#hardcover-token").value = ""; refreshHardcoverStatus(); $("#src-hardcover").checked = true;
+  message("#hardcover-status", "Token saved on this device only. Use Test connection to check it. Tokens expire, so renew it at hardcover.app/account/api if Hardcover stops working.", "success");
+});
+$("#hardcover-remove").addEventListener("click", () => { setHardcoverToken(""); $("#hardcover-token").value = ""; refreshHardcoverStatus(); });
+$("#hardcover-test").addEventListener("click", async () => {
+  const button = $("#hardcover-test"); button.disabled = true; message("#hardcover-status", "Testing Hardcover…");
+  try { const found = await searchHardcover("dune", "all"); message("#hardcover-status", `Hardcover works: ${found.length} results for a test search.`, "success"); }
+  catch (error) { message("#hardcover-status", `Hardcover test failed: ${error.message}`, "error"); }
+  finally { button.disabled = false; }
+});
+refreshHardcoverStatus(); if (getHardcoverToken()) $("#src-hardcover").checked = true;
+
+$("#book-form").addEventListener("submit", async (event) => {
+  event.preventDefault(); const form = event.currentTarget; const values = new FormData(form); const id = clean(values.get("recordId"));
+  const button = $("#book-submit"); button.disabled = true;
+  try { if (!clean(values.get("title")) || !clean(values.get("author"))) throw new Error("Enter both the book title and author."); const candidate = { title: values.get("title"), author: values.get("author"), isbn: values.get("isbn") }; const duplicate = !id ? findBookDuplicate(candidate) : null; if (duplicate) throw new Error(`This book may already exist: ${duplicate.title} — ${duplicate.author}. Edit the existing record instead of adding a duplicate.`); await saveRecord("books", id, bookPayload(values)); resetEditor("#book-form", "#book-message", "#book-submit", "Add book"); message("#book-message", id ? "Book updated successfully." : "Book added successfully.", "success"); }
+  catch (error) { message("#book-message", friendlyError(error), "error"); } finally { button.disabled = false; }
+});
+$("#copy-form").addEventListener("submit", async (event) => {
+  event.preventDefault(); const form = event.currentTarget; const values = new FormData(form); const id = clean(values.get("recordId"));
+  const button = $("#copy-submit"); button.disabled = true;
+  try {
+    const existingCopy = id ? libraryCollections.copies.find((copy) => copy.id === id) : null;
+    const bookId = existingCopy?.status === "Loaned" ? existingCopy.bookId : clean(values.get("bookId"));
+    if (!libraryCollections.books.some((book) => book.id === bookId)) throw new Error("Choose a book from the catalogue first.");
+    const status = existingCopy?.status === "Loaned" ? "Loaned" : clean(values.get("status"));
+    const data = { bookId, condition: clean(values.get("condition")), status, updatedAt: serverTimestamp(), updatedBy: currentUser.uid };
+    for (const key of ["copyLabel", "locationId", "notes"]) { const value = clean(values.get(key)); if (value) data[key] = value; }
+    await saveRecord("copies", id, data); $("#copy-form").elements.bookId.disabled = false; $("#copy-form").elements.status.disabled = false; resetEditor("#copy-form", "#copy-message", "#copy-submit", "Add copy"); message("#copy-message", id ? "Physical copy updated." : "Physical copy added.", "success");
+  } catch (error) { message("#copy-message", friendlyError(error), "error"); } finally { button.disabled = false; }
+});
+$("#loan-form").elements.borrowedAt.value = todayLocal();
+$("#loan-form").elements.dueAt.value = todayLocal();
+$("#loan-cancel").addEventListener("click", () => { $("#loan-form").reset(); $("#loan-form").elements.borrowedAt.value = todayLocal(); $("#loan-form").elements.dueAt.value = todayLocal(); message("#loan-message", ""); });
+$("#loan-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const form = event.currentTarget; const values = new FormData(form);
+  const copyId = clean(values.get("copyId")); const borrowerName = clean(values.get("borrowerName"));
+  const borrowedAt = clean(values.get("borrowedAt")); const dueAt = clean(values.get("dueAt")); const notes = clean(values.get("notes"));
+  const button = $("#loan-submit"); button.disabled = true;
+  try {
+    if (!copyId || !borrowerName || !borrowedAt || !dueAt) throw new Error("Complete all required borrowing fields.");
+    if (dueAt < borrowedAt) throw new Error("The due date cannot be earlier than the borrowing date.");
+    const copyRef = doc(db, "libraries", LIBRARY_ID, "copies", copyId);
+    const loanRef = doc(libraryPath("loans"));
+    await runTransaction(db, async (transaction) => {
+      const copySnapshot = await transaction.get(copyRef);
+      if (!copySnapshot.exists()) throw new Error("This physical copy no longer exists.");
+      const copy = copySnapshot.data();
+      if (copy.status !== "Available") throw new Error("This copy is no longer available. Refresh and choose another copy.");
+      const bookRef = doc(db, "libraries", LIBRARY_ID, "books", copy.bookId);
+      const bookSnapshot = await transaction.get(bookRef);
+      if (!bookSnapshot.exists()) throw new Error("The book connected to this copy could not be found.");
+      const now = serverTimestamp();
+      const loanData = {
+        copyId, bookId: copy.bookId, bookTitle: bookSnapshot.data().title || "Unknown book",
+        borrowerName, borrowedAt: dateInputToTimestamp(borrowedAt), dueAt: dateInputToTimestamp(dueAt),
+        returnedAt: null, status: "Borrowed", createdBy: currentUser.uid,
+        createdAt: now, updatedBy: currentUser.uid, updatedAt: now
+      };
+      if (copy.copyLabel) loanData.copyLabel = copy.copyLabel;
+      if (notes) loanData.notes = notes;
+      transaction.set(loanRef, loanData);
+      transaction.update(copyRef, { status: "Loaned", activeLoanId: loanRef.id, updatedBy: currentUser.uid, updatedAt: now });
+    });
+    form.reset(); form.elements.borrowedAt.value = todayLocal(); form.elements.dueAt.value = todayLocal();
+    message("#loan-message", "Borrowing recorded. The physical copy is now marked as Loaned.", "success");
+  } catch (error) { message("#loan-message", friendlyError(error), "error"); }
+  finally { button.disabled = false; }
+});
+
+$("#location-form").elements.type.addEventListener("change", (event) => {
+  const type = event.target.value; const parent = $("#location-form [name=parentId]");
+  [...parent.options].forEach((option) => { if (!option.value) return; const location = libraryCollections.locations.find((item) => item.id === option.value); option.disabled = type === "bookshelf" ? location?.type !== "room" : type === "shelf" ? location?.type !== "bookshelf" : true; });
+});
+$("#location-form").addEventListener("submit", async (event) => {
+  event.preventDefault(); const form = event.currentTarget; const values = new FormData(form); const id = clean(values.get("recordId")); const type = clean(values.get("type")); const parentId = clean(values.get("parentId"));
+  const button = $("#location-submit"); button.disabled = true;
+  try {
+    if (type === "room" && parentId) throw new Error("A room must be a top-level location.");
+    if (type === "bookshelf" && (!parentId || libraryCollections.locations.find((item) => item.id === parentId)?.type !== "room")) throw new Error("Choose a room as the parent of a bookshelf.");
+    if (type === "shelf" && (!parentId || libraryCollections.locations.find((item) => item.id === parentId)?.type !== "bookshelf")) throw new Error("Choose a bookshelf as the parent of a shelf.");
+    if (id && (id === parentId || isDescendant(parentId, id))) throw new Error("A location cannot be placed inside itself or one of its descendants.");
+    const data = { name: clean(values.get("name")), type, updatedAt: serverTimestamp(), updatedBy: currentUser.uid };
+    if (!data.name) throw new Error("Enter a location name."); if (parentId) data.parentId = parentId; const notes = clean(values.get("notes")); if (notes) data.notes = notes;
+    await saveRecord("locations", id, data); resetEditor("#location-form", "#location-message", "#location-submit", "Add location"); message("#location-message", id ? "Location updated." : "Location added.", "success");
+  } catch (error) { message("#location-message", friendlyError(error), "error"); } finally { button.disabled = false; }
+});
+function isDescendant(candidateId, ancestorId) { let current = libraryCollections.locations.find((item) => item.id === candidateId); while (current?.parentId) { if (current.parentId === ancestorId) return true; current = libraryCollections.locations.find((item) => item.id === current.parentId); } return false; }
+$("#book-cancel").addEventListener("click", () => resetEditor("#book-form", "#book-message", "#book-submit", "Add book"));
+$("#copy-cancel").addEventListener("click", () => { $("#copy-form").elements.bookId.disabled = false; $("#copy-form").elements.status.disabled = false; [...$("#copy-form").elements.status.options].filter((option) => option.dataset.legacy === "true").forEach((option) => option.remove()); resetEditor("#copy-form", "#copy-message", "#copy-submit", "Add copy"); });
+$("#location-cancel").addEventListener("click", () => resetEditor("#location-form", "#location-message", "#location-submit", "Add location"));
+document.querySelectorAll("[data-library-tab]").forEach((button) => button.addEventListener("click", () => {
+  document.querySelectorAll("[data-library-tab]").forEach((tab) => tab.classList.toggle("active", tab === button));
+  ["home", "discover", "books", "copies", "locations", "borrowing", "members"].forEach((name) => $(`#${name}-section`).classList.toggle("hidden", button.dataset.libraryTab !== name));
+}));
+document.querySelector(".library-tools").addEventListener("click", async (event) => {
+  const button = event.target.closest("button[data-action]"); if (!button) return; const { action, id } = button.dataset;
+  if (action === "view-book") { openBookDialog(id); return; }
+  closeBookDialog();
+  try {
+    if (action === "use-discovery") {
+      const item = discoveryResults[Number(button.dataset.index)]; if (!item) return;
+      const candidate = { title: item.title.slice(0, 180), author: item.authors.join(", ").slice(0, 140), isbn: item.isbn || "" };
+      const duplicate = findBookDuplicate(candidate);
+      if (duplicate) { message("#discovery-message", `This may already be in your collection: ${duplicate.title} — ${duplicate.author}. Check your Books tab before adding another copy.`, "error"); return; }
+      const form = $("#book-form"); form.reset(); form.elements.recordId.value = "";
+      form.elements.title.value = candidate.title; form.elements.author.value = candidate.author;
+      form.elements.isbn.value = candidate.isbn; form.elements.publisher.value = item.publisher || "";
+      form.elements.publicationYear.value = item.year || "";
+      form.elements.coverUrl.value = safeUrl(item.coverUrl) ? item.coverUrl.replace(/-M\.jpg$/, "-L.jpg") : ""; form.elements.description.value = (item.description || "").slice(0, 1500);
+      $("#book-submit").textContent = "Add book"; document.querySelector('[data-library-tab="books"]').click(); $("#book-editor").open = true;
+      message("#book-message", `Details filled from ${item.sources.map((s) => SOURCE_NAMES[s] || s).join(" + ")}. Review them and click Add book to save.`, "success");
+      form.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    if (action === "edit-book") { const item = libraryCollections.books.find((entry) => entry.id === id); if (!item) return; const form = $("#book-form"); for (const key of ["title", "author", "genre", "isbn", "publisher", "publicationYear", "coverUrl", "description"]) form.elements[key].value = item[key] ?? ""; form.elements.recordId.value = id; $("#book-submit").textContent = "Save book"; $("#book-editor").open = true; form.scrollIntoView({ behavior: "smooth", block: "center" }); }
+    if (action === "edit-copy") { const item = libraryCollections.copies.find((entry) => entry.id === id); if (!item) return; const form = $("#copy-form"); const statusSelect = form.elements.status; [...statusSelect.options].filter((option) => option.dataset.legacy === "true").forEach((option) => option.remove()); if (item.status === "Loaned") { const legacy = new Option("Loaned (managed by borrowing)", "Loaned"); legacy.disabled = true; legacy.dataset.legacy = "true"; statusSelect.add(legacy); } for (const key of ["bookId", "copyLabel", "condition", "status", "locationId", "notes"]) form.elements[key].value = item[key] ?? ""; form.elements.bookId.disabled = item.status === "Loaned"; form.elements.status.disabled = item.status === "Loaned"; form.elements.recordId.value = id; $("#copy-submit").textContent = "Save copy"; document.querySelector('[data-library-tab="copies"]').click(); form.scrollIntoView({ behavior: "smooth", block: "center" }); }
+    if (action === "edit-location") { const item = libraryCollections.locations.find((entry) => entry.id === id); if (!item) return; const form = $("#location-form"); for (const key of ["name", "type", "parentId", "notes"]) form.elements[key].value = item[key] ?? ""; form.elements.recordId.value = id; $("#location-submit").textContent = "Save location"; document.querySelector('[data-library-tab="locations"]').click(); form.scrollIntoView({ behavior: "smooth", block: "center" }); }
+    if (action === "return-loan") {
+      const loan = libraryCollections.loans.find((item) => item.id === id);
+      const returnDateInput = document.querySelector(`[data-return-date-for="${CSS.escape(id)}"]`);
+      const returnDate = returnDateInput?.value;
+      if (!loan || loan.status !== "Borrowed") throw new Error("This borrowing record is no longer active. Refresh the page.");
+      if (!returnDate) throw new Error("Choose a return date first.");
+      if (returnDate > todayLocal()) throw new Error("The return date cannot be in the future.");
+      if (returnDate < timestampToDateInput(loan.borrowedAt)) throw new Error("The return date cannot be earlier than the borrowing date.");
+      const copyRef = doc(db, "libraries", LIBRARY_ID, "copies", loan.copyId);
+      const loanRef = doc(db, "libraries", LIBRARY_ID, "loans", id);
+      await runTransaction(db, async (transaction) => {
+        const loanSnapshot = await transaction.get(loanRef);
+        if (!loanSnapshot.exists() || loanSnapshot.data().status !== "Borrowed") throw new Error("This loan has already been returned or changed.");
+        const copySnapshot = await transaction.get(copyRef);
+        if (!copySnapshot.exists()) throw new Error("The physical copy record is missing. The loan was not changed.");
+        const copy = copySnapshot.data();
+        if (copy.status !== "Loaned" || copy.activeLoanId !== id) throw new Error("The copy and loan records do not match. No changes were made.");
+        const now = serverTimestamp();
+        transaction.update(loanRef, { status: "Returned", returnedAt: dateInputToTimestamp(returnDate), updatedBy: currentUser.uid, updatedAt: now });
+        transaction.update(copyRef, { status: "Available", activeLoanId: deleteField(), updatedBy: currentUser.uid, updatedAt: now });
+      });
+      showToast("Return recorded. The copy is available again.");
+    }
+    if (action === "delete-book") { if (libraryCollections.copies.some((copy) => copy.bookId === id)) { showToast("Delete this book's physical copies first."); return; } if (!confirm("Delete this book from the catalogue? This cannot be undone.")) return; await deleteDoc(doc(db, "libraries", LIBRARY_ID, "books", id)); showToast("Book deleted."); }
+    if (action === "delete-copy") { const copy = libraryCollections.copies.find((item) => item.id === id); if (copy?.status === "Loaned" || copy?.activeLoanId) { showToast("This copy has an active loan and cannot be deleted."); return; } if (!confirm("Delete this physical copy?")) return; await deleteDoc(doc(db, "libraries", LIBRARY_ID, "copies", id)); showToast("Physical copy deleted."); }
+    if (action === "delete-location") { if (libraryCollections.locations.some((item) => item.parentId === id) || libraryCollections.copies.some((copy) => copy.locationId === id)) { showToast("Move child locations and physical copies first."); return; } if (!confirm("Delete this location?")) return; await deleteDoc(doc(db, "libraries", LIBRARY_ID, "locations", id)); showToast("Location deleted."); }
+  } catch (error) { showToast(friendlyError(error)); }
+});
+
+// ---- Navigation helpers ----
+function goTab(name) { document.querySelector(`[data-library-tab="${name}"]`)?.click(); }
+function setGreeting() {
+  const hour = new Date().getHours();
+  $("#greeting-word").textContent = hour < 5 ? "Still up" : hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+}
+document.querySelectorAll("[data-library-tab]").forEach((button) => button.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" })));
+
+// ---- Catalogue controls ----
+function applyViewButtons() {
+  $("#view-grid").setAttribute("aria-pressed", String(bookView.mode === "grid"));
+  $("#view-list").setAttribute("aria-pressed", String(bookView.mode === "list"));
+}
+function setBookView(mode) {
+  bookView.mode = mode;
+  try { localStorage.setItem("ourLibrary.bookView", mode); } catch { /* storage unavailable */ }
+  applyViewButtons(); renderBooks();
+}
+$("#view-grid").addEventListener("click", () => setBookView("grid"));
+$("#view-list").addEventListener("click", () => setBookView("list"));
+applyViewButtons();
+$("#filters-toggle").addEventListener("click", () => {
+  const panel = $("#advanced-panel"); const open = panel.classList.toggle("hidden") === false;
+  $("#filters-toggle").setAttribute("aria-expanded", String(open));
+});
+function openAdvancedFilters() { $("#advanced-panel").classList.remove("hidden"); $("#filters-toggle").setAttribute("aria-expanded", "true"); }
+$("#book-toolbar").addEventListener("input", renderBooks);
+$("#filters-reset").addEventListener("click", resetBookFilters);
+
+// ---- Book details dialog ----
+function closeBookDialog() { const dialog = $("#book-dialog"); if (dialog.open) dialog.close(); }
+function openBookDialog(id) {
+  const book = libraryCollections.books.find((item) => item.id === id); if (!book) return;
+  const body = $("#book-dialog-body"); body.replaceChildren();
+  const top = document.createElement("div"); top.className = "dialog-top";
+  const info = document.createElement("div");
+  const title = document.createElement("h2"); title.textContent = book.title || "Untitled book";
+  const author = document.createElement("p"); author.className = "muted"; author.textContent = book.author || "Author unknown";
+  const meta = document.createElement("div"); meta.className = "dialog-meta";
+  [book.genre, book.publicationYear, book.publisher, book.isbn ? `ISBN ${book.isbn}` : ""].filter(Boolean).forEach((value) => { const chip = document.createElement("span"); chip.textContent = String(value); meta.append(chip); });
+  const stats = copiesByBook().get(book.id) || emptyStats();
+  info.append(title, author, meta, availabilityBadge(stats));
+  top.append(makeCover(book), info); body.append(top);
+  if (book.description) { const desc = document.createElement("p"); desc.className = "dialog-desc"; desc.textContent = book.description; body.append(desc); }
+  const heading = document.createElement("h3"); heading.textContent = `Physical copies (${stats.total})`; body.append(heading);
+  const copies = libraryCollections.copies.filter((copy) => copy.bookId === book.id);
+  if (!copies.length) { const none = document.createElement("div"); none.className = "empty-state"; none.textContent = "No physical copies registered yet."; body.append(none); }
+  copies.forEach((copy) => {
+    const row = document.createElement("div"); row.className = "dialog-copy";
+    const left = document.createElement("div"); const name = document.createElement("strong"); name.textContent = copy.copyLabel || "Copy";
+    const where = document.createElement("small"); where.textContent = `${displayLocation(copy.locationId)} · ${copy.condition || "Condition not set"}`;
+    left.append(name, where);
+    const state = document.createElement("span"); state.className = `pill${copy.status === "Available" ? "" : ""}`; state.textContent = copy.status || "Status not set";
+    row.append(left, state); body.append(row);
+  });
+  const actions = document.createElement("div"); actions.className = "library-actions dialog-actions";
+  actions.append(makeActionButton("Edit book", "edit-book", book.id), makeActionButton("Delete", "delete-book", book.id, true));
+  body.append(actions);
+  $("#book-dialog").showModal();
+}
+$("#book-dialog-close").addEventListener("click", closeBookDialog);
+$("#book-dialog").addEventListener("click", (event) => { if (event.target === event.currentTarget) closeBookDialog(); });
+
+// ---- Home dashboard ----
+function dayDiff(dateInput) {
+  if (!dateInput) return 0;
+  const [y, m, d] = dateInput.split("-").map(Number); const [ty, tm, td] = todayLocal().split("-").map(Number);
+  return Math.round((Date.UTC(y, m - 1, d) - Date.UTC(ty, tm - 1, td)) / 86400000);
+}
+function emptyNode(text) { const node = document.createElement("div"); node.className = "empty-state"; node.textContent = text; return node; }
+function renderHome() {
+  const { books, copies, loans } = libraryCollections;
+  $("#stat-books").textContent = String(books.length);
+  $("#stat-copies").textContent = `${copies.filter((copy) => copy.status === "Available").length}/${copies.length}`;
+  $("#loan-stat-overdue").closest(".stat-card").classList.toggle("alert", Number($("#loan-stat-overdue").textContent) > 0);
+
+  const due = loans.filter((loan) => loan.status === "Borrowed")
+    .map((loan) => ({ loan, diff: dayDiff(timestampToDateInput(loan.dueAt)) }))
+    .filter((entry) => entry.diff <= 3).sort((a, b) => a.diff - b.diff);
+  const attention = $("#attention-list"); attention.replaceChildren();
+  if (!due.length) attention.append(emptyNode("Nothing is due soon. You're all caught up."));
+  due.slice(0, 6).forEach(({ loan, diff }) => {
+    const book = books.find((item) => item.id === loan.bookId);
+    const row = document.createElement("div"); row.className = `attention-row${diff < 0 ? " overdue" : ""}`;
+    const text = document.createElement("div"); const name = document.createElement("strong"); name.textContent = loan.bookTitle || book?.title || "Unknown book";
+    const who = document.createElement("small"); who.textContent = `Borrowed by ${loan.borrowerName || "someone"}`; text.append(name, who);
+    const pill = document.createElement("span"); pill.className = "pill";
+    pill.textContent = diff < 0 ? `${-diff} day${diff === -1 ? "" : "s"} overdue` : diff === 0 ? "Due today" : `Due in ${diff} day${diff === 1 ? "" : "s"}`;
+    row.append(text, pill); attention.append(row);
+  });
+
+  const shelf = $("#recent-shelf"); shelf.replaceChildren();
+  if (!books.length) shelf.append(emptyNode("Books you add will appear here."));
+  [...books].sort((a, b) => bookCreatedMs(b) - bookCreatedMs(a)).slice(0, 12).forEach((book) => {
+    const item = document.createElement("button"); item.type = "button"; item.className = "shelf-item";
+    item.dataset.action = "view-book"; item.dataset.id = book.id; item.setAttribute("aria-label", `View details for ${book.title || "book"}`);
+    const label = document.createElement("span"); label.textContent = book.title || "Untitled book";
+    item.append(makeCover(book), label); shelf.append(item);
+  });
+
+  const bar = $("#status-bar"); const legend = $("#status-legend"); bar.replaceChildren(); legend.replaceChildren();
+  if (!copies.length) { legend.append(emptyNode("Add physical copies to see availability.")); }
+  ["Available", "Loaned", "Reading", "Repair"].forEach((status) => {
+    const count = copies.filter((copy) => copy.status === status).length;
+    if (!count) return;
+    const seg = document.createElement("span"); seg.className = `seg seg-${status}`; seg.style.flex = String(count); bar.append(seg);
+    const entry = document.createElement("span"); const dot = document.createElement("i"); dot.className = `dot-${status}`; entry.append(dot, `${status}: ${count}`); legend.append(entry);
+  });
+
+  const genreCounts = new Map();
+  books.forEach((book) => { const genre = clean(book.genre); if (!genre) return; const key = genre.toLowerCase(); const entry = genreCounts.get(key) || { name: genre, count: 0 }; entry.count += 1; genreCounts.set(key, entry); });
+  const genres = [...genreCounts.values()].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+  const chips = $("#genre-chips"); chips.replaceChildren();
+  if (!genres.length) chips.append(emptyNode("Add a genre to your books to browse by it."));
+  genres.slice(0, 8).forEach((genre) => { const chip = document.createElement("button"); chip.type = "button"; chip.className = "chip"; chip.dataset.genre = genre.name; chip.textContent = `${genre.name} · ${genre.count}`; chips.append(chip); });
+  $("#genre-options").replaceChildren(...genres.map((genre) => { const option = document.createElement("option"); option.value = genre.name; return option; }));
+}
+
+$("#home-search-form").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const query = clean($("#home-search").value);
+  resetBookFilters(); $("#book-search").value = query; $("#home-search").value = "";
+  goTab("books"); renderBooks();
+});
+document.addEventListener("click", (event) => {
+  const reset = event.target.closest("[data-reset-filters]");
+  if (reset) { resetBookFilters(); return; }
+  const chip = event.target.closest("[data-genre]");
+  if (chip) { resetBookFilters(); $("#adv-genre").value = chip.dataset.genre; openAdvancedFilters(); goTab("books"); renderBooks(); return; }
+  const jump = event.target.closest("[data-goto]");
+  if (jump) {
+    goTab(jump.dataset.goto);
+    if (jump.dataset.openEditor === "true") { $("#book-editor").open = true; $("#book-form").elements.title.focus({ preventScroll: true }); }
+  }
+});
+
+observeAuth(async (user) => {
+  stopMemberListener();
+  stopLibraryListeners();
+  currentUser = user;
+  if (!user) {
+    setConnection("Not signed in");
+    showView("#auth-view");
+    return;
+  }
+  setConnection("Account connected");
+  showView("#pending-view");
+  $("#pending-uid").textContent = user.uid;
+  await refreshMembership();
+});
+
+  
+  </script>
+</body>
+</html>

@@ -80,7 +80,8 @@ service cloud.firestore {
           && request.resource.data.keys().hasAll(["title", "author", "createdAt", "createdBy", "updatedAt", "updatedBy"])
           && request.resource.data.keys().hasOnly([
             "title", "author", "genre", "isbn", "publisher", "publicationYear",
-            "coverUrl", "description", "createdAt", "createdBy", "updatedAt", "updatedBy"
+            "coverUrl", "description", "language", "originalTitle", "authorOriginal",
+            "createdAt", "createdBy", "updatedAt", "updatedBy"
           ])
           && request.resource.data.title is string
           && request.resource.data.title.size() > 0
@@ -88,12 +89,21 @@ service cloud.firestore {
           && request.resource.data.author is string
           && request.resource.data.author.size() > 0
           && request.resource.data.author.size() <= 140
+          && (!request.resource.data.keys().hasAny(["language"])
+              || request.resource.data.language in ["bn", "en", "other"])
+          && (!request.resource.data.keys().hasAny(["originalTitle"])
+              || (request.resource.data.originalTitle is string
+                  && request.resource.data.originalTitle.size() <= 180))
+          && (!request.resource.data.keys().hasAny(["authorOriginal"])
+              || (request.resource.data.authorOriginal is string
+                  && request.resource.data.authorOriginal.size() <= 140))
           && validAuditCreate();
         allow update: if isActiveMember(libraryId)
           && request.resource.data.keys().hasAll(["title", "author", "createdAt", "createdBy", "updatedAt", "updatedBy"])
           && request.resource.data.keys().hasOnly([
             "title", "author", "genre", "isbn", "publisher", "publicationYear",
-            "coverUrl", "description", "createdAt", "createdBy", "updatedAt", "updatedBy"
+            "coverUrl", "description", "language", "originalTitle", "authorOriginal",
+            "createdAt", "createdBy", "updatedAt", "updatedBy"
           ])
           && request.resource.data.title is string
           && request.resource.data.title.size() > 0
@@ -101,6 +111,14 @@ service cloud.firestore {
           && request.resource.data.author is string
           && request.resource.data.author.size() > 0
           && request.resource.data.author.size() <= 140
+          && (!request.resource.data.keys().hasAny(["language"])
+              || request.resource.data.language in ["bn", "en", "other"])
+          && (!request.resource.data.keys().hasAny(["originalTitle"])
+              || (request.resource.data.originalTitle is string
+                  && request.resource.data.originalTitle.size() <= 180))
+          && (!request.resource.data.keys().hasAny(["authorOriginal"])
+              || (request.resource.data.authorOriginal is string
+                  && request.resource.data.authorOriginal.size() <= 140))
           && validAuditUpdate();
         allow delete: if isActiveMember(libraryId);
       }

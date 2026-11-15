@@ -275,6 +275,36 @@ service cloud.firestore {
         allow delete: if false;
       }
 
+      // Stage 5D: append-only activity log. Entries can be created by active members
+      // (as themselves, with the server time) and read by active members. They can never be edited or deleted.
+      match /activity/{activityId} {
+        allow read: if isActiveMember(libraryId);
+
+        allow create: if isActiveMember(libraryId)
+          && request.resource.data.keys().hasAll(["type", "summary", "actorId", "actorName", "createdAt"])
+          && request.resource.data.keys().hasOnly(["type", "summary", "actorId", "actorName", "createdAt", "targetType", "targetId"])
+          && request.resource.data.type in [
+            "book_added", "book_edited", "book_deleted", "books_bulk_added",
+            "copy_added", "copy_edited", "copy_deleted",
+            "location_added", "location_edited", "location_deleted",
+            "loan_borrowed", "loan_returned",
+            "member_approved", "member_activated", "member_deactivated"
+          ]
+          && request.resource.data.summary is string
+          && request.resource.data.summary.size() > 0
+          && request.resource.data.summary.size() <= 240
+          && request.resource.data.actorId == request.auth.uid
+          && request.resource.data.actorName is string
+          && request.resource.data.actorName.size() <= 60
+          && request.resource.data.createdAt == request.time
+          && (!request.resource.data.keys().hasAny(["targetType"])
+              || (request.resource.data.targetType is string && request.resource.data.targetType.size() <= 20))
+          && (!request.resource.data.keys().hasAny(["targetId"])
+              || (request.resource.data.targetId is string && request.resource.data.targetId.size() <= 64));
+
+        allow update, delete: if false;
+      }
+
       // All other collections remain closed unless explicitly added later.
       match /{collectionName}/{document=**} {
         allow read, write: if false;

@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#12141A">
   <meta name="description" content="A shared personal library for two readers.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Our Library">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <title>Our Library</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -356,6 +363,67 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(16,231,100,.10)
 .empty-state::before { content: ""; display: block; width: 64px; height: 64px; margin: 0 auto 10px; background: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22 fill=%22none%22 stroke=%22%2310E764%22 stroke-width=%222%22 stroke-linejoin=%22round%22%3E%3Crect x=%228%22 y=%2240%22 width=%2248%22 height=%2210%22 rx=%223%22/%3E%3Crect x=%2214%22 y=%2228%22 width=%2238%22 height=%2210%22 rx=%223%22/%3E%3Crect x=%2210%22 y=%2216%22 width=%2242%22 height=%2210%22 rx=%223%22/%3E%3Cpath d=%22M50 6l2 4 4 2-4 2-2 4-2-4-4-2 4-2z%22 fill=%22%23F5B942%22 stroke=%22none%22/%3E%3C/svg%3E") center / contain no-repeat; }
 .book-dialog { border-radius: 24px; background: linear-gradient(180deg, rgba(16,231,100,.06), transparent 30%), var(--surface); }
 @media (max-width: 700px) { .section-head, .hero { padding: 20px; min-height: 0; background: linear-gradient(90deg, var(--surface) 55%, rgba(26,29,38,.35)), var(--art, none) right center / cover no-repeat, var(--surface); } }
+
+/* Stage 5A/5B additions */
+.members-list li { align-items: center; flex-wrap: wrap; }
+.member-info { display: grid; gap: 2px; min-width: 0; flex: 1 1 200px; }
+.member-info strong { font-weight: 600; overflow-wrap: anywhere; }
+.member-info small { overflow-wrap: anywhere; }
+.member-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.member-actions .badge-state { font-size: 12px; color: var(--muted); }
+.export-grid { display: grid; gap: 8px; margin-top: 12px; }
+.export-grid button { justify-content: flex-start; text-align: left; }
+.manual-add-row { margin: 4px 0 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+/* Stage 5C: reports */
+#reports-section .section-head { --art: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 520 200%22 preserveAspectRatio=%22xMaxYMid meet%22%3E%3Cdefs%3E%3CradialGradient id=%22g%22 cx=%2275%25%22 cy=%2230%25%22 r=%2260%25%22%3E%3Cstop offset=%220%22 stop-color=%22%232DD4BF%22 stop-opacity=%22.55%22/%3E%3Cstop offset=%221%22 stop-color=%22%232DD4BF%22 stop-opacity=%220%22/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width=%22520%22 height=%22200%22 fill=%22url(%23g)%22/%3E%3Cg fill=%22none%22 stroke=%22%232DD4BF%22 stroke-opacity=%22.7%22 stroke-width=%222%22%3E%3Cpath d=%22M330 150h150%22/%3E%3Crect x=%22345%22 y=%22105%22 width=%2222%22 height=%2245%22 rx=%224%22/%3E%3Crect x=%22380%22 y=%2270%22 width=%2222%22 height=%2280%22 rx=%224%22/%3E%3Crect x=%22415%22 y=%2290%22 width=%2222%22 height=%2260%22 rx=%224%22/%3E%3Crect x=%22450%22 y=%2245%22 width=%2222%22 height=%22105%22 rx=%224%22/%3E%3C/g%3E%3C/svg%3E"); }
+.report-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.report-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.report-grid .panel { min-width: 0; }
+.report-grid .wide { grid-column: 1 / -1; }
+.report-grid h2 { margin: 0 0 4px; font-size: 18px; }
+.report-note { color: var(--faint); font-size: 12px; margin: 0 0 12px; }
+.bar-list { display: grid; gap: 9px; margin-top: 12px; }
+.bar-row { display: grid; grid-template-columns: minmax(90px, 34%) minmax(0, 1fr) auto; align-items: center; gap: 10px; font-size: 13px; }
+.bar-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
+.bar-track { height: 10px; border-radius: 99px; background: var(--inset); overflow: hidden; display: block; }
+.bar-fill { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--green), var(--lime)); }
+.bar-fill.warn { background: var(--warn); }
+.bar-fill.teal { background: var(--teal); }
+.bar-fill.danger { background: var(--danger); }
+.bar-value { font-variant-numeric: tabular-nums; color: var(--text); font-weight: 600; text-align: right; }
+.month-chart { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 6px; align-items: end; height: 150px; margin-top: 14px; }
+.month-col { display: grid; grid-template-rows: 1fr auto auto; justify-items: center; height: 100%; gap: 3px; min-width: 0; }
+.month-col .col-bar { align-self: end; width: 100%; max-width: 26px; border-radius: 6px 6px 3px 3px; background: linear-gradient(180deg, var(--lime), var(--green)); min-height: 2px; }
+.month-col .col-bar.zero { background: var(--line-strong); }
+.month-col b { font-size: 11px; font-weight: 600; }
+.month-col small { font-size: 10px; color: var(--faint); white-space: nowrap; }
+.plain-list { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 6px; }
+.plain-list li { display: flex; justify-content: space-between; gap: 10px; padding: 8px 12px; background: var(--inset); border: 1px solid var(--line); border-radius: 10px; font-size: 13px; }
+.plain-list li span:first-child { overflow-wrap: anywhere; }
+.plain-list li small { color: var(--muted); white-space: nowrap; }
+.report-filter { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+.report-filter select { max-width: 100%; }
+.loan-pill-ok { background: rgba(16,231,100,.14) !important; color: var(--lime) !important; }
+.loan-pill-late { background: rgba(255,107,107,.14) !important; color: var(--danger) !important; }
+@media (max-width: 760px) { .report-grid { grid-template-columns: minmax(0, 1fr); } .bar-row { grid-template-columns: minmax(80px, 38%) minmax(0, 1fr) auto; } }
+
+/* Stage 5D: activity */
+#activity-section .section-head { --art: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 520 200%22 preserveAspectRatio=%22xMaxYMid meet%22%3E%3Cdefs%3E%3CradialGradient id=%22g%22 cx=%2275%25%22 cy=%2230%25%22 r=%2260%25%22%3E%3Cstop offset=%220%22 stop-color=%22%2310E764%22 stop-opacity=%22.55%22/%3E%3Cstop offset=%221%22 stop-color=%22%2310E764%22 stop-opacity=%220%22/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width=%22520%22 height=%22200%22 fill=%22url(%23g)%22/%3E%3Cg fill=%22none%22 stroke=%22%2310E764%22 stroke-opacity=%22.7%22 stroke-width=%222%22%3E%3Ccircle cx=%22400%22 cy=%2295%22 r=%2255%22/%3E%3Cpath d=%22M400 62v33l24 16%22/%3E%3Cpath d=%22M335 175h130M345 175v-8M400 175v-8M455 175v-8%22/%3E%3C/g%3E%3C/svg%3E"); }
+.activity-filters { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.activity-filters label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.activity-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.activity-item { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; padding: 12px 14px; background: var(--inset); border: 1px solid var(--line); border-radius: 12px; }
+.activity-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 6px; background: var(--lime); box-shadow: 0 0 8px rgba(16,231,100,.5); }
+.activity-dot.loan { background: var(--warn); box-shadow: 0 0 8px rgba(245,185,66,.5); }
+.activity-dot.delete { background: var(--danger); box-shadow: 0 0 8px rgba(255,107,107,.5); }
+.activity-dot.member { background: var(--teal); box-shadow: 0 0 8px rgba(45,212,191,.5); }
+.activity-text { overflow-wrap: anywhere; }
+.activity-meta { display: block; color: var(--faint); font-size: 12px; margin-top: 2px; }
+
+/* Stage 5E: install panel */
+.install-steps { margin: 8px 0 0; padding-left: 18px; color: var(--muted); font-size: 13px; display: grid; gap: 4px; }
+.install-steps b { color: var(--text); font-weight: 600; }
 </style>
 </head>
 <body>
@@ -425,6 +493,8 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(16,231,100,.10)
           <button class="nav-item library-tab" type="button" data-library-tab="copies"><svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5"/></svg>Copies</button>
           <button class="nav-item library-tab" type="button" data-library-tab="borrowing"><svg viewBox="0 0 24 24"><path d="M4 8h14l-3-3M20 16H6l3 3"/></svg>Borrowing</button>
           <button class="nav-item library-tab" type="button" data-library-tab="locations"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Locations</button>
+          <button class="nav-item library-tab" type="button" data-library-tab="reports"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Reports</button>
+          <button class="nav-item library-tab" type="button" data-library-tab="activity"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.5 2"/></svg>Activity</button>
           <button class="nav-item library-tab hidden" id="members-tab" type="button" data-library-tab="members"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5M17 5.5a3.2 3.2 0 010 6M21.5 20c-.3-2.3-1.4-3.8-3-4.6"/></svg>Members</button>
         </nav>
         <div class="side-user"><span id="library-name">Our Library</span><small id="member-role">Member</small></div>
@@ -480,6 +550,30 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(16,231,100,.10)
               <article class="panel">
                 <h2>Browse by genre</h2>
                 <div id="genre-chips" class="chips"></div>
+              </article>
+              <article class="panel" id="backup-panel">
+                <h2>Backup and export</h2>
+                <p class="muted" style="font-size:13px;margin:6px 0 0">Download your library as files for safekeeping. This only reads your data; nothing is changed.</p>
+                <div class="export-grid">
+                  <button class="primary-button" type="button" data-export="backup">Full backup (one file)</button>
+                  <button class="secondary-button" type="button" data-export="books">Books (CSV)</button>
+                  <button class="secondary-button" type="button" data-export="copies">Copies (CSV)</button>
+                  <button class="secondary-button" type="button" data-export="locations">Locations (CSV)</button>
+                  <button class="secondary-button" type="button" data-export="loans">Borrowing history (CSV)</button>
+                  <button class="small-button" type="button" id="backup-check-button">Check a backup file</button>
+                  <input id="backup-check-file" type="file" accept=".json,application/json" class="hidden">
+                </div>
+                <p id="backup-message" class="message" role="status" aria-live="polite"></p>
+              </article>
+              <article class="panel" id="install-panel">
+                <h2>Install on your phone</h2>
+                <p class="muted" style="font-size:13px;margin:6px 0 0">Add Our Library to your home screen so it opens like an app, full screen.</p>
+                <div class="quick-actions"><button class="primary-button hidden" type="button" id="install-button">Install the app</button></div>
+                <ul class="install-steps">
+                  <li><b>Android (Chrome):</b> menu ⋮ → Install app (or Add to Home screen).</li>
+                  <li><b>iPhone (Safari):</b> Share button → Add to Home Screen.</li>
+                  <li><b>Computer (Chrome or Edge):</b> install icon in the address bar.</li>
+                </ul>
               </article>
             </aside>
           </div>
@@ -572,6 +666,7 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(16,231,100,.10)
           </div>
           <p id="discovery-counts" class="muted" style="font-size:13px;margin:0 0 8px" aria-live="polite"></p>
           <p id="discovery-message" class="message" role="status" aria-live="polite"></p>
+          <div class="manual-add-row"><button class="secondary-button" type="button" data-goto="books" data-open-editor="true">Can't find it? Add a book by hand</button><span class="muted" style="font-size:13px">No search or Hardcover needed.</span></div>
           <dialog id="scan-dialog" class="book-dialog" aria-label="Scan ISBN barcodes">
             <div class="dialog-card">
               <button type="button" id="scan-close" class="icon-button" aria-label="Done">✕</button>
@@ -676,6 +771,47 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(16,231,100,.10)
           <div id="locations-list" class="library-list"><div class="empty-state">Loading locations…</div></div>
         </section>
 
+        <section id="reports-section" class="library-section hidden">
+          <div class="section-head"><div><h2>Library reports</h2><p class="muted">Statistics about your books, copies and borrowing. Read-only; it updates as the library changes.</p></div></div>
+          <div class="report-stats">
+            <article class="stat-card"><span class="stat-label">Books</span><strong id="rep-books">0</strong><small id="rep-books-note">in the catalogue</small></article>
+            <article class="stat-card"><span class="stat-label">Copies</span><strong id="rep-copies">0</strong><small id="rep-copies-note">physical copies</small></article>
+            <article class="stat-card"><span class="stat-label">Borrowings</span><strong id="rep-loans">0</strong><small>recorded in total</small></article>
+            <article class="stat-card"><span class="stat-label">On loan now</span><strong id="rep-active">0</strong><small id="rep-active-note">active loans</small></article>
+            <article class="stat-card" id="rep-overdue-card"><span class="stat-label">Overdue</span><strong id="rep-overdue">0</strong><small>past their due date</small></article>
+            <article class="stat-card"><span class="stat-label">Average loan</span><strong id="rep-avg">–</strong><small>days kept, returned books</small></article>
+          </div>
+          <div class="report-grid">
+            <article class="panel"><h2>Books by language</h2><p class="report-note">Books with no language set are counted separately.</p><div id="rep-language" class="bar-list"></div></article>
+            <article class="panel"><h2>Books by genre</h2><p class="report-note" id="rep-genre-note">Top genres.</p><div id="rep-genre" class="bar-list"></div></article>
+            <article class="panel"><h2>Copies by status</h2><p class="report-note">What state your physical copies are in right now.</p><div id="rep-status" class="bar-list"></div></article>
+            <article class="panel"><h2>Copies by location</h2><p class="report-note" id="rep-location-note">Where your copies are kept.</p><div id="rep-location" class="bar-list"></div></article>
+            <article class="panel wide"><h2>Borrowing by month</h2><p class="report-note">Books borrowed in each of the last 12 months.</p><div id="rep-months" class="month-chart" role="img" aria-label="Borrowings per month for the last 12 months"></div></article>
+            <article class="panel"><h2>Most borrowed books</h2><p class="report-note">Counted across the whole borrowing history.</p><div id="rep-popular" class="bar-list"></div></article>
+            <article class="panel"><h2>Never borrowed</h2><p class="report-note" id="rep-never-note">Books that have not been lent out yet.</p><ul id="rep-never" class="plain-list"></ul></article>
+            <article class="panel wide">
+              <h2>Who borrowed what</h2>
+              <div class="report-filter"><label class="muted" style="font-size:13px" for="rep-borrower">Borrower</label><select id="rep-borrower" aria-label="Choose a borrower"></select></div>
+              <p class="report-note" id="rep-borrower-note" style="margin-top:10px"></p>
+              <ul id="rep-borrower-list" class="plain-list"></ul>
+              <div class="library-actions" style="margin-top:10px"><button type="button" class="small-button hidden" id="rep-borrower-more">Show all</button></div>
+            </article>
+          </div>
+        </section>
+
+        <section id="activity-section" class="library-section hidden">
+          <div class="section-head"><div><h2>Activity log</h2><p class="muted">Who did what and when: books, copies, locations, borrowing and members. Entries cannot be edited or deleted.</p></div></div>
+          <article class="panel">
+            <div class="activity-filters">
+              <label>Show <select id="activity-type" aria-label="Filter activity by kind"><option value="all">Everything</option><option value="book">Books</option><option value="copy">Copies</option><option value="location">Locations</option><option value="loan">Borrowing</option><option value="member">Members</option></select></label>
+              <label>By <select id="activity-person" aria-label="Filter activity by person"><option value="all">Everyone</option></select></label>
+              <span id="activity-count" class="library-count">0</span>
+            </div>
+            <p id="activity-message" class="message" role="status" aria-live="polite"></p>
+            <ul id="activity-list" class="activity-list" style="margin-top:12px"></ul>
+          </article>
+        </section>
+
         <section id="members-section" class="library-section hidden">
           <div class="section-head"><div><h2>Members</h2><p class="muted">Administration. Only administrators can see this page.</p></div></div>
           <article id="admin-panel" class="panel">
@@ -712,7 +848,7 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
 import {
-  getFirestore, collection, doc, getDoc, onSnapshot, serverTimestamp, setDoc, updateDoc, addDoc, deleteDoc, runTransaction, Timestamp, deleteField
+  getFirestore, collection, doc, getDoc, onSnapshot, serverTimestamp, setDoc, updateDoc, addDoc, deleteDoc, runTransaction, Timestamp, deleteField, query, orderBy, limit
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
 
 /*
@@ -981,13 +1117,34 @@ function showDashboard(membership, library) {
     memberUnsubscribe = observeMembers((members) => {
       $("#member-count").textContent = String(members.length);
       $("#members-list").replaceChildren();
+      members.sort((a, b) => (a.role === "admin" ? -1 : 0) - (b.role === "admin" ? -1 : 0) || String(a.displayName || a.email || "").localeCompare(String(b.displayName || b.email || "")));
       members.forEach((member) => {
         const li = document.createElement("li");
-        const left = document.createElement("span");
-        const right = document.createElement("small");
-        left.textContent = member.displayName || member.email || member.uid;
-        right.textContent = `${member.role || "member"} · ${member.active ? "active" : "inactive"}`;
-        li.append(left, right);
+        const info = document.createElement("span");
+        info.className = "member-info";
+        const nameLine = document.createElement("strong");
+        nameLine.textContent = member.displayName || member.email || member.uid;
+        const emailLine = document.createElement("small");
+        emailLine.textContent = `${member.email || "No email on record"} · ID ${String(member.uid || member.id).slice(0, 6)}…`;
+        info.append(nameLine, emailLine);
+        const actions = document.createElement("span");
+        actions.className = "member-actions";
+        const state = document.createElement("small");
+        state.className = "badge-state";
+        state.textContent = `${member.role || "member"} · ${member.active ? "active" : "inactive"}`;
+        actions.append(state);
+        const isSelf = currentUser && member.id === currentUser.uid;
+        if (member.role !== "admin" && !isSelf) {
+          const toggle = document.createElement("button");
+          toggle.type = "button";
+          toggle.className = member.active ? "small-button danger" : "small-button";
+          toggle.textContent = member.active ? "Deactivate" : "Activate";
+          toggle.dataset.memberToggle = member.id;
+          toggle.dataset.memberActive = member.active ? "true" : "false";
+          toggle.dataset.memberName = member.displayName || member.email || "this member";
+          actions.append(toggle);
+        }
+        li.append(info, actions);
         $("#members-list").append(li);
       });
     }, (error) => message("#invite-message", friendlyError(error), "error"));
@@ -1011,6 +1168,7 @@ $("#invite-form").addEventListener("submit", async (event) => {
     });
 
     formElement.reset();
+    if (!result.alreadyActive) logActivity("member_approved", `${result.reactivated ? "Reactivated" : "Approved"} member ${clean(form.get("displayName")) || "(no name)"}`, { targetType: "member", targetId: clean(form.get("uid")).slice(0, 64) });
 
     if (result.alreadyActive) {
       message("#invite-message", "This person is already an active library member. No changes were needed.", "success");
@@ -1059,6 +1217,13 @@ function startLibraryListeners() {
     }, (error) => showToast(`${name} could not be loaded: ${friendlyError(error)}`));
     libraryUnsubscribers.push(unsubscribe);
   });
+  // Stage 5D: the activity log has its own listener so a missing rule never disturbs the rest of the app.
+  activityError = "";
+  libraryUnsubscribers.push(onSnapshot(query(libraryPath("activity"), orderBy("createdAt", "desc"), limit(200)), (snapshot) => {
+    activityItems = snapshot.docs.map((item) => ({ id: item.id, ...item.data() }));
+    activityError = "";
+    renderActivity();
+  }, (error) => { activityItems = []; activityError = error?.code === "permission-denied" ? "The activity log is not switched on yet. Publish the updated Firestore rules in the Firebase Console, then refresh this page." : `The activity log could not be loaded: ${friendlyError(error)}`; renderActivity(); }));
 }
 function displayLocation(locationId) {
   if (!locationId) return "Not assigned";
@@ -1068,7 +1233,7 @@ function displayLocation(locationId) {
   return parent ? `${parent.name} → ${location.name}` : location.name;
 }
 function renderLibrary() {
-  renderBooks(); renderCopies(); renderLocations(); renderLoans(); renderHome(); refreshLibrarySelects();
+  renderBooks(); renderCopies(); renderLocations(); renderLoans(); renderHome(); renderReports(); refreshLibrarySelects();
 }
 // ---- Catalogue: tiles / list view, combined search and filters ----
 const bookView = { mode: "grid" };
@@ -1355,8 +1520,18 @@ function bookPayload(form) {
 }
 function auditCreate(data) { return { ...data, createdAt: serverTimestamp(), createdBy: currentUser.uid }; }
 async function saveRecord(collectionName, id, data) {
+  let targetId = id;
   if (id) await updateDoc(doc(db, "libraries", LIBRARY_ID, collectionName, id), data);
-  else await addDoc(libraryPath(collectionName), auditCreate(data));
+  else { const created = await addDoc(libraryPath(collectionName), auditCreate(data)); targetId = created.id; }
+  if (!activityPaused) {
+    const singular = { books: "book", copies: "copy", locations: "location" }[collectionName];
+    if (singular) {
+      const existing = id ? libraryCollections[collectionName].find((item) => item.id === id) : null;
+      const title = activityTitle(collectionName, { ...existing, ...data });
+      const noun = singular === "copy" ? "a copy of" : singular;
+      logActivity(`${singular}_${id ? "edited" : "added"}`, `${id ? "Edited" : "Added"} ${noun} “${title}”`, { targetType: singular, targetId });
+    }
+  }
 }
 // Stage 2: human-triggered book discovery using the public Open Library Search API.
 let discoveryResults = [];
@@ -1609,7 +1784,7 @@ async function runBulkLookup() {
 }
 async function addBulkSelected() {
   const chosen = bulkRows.filter((r) => r.checked && r.status === "ready"); if (!chosen.length || bulkBusy) return;
-  bulkBusy = true; $("#bulk-add").disabled = true; let added = 0; let skipped = 0; let failed = 0; let firstError = "";
+  bulkBusy = true; activityPaused = true; $("#bulk-add").disabled = true; let added = 0; let skipped = 0; let failed = 0; let firstError = "";
   for (const row of chosen) {
     const item = row.item;
     try {
@@ -1624,7 +1799,8 @@ async function addBulkSelected() {
       await saveRecord("books", "", data); added += 1; row.status = "added"; row.checked = false;
     } catch (error) { failed += 1; row.checked = false; if (!firstError) firstError = friendlyError(error); }
   }
-  bulkBusy = false; renderBulk();
+  bulkBusy = false; activityPaused = false; renderBulk();
+  if (added) logActivity("books_bulk_added", `Added ${added} book${added === 1 ? "" : "s"} in bulk`, { targetType: "book" });
   message("#bulk-message", `${added} added${skipped ? `, ${skipped} skipped as duplicates` : ""}${failed ? `, ${failed} failed (${firstError})` : ""}.`, failed ? "error" : "success");
   if (added) showToast(`${added} book${added === 1 ? "" : "s"} added.`);
 }
@@ -1700,6 +1876,7 @@ $("#loan-form").addEventListener("submit", async (event) => {
     if (dueAt < borrowedAt) throw new Error("The due date cannot be earlier than the borrowing date.");
     const copyRef = doc(db, "libraries", LIBRARY_ID, "copies", copyId);
     const loanRef = doc(libraryPath("loans"));
+    const logBookTitle = libraryCollections.books.find((book) => book.id === libraryCollections.copies.find((item) => item.id === copyId)?.bookId)?.title || "a book";
     await runTransaction(db, async (transaction) => {
       const copySnapshot = await transaction.get(copyRef);
       if (!copySnapshot.exists()) throw new Error("This physical copy no longer exists.");
@@ -1720,6 +1897,7 @@ $("#loan-form").addEventListener("submit", async (event) => {
       transaction.set(loanRef, loanData);
       transaction.update(copyRef, { status: "Loaned", activeLoanId: loanRef.id, updatedBy: currentUser.uid, updatedAt: now });
     });
+    logActivity("loan_borrowed", `${borrowerName} borrowed “${logBookTitle}” (due ${dueAt})`, { targetType: "loan", targetId: loanRef.id });
     form.reset(); form.elements.borrowedAt.value = todayLocal(); form.elements.dueAt.value = defaultDueDate();
     message("#loan-message", "Borrowing recorded. The physical copy is now marked as Loaned.", "success");
   } catch (error) { message("#loan-message", friendlyError(error), "error"); }
@@ -1749,7 +1927,7 @@ $("#copy-cancel").addEventListener("click", () => { $("#copy-form").elements.boo
 $("#location-cancel").addEventListener("click", () => resetEditor("#location-form", "#location-message", "#location-submit", "Add location"));
 document.querySelectorAll("[data-library-tab]").forEach((button) => button.addEventListener("click", () => {
   document.querySelectorAll("[data-library-tab]").forEach((tab) => tab.classList.toggle("active", tab === button));
-  ["home", "discover", "books", "copies", "locations", "borrowing", "members"].forEach((name) => $(`#${name}-section`).classList.toggle("hidden", button.dataset.libraryTab !== name));
+  ["home", "discover", "books", "copies", "locations", "borrowing", "reports", "activity", "members"].forEach((name) => $(`#${name}-section`).classList.toggle("hidden", button.dataset.libraryTab !== name));
 }));
 function askConfirm(text, label = "Delete") {
   return new Promise((resolve) => {
@@ -1778,6 +1956,7 @@ async function returnLoan(id, returnDate) {
     transaction.update(loanRef, { status: "Returned", returnedAt: dateInputToTimestamp(returnDate), updatedBy: currentUser.uid, updatedAt: now });
     transaction.update(copyRef, { status: "Available", activeLoanId: deleteField(), updatedBy: currentUser.uid, updatedAt: now });
   });
+  logActivity("loan_returned", `${loan.borrowerName || "Someone"} returned “${loan.bookTitle || "a book"}”`, { targetType: "loan", targetId: id });
   showToast("Return recorded. The copy is available again.");
 }
 document.querySelector(".library-tools").addEventListener("click", async (event) => {
@@ -1817,9 +1996,9 @@ document.querySelector(".library-tools").addEventListener("click", async (event)
       goTab("borrowing"); $("#loan-form").elements.copyId.value = free.id;
       $("#loan-form").scrollIntoView({ behavior: "smooth", block: "center" }); $("#loan-form").elements.borrowerName?.focus();
     }
-    if (action === "delete-book") { if (libraryCollections.copies.some((copy) => copy.bookId === id)) { showToast("Delete this book's physical copies first."); return; } if (!(await askConfirm("Delete this book from the catalogue? This cannot be undone."))) return; await deleteDoc(doc(db, "libraries", LIBRARY_ID, "books", id)); showToast("Book deleted."); }
-    if (action === "delete-copy") { const copy = libraryCollections.copies.find((item) => item.id === id); if (copy?.status === "Loaned" || copy?.activeLoanId) { showToast("This copy has an active loan and cannot be deleted."); return; } if (!(await askConfirm("Delete this physical copy?"))) return; await deleteDoc(doc(db, "libraries", LIBRARY_ID, "copies", id)); showToast("Physical copy deleted."); }
-    if (action === "delete-location") { if (libraryCollections.locations.some((item) => item.parentId === id) || libraryCollections.copies.some((copy) => copy.locationId === id)) { showToast("Move child locations and physical copies first."); return; } if (!(await askConfirm("Delete this location?"))) return; await deleteDoc(doc(db, "libraries", LIBRARY_ID, "locations", id)); showToast("Location deleted."); }
+    if (action === "delete-book") { if (libraryCollections.copies.some((copy) => copy.bookId === id)) { showToast("Delete this book's physical copies first."); return; } if (!(await askConfirm("Delete this book from the catalogue? This cannot be undone."))) return; const doomedBook = libraryCollections.books.find((item) => item.id === id); await deleteDoc(doc(db, "libraries", LIBRARY_ID, "books", id)); logActivity("book_deleted", `Deleted book “${doomedBook?.title || "a book"}”`, { targetType: "book", targetId: id }); showToast("Book deleted."); }
+    if (action === "delete-copy") { const copy = libraryCollections.copies.find((item) => item.id === id); if (copy?.status === "Loaned" || copy?.activeLoanId) { showToast("This copy has an active loan and cannot be deleted."); return; } if (!(await askConfirm("Delete this physical copy?"))) return; const doomedCopy = copy; await deleteDoc(doc(db, "libraries", LIBRARY_ID, "copies", id)); logActivity("copy_deleted", `Deleted a copy of “${activityTitle("copies", doomedCopy || {})}”`, { targetType: "copy", targetId: id }); showToast("Physical copy deleted."); }
+    if (action === "delete-location") { if (libraryCollections.locations.some((item) => item.parentId === id) || libraryCollections.copies.some((copy) => copy.locationId === id)) { showToast("Move child locations and physical copies first."); return; } if (!(await askConfirm("Delete this location?"))) return; const doomedLocation = libraryCollections.locations.find((item) => item.id === id); await deleteDoc(doc(db, "libraries", LIBRARY_ID, "locations", id)); logActivity("location_deleted", `Deleted location “${doomedLocation?.name || "a location"}”`, { targetType: "location", targetId: id }); showToast("Location deleted."); }
   } catch (error) { showToast(friendlyError(error)); }
 });
 
@@ -1954,6 +2133,296 @@ $("#home-search-form").addEventListener("submit", (event) => {
   resetBookFilters(); $("#book-search").value = query; $("#home-search").value = "";
   goTab("books"); renderBooks();
 });
+
+// ---- Stage 5D: activity log ----
+let activityItems = [];
+let activityError = "";
+let activityPaused = false;
+function activityTitle(collectionName, record) {
+  if (collectionName === "books") return record.title || "a book";
+  if (collectionName === "locations") return record.name || "a location";
+  const book = libraryCollections.books.find((item) => item.id === record.bookId);
+  return `${book?.title || "a book"}${record.copyLabel ? ` (${record.copyLabel})` : ""}`;
+}
+// Best effort: a failed log entry never blocks or undoes the real action.
+async function logActivity(type, summary, target = {}) {
+  try {
+    if (!currentUser) return;
+    const entry = { type, summary: String(summary).slice(0, 240), actorId: currentUser.uid, actorName: (clean($("#member-name")?.textContent) || "Reader").slice(0, 60), createdAt: serverTimestamp() };
+    if (target.targetType) entry.targetType = String(target.targetType).slice(0, 20);
+    if (target.targetId) entry.targetId = String(target.targetId).slice(0, 64);
+    await addDoc(libraryPath("activity"), entry);
+  } catch (error) { console.warn("Activity log entry was not saved:", error?.code || error); }
+}
+function renderActivity() {
+  const list = $("#activity-list"); if (!list) return;
+  const typeFilter = $("#activity-type").value; const personSelect = $("#activity-person");
+  const people = [...new Map(activityItems.filter((item) => item.actorId).map((item) => [item.actorId, clean(item.actorName) || "Reader"])).entries()];
+  const personValue = people.some(([id]) => id === personSelect.value) ? personSelect.value : "all";
+  personSelect.replaceChildren();
+  const everyone = document.createElement("option"); everyone.value = "all"; everyone.textContent = "Everyone"; personSelect.append(everyone);
+  people.forEach(([id, name]) => { const option = document.createElement("option"); option.value = id; option.textContent = name; personSelect.append(option); });
+  personSelect.value = personValue;
+  const shown = activityItems.filter((item) => (typeFilter === "all" || String(item.type).startsWith(typeFilter === "book" ? "book" : `${typeFilter}_`)) && (personValue === "all" || item.actorId === personValue));
+  $("#activity-count").textContent = String(shown.length);
+  message("#activity-message", activityError, activityError ? "error" : "");
+  list.replaceChildren();
+  if (!shown.length) { if (!activityError) list.append(emptyNode(activityItems.length ? "Nothing matches these filters." : "No activity recorded yet. New actions will appear here.")); return; }
+  shown.forEach((item) => {
+    const li = document.createElement("li"); li.className = "activity-item";
+    const dot = document.createElement("span"); const kind = String(item.type);
+    dot.className = `activity-dot${kind.startsWith("loan_") ? " loan" : kind.endsWith("_deleted") ? " delete" : kind.startsWith("member_") ? " member" : ""}`;
+    const text = document.createElement("span"); text.className = "activity-text"; text.textContent = item.summary || "";
+    const meta = document.createElement("span"); meta.className = "activity-meta";
+    const when = item.createdAt && typeof item.createdAt.toDate === "function" ? item.createdAt.toDate().toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" }) : "just now";
+    meta.textContent = `${clean(item.actorName) || "Reader"} · ${when}`;
+    const body = document.createElement("span"); body.append(text, meta);
+    li.append(dot, body); list.append(li);
+  });
+}
+$("#activity-type").addEventListener("change", renderActivity);
+$("#activity-person").addEventListener("change", renderActivity);
+// ---- Stage 5C: reports and statistics (read-only; nothing here writes to Firebase) ----
+let reportBorrower = "all";
+let reportShowAll = false;
+function reportBars(container, entries, options = {}) {
+  const { total = 0, showPercent = false, empty = "Nothing to show yet." } = options;
+  container.replaceChildren();
+  if (!entries.length) { container.append(emptyNode(empty)); return; }
+  const max = Math.max(...entries.map((entry) => entry.count), 1);
+  entries.forEach((entry) => {
+    const row = document.createElement("div"); row.className = "bar-row";
+    const label = document.createElement("span"); label.className = "bar-label"; label.textContent = entry.label; label.title = entry.label;
+    const track = document.createElement("span"); track.className = "bar-track";
+    const fill = document.createElement("i"); fill.className = `bar-fill${entry.tone ? " " + entry.tone : ""}`;
+    fill.style.width = `${entry.count ? Math.max(4, Math.round((entry.count / max) * 100)) : 0}%`;
+    track.append(fill);
+    const value = document.createElement("span"); value.className = "bar-value";
+    value.textContent = showPercent && total ? `${entry.count} · ${Math.round((entry.count / total) * 100)}%` : String(entry.count);
+    row.append(label, track, value); container.append(row);
+  });
+}
+function reportTally(items, keyFn) {
+  const map = new Map();
+  items.forEach((item) => { const key = keyFn(item); map.set(key, (map.get(key) || 0) + 1); });
+  return [...map.entries()].map(([label, count]) => ({ label, count })).sort((a, b) => b.count - a.count || String(a.label).localeCompare(String(b.label), ["bn", "en"]));
+}
+function reportTop(entries, limit, otherLabel) {
+  if (entries.length <= limit) return entries;
+  const rest = entries.slice(limit);
+  return entries.slice(0, limit).concat([{ label: `${otherLabel} (${rest.length})`, count: rest.reduce((sum, entry) => sum + entry.count, 0), tone: "teal" }]);
+}
+function reportDayNumber(dateInput) { const [y, m, d] = dateInput.split("-").map(Number); return Date.UTC(y, m - 1, d) / 86400000; }
+function renderReports() {
+  if (!$("#reports-section")) return;
+  const { books, copies, loans } = libraryCollections;
+  const today = todayLocal();
+  const active = loans.filter((loan) => loan.status === "Borrowed");
+  const overdue = active.filter((loan) => timestampToDateInput(loan.dueAt) < today);
+  const keptDays = loans.filter((loan) => loan.status === "Returned" && loan.borrowedAt && loan.returnedAt)
+    .map((loan) => reportDayNumber(timestampToDateInput(loan.returnedAt)) - reportDayNumber(timestampToDateInput(loan.borrowedAt))).filter((n) => Number.isFinite(n) && n >= 0);
+  const booksWithoutCopy = books.filter((book) => !copies.some((copy) => copy.bookId === book.id)).length;
+
+  $("#rep-books").textContent = String(books.length);
+  $("#rep-books-note").textContent = booksWithoutCopy ? `${booksWithoutCopy} without a copy yet` : "in the catalogue";
+  $("#rep-copies").textContent = String(copies.length);
+  $("#rep-copies-note").textContent = `${copies.filter((copy) => copy.status === "Available").length} available now`;
+  $("#rep-loans").textContent = String(loans.length);
+  $("#rep-active").textContent = String(active.length);
+  $("#rep-overdue").textContent = String(overdue.length);
+  $("#rep-overdue-card").classList.toggle("alert", overdue.length > 0);
+  $("#rep-avg").textContent = keptDays.length ? String(Math.round((keptDays.reduce((a, b) => a + b, 0) / keptDays.length) * 10) / 10) : "–";
+
+  // language
+  const languageName = { bn: "Bengali", en: "English", other: "Other" };
+  const languageEntries = reportTally(books, (book) => languageName[book.language] || "Not set");
+  reportBars($("#rep-language"), languageEntries, { total: books.length, showPercent: true, empty: "Add books to see the language mix." });
+
+  // genre
+  const genreEntries = reportTally(books, (book) => clean(book.genre) || "No genre");
+  const noGenre = genreEntries.filter((entry) => entry.label === "No genre");
+  const realGenres = genreEntries.filter((entry) => entry.label !== "No genre");
+  reportBars($("#rep-genre"), reportTop(realGenres, 8, "Other genres").concat(noGenre.map((entry) => ({ ...entry, tone: "warn" }))), { empty: "Add books to see genres." });
+  $("#rep-genre-note").textContent = realGenres.length > 8 ? `Top 8 of ${realGenres.length} genres; the rest are grouped.` : `${realGenres.length} genre${realGenres.length === 1 ? "" : "s"} in use.`;
+
+  // copy status
+  const statusTone = { Available: "", Loaned: "warn", Reading: "teal", Repair: "danger" };
+  const statusEntries = reportTally(copies, (copy) => copy.status || "Status not set").map((entry) => ({ ...entry, tone: statusTone[entry.label] || "warn" }));
+  reportBars($("#rep-status"), statusEntries, { total: copies.length, showPercent: true, empty: "Add copies to see their status." });
+
+  // location
+  const locationEntries = reportTally(copies, (copy) => copy.locationId ? displayLocation(copy.locationId) : "Not assigned").map((entry) => entry.label === "Not assigned" ? { ...entry, tone: "warn" } : entry);
+  reportBars($("#rep-location"), reportTop(locationEntries, 8, "Other places"), { empty: "Add copies and locations to see where books are kept." });
+  $("#rep-location-note").textContent = locationEntries.length > 8 ? `Top 8 of ${locationEntries.length} places; the rest are grouped.` : "Where your copies are kept.";
+
+  // borrowing by month (last 12 months)
+  const monthBox = $("#rep-months"); monthBox.replaceChildren();
+  const now = new Date(); const months = [];
+  for (let i = 11; i >= 0; i -= 1) { const d = new Date(now.getFullYear(), now.getMonth() - i, 1); months.push({ key: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`, label: d.toLocaleDateString("en", { month: "short" }), count: 0 }); }
+  loans.forEach((loan) => { const day = loan.borrowedAt ? timestampToDateInput(loan.borrowedAt) : ""; const slot = months.find((month) => month.key === day.slice(0, 7)); if (slot) slot.count += 1; });
+  const peak = Math.max(...months.map((month) => month.count), 1);
+  months.forEach((month) => {
+    const col = document.createElement("div"); col.className = "month-col";
+    const bar = document.createElement("span"); bar.className = `col-bar${month.count ? "" : " zero"}`; bar.style.height = `${month.count ? Math.max(6, Math.round((month.count / peak) * 100)) : 2}%`;
+    const num = document.createElement("b"); num.textContent = String(month.count);
+    const name = document.createElement("small"); name.textContent = month.label;
+    col.title = `${month.label}: ${month.count}`; col.append(bar, num, name); monthBox.append(col);
+  });
+
+  // most borrowed
+  const titleOf = (id, fallback) => books.find((book) => book.id === id)?.title || fallback || "Unknown book";
+  const popular = reportTally(loans, (loan) => loan.bookId || `t:${loan.bookTitle}`);
+  const popularEntries = popular.slice(0, 8).map((entry) => {
+    const sample = loans.find((loan) => (loan.bookId || `t:${loan.bookTitle}`) === entry.label);
+    return { label: titleOf(sample?.bookId, sample?.bookTitle), count: entry.count };
+  });
+  reportBars($("#rep-popular"), popularEntries, { empty: "Borrow a book to see what is most popular." });
+
+  // never borrowed
+  const borrowedIds = new Set(loans.map((loan) => loan.bookId));
+  const never = books.filter((book) => !borrowedIds.has(book.id)).sort((a, b) => String(a.title || "").localeCompare(String(b.title || ""), ["bn", "en"]));
+  const neverList = $("#rep-never"); neverList.replaceChildren();
+  $("#rep-never-note").textContent = books.length ? `${never.length} of ${books.length} book${books.length === 1 ? "" : "s"} have never been lent out${never.length > 10 ? " (first 10 shown)" : ""}.` : "Books that have not been lent out yet.";
+  never.slice(0, 10).forEach((book) => { const li = document.createElement("li"); const t = document.createElement("span"); t.textContent = book.title || "Untitled book"; const a = document.createElement("small"); a.textContent = book.author || ""; li.append(t, a); neverList.append(li); });
+  if (!never.length && books.length) { const li = document.createElement("li"); li.textContent = "Every book has been borrowed at least once."; neverList.append(li); }
+
+  // who borrowed what
+  const people = new Map();
+  loans.forEach((loan) => { const name = clean(loan.borrowerName) || "Unknown"; const key = name.toLowerCase(); if (!people.has(key)) people.set(key, { name, count: 0 }); people.get(key).count += 1; });
+  const peopleList = [...people.entries()].sort((a, b) => a[1].name.localeCompare(b[1].name, ["bn", "en"]));
+  const select = $("#rep-borrower");
+  if (reportBorrower !== "all" && !people.has(reportBorrower)) reportBorrower = "all";
+  select.replaceChildren();
+  const everyone = document.createElement("option"); everyone.value = "all"; everyone.textContent = `Everyone (${loans.length})`; select.append(everyone);
+  peopleList.forEach(([key, person]) => { const option = document.createElement("option"); option.value = key; option.textContent = `${person.name} (${person.count})`; select.append(option); });
+  select.value = reportBorrower;
+  const shown = loans.filter((loan) => reportBorrower === "all" || (clean(loan.borrowerName) || "Unknown").toLowerCase() === reportBorrower)
+    .sort((a, b) => String(timestampToDateInput(b.borrowedAt)).localeCompare(String(timestampToDateInput(a.borrowedAt))));
+  const limit = reportShowAll ? shown.length : 20;
+  const list = $("#rep-borrower-list"); list.replaceChildren();
+  $("#rep-borrower-note").textContent = shown.length ? `${shown.length} borrowing${shown.length === 1 ? "" : "s"}, newest first.` : "No borrowing records yet.";
+  shown.slice(0, limit).forEach((loan) => {
+    const li = document.createElement("li");
+    const left = document.createElement("span"); left.textContent = `${titleOf(loan.bookId, loan.bookTitle)}${reportBorrower === "all" ? ` · ${clean(loan.borrowerName) || "Unknown"}` : ""}`;
+    const right = document.createElement("small");
+    const borrowed = timestampToDateInput(loan.borrowedAt);
+    if (loan.status === "Borrowed") { const late = timestampToDateInput(loan.dueAt) < today; right.textContent = `${borrowed} → due ${timestampToDateInput(loan.dueAt)}${late ? " · overdue" : ""}`; right.className = late ? "pill loan-pill-late" : "pill"; }
+    else { right.textContent = `${borrowed} → ${timestampToDateInput(loan.returnedAt)} · returned`; right.className = "pill loan-pill-ok"; }
+    li.append(left, right); list.append(li);
+  });
+  const more = $("#rep-borrower-more");
+  more.classList.toggle("hidden", shown.length <= 20);
+  more.textContent = reportShowAll ? "Show fewer" : `Show all ${shown.length}`;
+}
+$("#rep-borrower").addEventListener("change", (event) => { reportBorrower = event.target.value; reportShowAll = false; renderReports(); });
+$("#rep-borrower-more").addEventListener("click", () => { reportShowAll = !reportShowAll; renderReports(); });
+
+// ---- Stage 5A: activate / deactivate a member (admin only; rules allow the "active" field only) ----
+document.addEventListener("click", async (event) => {
+  const button = event.target.closest("[data-member-toggle]");
+  if (!button || !currentUser) return;
+  const memberId = button.dataset.memberToggle;
+  const makeActive = button.dataset.memberActive !== "true";
+  const name = button.dataset.memberName;
+  if (memberId === currentUser.uid) { showToast("You cannot change your own membership."); return; }
+  if (!makeActive && !(await askConfirm(`Deactivate ${name}? They will lose access to the library until you activate them again. Their records stay.`, "Deactivate"))) return;
+  button.disabled = true;
+  try {
+    await updateDoc(doc(db, "libraries", LIBRARY_ID, "members", memberId), { active: makeActive });
+    logActivity(makeActive ? "member_activated" : "member_deactivated", `${makeActive ? "Activated" : "Deactivated"} member ${name}`, { targetType: "member", targetId: String(memberId).slice(0, 64) });
+    showToast(makeActive ? `${name} is active again.` : `${name} has been deactivated.`);
+  } catch (error) {
+    button.disabled = false;
+    showToast(`Could not update the member: ${friendlyError(error)}`);
+  }
+});
+
+// ---- Stage 5B: backup and export (read-only) ----
+function exportStamp() { return todayLocal(); }
+function tsToIso(value) { if (!value) return ""; const d = typeof value.toDate === "function" ? value.toDate() : new Date(value); return Number.isNaN(d.getTime()) ? "" : d.toISOString(); }
+function tsToDay(value) { if (!value) return ""; const d = typeof value.toDate === "function" ? value.toDate() : new Date(value); return Number.isNaN(d.getTime()) ? "" : localDateInputValue(d); }
+function csvCell(value) {
+  let text = value === null || value === undefined ? "" : String(value);
+  if (/^[=+\-@\t\r]/.test(text)) text = "'" + text;
+  return /[",\n\r]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+}
+function downloadFile(filename, content, mime) {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url; link.download = filename; document.body.append(link); link.click(); link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+function downloadCsv(name, headers, rows) {
+  const lines = [headers.map(csvCell).join(",")].concat(rows.map((row) => row.map(csvCell).join(",")));
+  downloadFile(`our-library-${name}-${exportStamp()}.csv`, "\uFEFF" + lines.join("\r\n"), "text/csv;charset=utf-8");
+}
+function exportJsonValue(value) {
+  if (value && typeof value.toDate === "function") return value.toDate().toISOString();
+  if (Array.isArray(value)) return value.map(exportJsonValue);
+  if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, exportJsonValue(v)]));
+  return value;
+}
+function runExport(kind) {
+  const { books, copies, locations, loans } = libraryCollections;
+  const bookTitle = (id) => books.find((item) => item.id === id)?.title || "";
+  const byTitle = (a, b) => String(a.title || "").localeCompare(String(b.title || ""), ["bn", "en"]);
+  if (kind === "backup") {
+    if (!books.length && !copies.length && !locations.length && !loans.length) { showToast("There is nothing to back up yet."); return; }
+    const data = {
+      app: "Our Library", format: 1, libraryId: LIBRARY_ID, exportedAt: new Date().toISOString(),
+      counts: { books: books.length, copies: copies.length, locations: locations.length, loans: loans.length, activity: activityItems.length },
+      books: books.map(exportJsonValue), copies: copies.map(exportJsonValue), locations: locations.map(exportJsonValue), loans: loans.map(exportJsonValue), activity: activityItems.map(exportJsonValue)
+    };
+    downloadFile(`our-library-backup-${exportStamp()}.json`, JSON.stringify(data, null, 2), "application/json");
+    message("#backup-message", `Backup saved: ${books.length} books, ${copies.length} copies, ${locations.length} locations, ${loans.length} loans.`, "success");
+    return;
+  }
+  if (kind === "books") {
+    if (!books.length) { showToast("No books to export yet."); return; }
+    downloadCsv("books", ["id", "title", "author", "language", "originalTitle", "authorOriginal", "genre", "isbn", "publisher", "publicationYear", "coverUrl", "description", "createdAt", "updatedAt"],
+      [...books].sort(byTitle).map((b) => [b.id, b.title, b.author, b.language, b.originalTitle, b.authorOriginal, b.genre, b.isbn, b.publisher, b.publicationYear, b.coverUrl, b.description, tsToIso(b.createdAt), tsToIso(b.updatedAt)]));
+  } else if (kind === "copies") {
+    if (!copies.length) { showToast("No copies to export yet."); return; }
+    downloadCsv("copies", ["id", "bookId", "bookTitle", "copyLabel", "condition", "status", "location", "locationId", "notes", "activeLoanId", "createdAt", "updatedAt"],
+      [...copies].sort((a, b) => bookTitle(a.bookId).localeCompare(bookTitle(b.bookId), ["bn", "en"])).map((c) => [c.id, c.bookId, bookTitle(c.bookId), c.copyLabel, c.condition, c.status, c.locationId ? displayLocation(c.locationId) : "", c.locationId, c.notes, c.activeLoanId, tsToIso(c.createdAt), tsToIso(c.updatedAt)]));
+  } else if (kind === "locations") {
+    if (!locations.length) { showToast("No locations to export yet."); return; }
+    downloadCsv("locations", ["id", "name", "type", "parentId", "path", "notes"],
+      [...locations].sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""))).map((l) => [l.id, l.name, l.type, l.parentId, displayLocation(l.id), l.notes]));
+  } else if (kind === "loans") {
+    if (!loans.length) { showToast("No borrowing records to export yet."); return; }
+    downloadCsv("borrowing", ["id", "bookId", "bookTitle", "copyId", "copyLabel", "borrowerName", "borrowedAt", "dueAt", "returnedAt", "status", "notes"],
+      [...loans].sort((a, b) => String(tsToDay(b.borrowedAt)).localeCompare(String(tsToDay(a.borrowedAt)))).map((l) => [l.id, l.bookId, l.bookTitle, l.copyId, l.copyLabel, l.borrowerName, tsToDay(l.borrowedAt), tsToDay(l.dueAt), tsToDay(l.returnedAt), l.status, l.notes]));
+  }
+  message("#backup-message", "File downloaded. Check your Downloads folder.", "success");
+}
+document.addEventListener("click", (event) => {
+  const exportButton = event.target.closest("[data-export]");
+  if (!exportButton) return;
+  try { runExport(exportButton.dataset.export); } catch (error) { message("#backup-message", `Export failed: ${friendlyError(error)}`, "error"); }
+});
+// Check a backup file: reads the file only, compares counts with the live library, writes nothing.
+$("#backup-check-button").addEventListener("click", () => $("#backup-check-file").click());
+$("#backup-check-file").addEventListener("change", async (event) => {
+  const file = event.target.files?.[0];
+  event.target.value = "";
+  if (!file) return;
+  try {
+    const data = JSON.parse(await file.text());
+    if (data?.app !== "Our Library" || !Array.isArray(data.books)) throw new Error("This does not look like an Our Library backup file.");
+    const parts = ["books", "copies", "locations", "loans"].map((name) => {
+      const inFile = Array.isArray(data[name]) ? data[name] : [];
+      const liveIds = new Set(libraryCollections[name].map((item) => item.id));
+      const missing = inFile.filter((item) => !liveIds.has(item.id)).length;
+      return `${name}: ${inFile.length} in file, ${libraryCollections[name].length} now${missing ? `, ${missing} no longer in the library` : ""}`;
+    });
+    message("#backup-message", `Backup from ${String(data.exportedAt || "").slice(0, 10) || "unknown date"} is readable. ${parts.join("; ")}.`, "success");
+  } catch (error) {
+    message("#backup-message", `Could not read that file: ${friendlyError(error)}`, "error");
+  }
+});
+
 document.addEventListener("click", (event) => {
   const reset = event.target.closest("[data-reset-filters]");
   if (reset) { resetBookFilters(); return; }
@@ -1985,6 +2454,28 @@ observeAuth(async (user) => {
   </script>
 <script>
 document.querySelectorAll(".section-head h2, .hero h1").forEach((el) => { if (el.children.length) return; const words = el.textContent.trim().split(" "); if (words.length < 2) return; const last = words.pop(); el.textContent = words.join(" ") + " "; const span = document.createElement("span"); span.className = "accent"; span.textContent = last; el.append(span); });
+</script>
+<script>
+(function () {
+  var panel = document.getElementById("install-panel");
+  var button = document.getElementById("install-button");
+  var standalone = (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone === true;
+  if (panel && standalone) panel.classList.add("hidden");
+  var deferred = null;
+  window.addEventListener("beforeinstallprompt", function (event) {
+    event.preventDefault(); deferred = event;
+    if (button) button.classList.remove("hidden");
+  });
+  if (button) button.addEventListener("click", function () {
+    if (!deferred) return;
+    deferred.prompt();
+    deferred.userChoice.then(function () { deferred = null; button.classList.add("hidden"); });
+  });
+  window.addEventListener("appinstalled", function () { if (panel) panel.classList.add("hidden"); });
+  if ("serviceWorker" in navigator && /^https?:$/.test(window.location.protocol)) {
+    window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () { /* optional feature */ }); });
+  }
+})();
 </script>
 </body>
 </html>

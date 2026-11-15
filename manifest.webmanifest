@@ -1,10 +1,10 @@
 {
-  "id": "./",
+  "id": "/our-library/",
   "name": "Our Library",
   "short_name": "Our Library",
   "description": "A shared personal library for two readers.",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "/our-library/",
+  "scope": "/our-library/",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#12141A",

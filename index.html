@@ -447,6 +447,34 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(16,231,100,.10)
   .books-grid[data-size="s"] { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 8px; }
   .books-grid[data-size="l"] { grid-template-columns: minmax(0, 1fr); gap: 22px; }
 }
+
+/* Stage 6F-1: phone nav "More", bigger book dialog, start guide */
+.nav-more-group { display: contents; }
+.nav-more { display: none; }
+@media (max-width: 860px) {
+  .side-nav { flex-wrap: wrap; }
+  .nav-more { display: flex; }
+  .nav-more-group { display: none; }
+  .side-nav.more-open .nav-more-group { display: flex; flex: 1 1 100%; order: -1; gap: 0; padding-bottom: 6px; margin-bottom: 4px; border-bottom: 1px solid var(--line); }
+  .nav-more.more-active, .side-nav.more-open .nav-more { color: var(--lime); }
+}
+.dialog-top { grid-template-columns: 170px minmax(0, 1fr); }
+.dialog-top h2 { font-size: 26px; line-height: 1.2; }
+.dialog-author { color: var(--muted); font-size: 17px; margin-bottom: 6px; }
+.dialog-actions { position: sticky; bottom: 0; display: flex; flex-wrap: wrap; gap: 8px; margin: 18px -24px -24px; padding: 14px 24px; background: linear-gradient(180deg, rgba(26,29,38,.88), var(--surface) 30%); border-top: 1px solid var(--line); border-radius: 0 0 24px 24px; z-index: 2; }
+.dialog-actions .small-button, .dialog-actions .primary-button { min-height: 42px; padding: 9px 16px; font-size: 14px; border-radius: 11px; }
+.dialog-actions .small-button.danger { margin-left: auto; }
+.start-guide .guide-steps { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 8px; color: var(--muted); font-size: 14px; }
+.start-guide .guide-steps b { color: var(--text); font-weight: 600; }
+.start-guide .guide-steps .text-button { font-size: 14px; padding: 0; color: var(--lime); }
+@media (max-width: 620px) {
+  .dialog-top { grid-template-columns: 112px minmax(0, 1fr); }
+  .dialog-top h2 { font-size: 21px; }
+  .dialog-author { font-size: 15px; }
+  .dialog-actions { margin: 16px -16px -16px; padding: 12px 16px; }
+  .dialog-actions .small-button, .dialog-actions .primary-button { flex: 1 1 calc(50% - 8px); }
+  .dialog-actions .small-button.danger { margin-left: 0; }
+}
 </style>
 </head>
 <body>
@@ -519,12 +547,15 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(16,231,100,.10)
           <button class="nav-item library-tab active" type="button" data-library-tab="home"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg>Home</button>
           <button class="nav-item library-tab" type="button" data-library-tab="books"><svg viewBox="0 0 24 24"><path d="M4 4h5v16H4zM11 4h5v16h-5zM18.2 6.2l2.8.8-3.9 13-2.8-.8z"/></svg>Books</button>
           <button class="nav-item library-tab" type="button" data-library-tab="discover"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/></svg>Discover</button>
-          <button class="nav-item library-tab" type="button" data-library-tab="copies"><svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5"/></svg>Copies</button>
           <button class="nav-item library-tab" type="button" data-library-tab="borrowing"><svg viewBox="0 0 24 24"><path d="M4 8h14l-3-3M20 16H6l3 3"/></svg>Borrowing</button>
-          <button class="nav-item library-tab" type="button" data-library-tab="locations"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Locations</button>
-          <button class="nav-item library-tab" type="button" data-library-tab="reports"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Reports</button>
-          <button class="nav-item library-tab" type="button" data-library-tab="activity"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.5 2"/></svg>Activity</button>
-          <button class="nav-item library-tab hidden" id="members-tab" type="button" data-library-tab="members"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5M17 5.5a3.2 3.2 0 010 6M21.5 20c-.3-2.3-1.4-3.8-3-4.6"/></svg>Members</button>
+          <div class="nav-more-group">
+            <button class="nav-item library-tab" type="button" data-library-tab="copies"><svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5"/></svg>Copies</button>
+            <button class="nav-item library-tab" type="button" data-library-tab="locations"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Locations</button>
+            <button class="nav-item library-tab" type="button" data-library-tab="reports"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Reports</button>
+            <button class="nav-item library-tab" type="button" data-library-tab="activity"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.5 2"/></svg>Activity</button>
+            <button class="nav-item library-tab hidden" id="members-tab" type="button" data-library-tab="members"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5M17 5.5a3.2 3.2 0 010 6M21.5 20c-.3-2.3-1.4-3.8-3-4.6"/></svg>Members</button>
+          </div>
+          <button class="nav-item nav-more" id="nav-more" type="button" aria-expanded="false" aria-label="More sections"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>More</button>
         </nav>
         <div class="side-user"><span id="library-name">Our Library</span><small id="member-role">Member</small></div>
       </aside>
@@ -544,6 +575,16 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(16,231,100,.10)
             <input id="home-search" type="search" maxlength="160" placeholder="Search your library by title, author, ISBN or genre…" aria-label="Search your library">
             <button class="primary-button" type="submit">Search</button>
           </form>
+          <article class="panel start-guide hidden" id="start-guide">
+            <div class="panel-head"><h2>Start here</h2><button class="text-button" type="button" id="guide-hide">Hide this guide</button></div>
+            <ol class="guide-steps">
+              <li><b>Set up places.</b> In <button class="text-button" type="button" data-goto="locations">Locations</button> add a room, then the shelves inside it.</li>
+              <li><b>Add books.</b> Find one online in <button class="text-button" type="button" data-goto="discover">Discover</button>, or add one by hand in <button class="text-button" type="button" data-goto="books">Books</button>.</li>
+              <li><b>Register copies.</b> Each physical copy you own gets its own entry in <button class="text-button" type="button" data-goto="copies">Copies</button>, with its shelf.</li>
+              <li><b>Lend and return.</b> <button class="text-button" type="button" data-goto="borrowing">Borrowing</button> shows who has what, and when it is due.</li>
+              <li><b>Install the app</b> on your phone so it opens like a normal app (see “Install on your phone” further down).</li>
+            </ol>
+          </article>
           <div class="stats-grid">
             <article class="stat-card"><span class="stat-label">Books</span><strong id="stat-books">0</strong><small>in the catalogue</small></article>
             <article class="stat-card"><span class="stat-label">Copies ready</span><strong id="stat-copies">0/0</strong><small>available to borrow</small></article>
@@ -604,6 +645,7 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(16,231,100,.10)
               <article class="panel" id="install-panel">
                 <h2>Install on your phone</h2>
                 <p class="muted" style="font-size:13px;margin:6px 0 0">Add Our Library to your home screen so it opens like an app, full screen.</p>
+                <p style="margin:10px 0 0"><button class="text-button" type="button" id="guide-show">Show the start guide on Home</button></p>
                 <div class="quick-actions"><button class="primary-button hidden" type="button" id="install-button">Install the app</button></div>
                 <ul class="install-steps">
                   <li><b>Android (Chrome):</b> menu ⋮ → Install app (or Add to Home screen).</li>
@@ -963,6 +1005,7 @@ if (!isConfigured) {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 // Stage 6E: keep a local copy of the library on this device so it opens fast (and can be browsed offline).
+const guideLoaded = new Set();
 let db;
 try {
   db = initializeFirestore(app, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) });
@@ -1354,7 +1397,7 @@ function startLibraryListeners() {
   }, (error) => { wishlistItems = []; wishlistError = error?.code === "permission-denied" ? rulesHint("The wish list") : `The wish list could not be loaded: ${friendlyError(error)}`; renderWishlist(); }));
   ["books", "copies", "locations", "loans"].forEach((name) => {
     const unsubscribe = onSnapshot(libraryPath(name), (snapshot) => {
-      libraryCollections[name] = snapshot.docs.map((item) => ({ id: item.id, ...item.data() }));
+      libraryCollections[name] = snapshot.docs.map((item) => ({ id: item.id, ...item.data() })); guideLoaded.add(name);
       renderLibrary();
     }, (error) => showToast(`${name} could not be loaded: ${friendlyError(error)}`));
     libraryUnsubscribers.push(unsubscribe);
@@ -1375,7 +1418,7 @@ function displayLocation(locationId) {
   return parent ? `${parent.name} → ${location.name}` : location.name;
 }
 function renderLibrary() {
-  renderBooks(); renderCopies(); renderLocations(); renderLoans(); renderHome(); renderReports(); refreshLibrarySelects();
+  renderBooks(); renderCopies(); renderLocations(); renderLoans(); renderHome(); renderReports(); refreshLibrarySelects(); updateGuideVisibility();
 }
 // ---- Catalogue: tiles / list view, combined search and filters ----
 const bookView = { mode: "grid" };
@@ -1525,7 +1568,7 @@ function renderBooks() {
 
 function renderCopies() {
   const list = $("#copies-list"); $("#copy-count").textContent = `${libraryCollections.copies.length} copies`; list.replaceChildren();
-  if (!libraryCollections.copies.length) { list.innerHTML = '<div class="empty-state">No physical copies yet. Add a book, then register its copies here.</div>'; return; }
+  if (!libraryCollections.copies.length) { list.innerHTML = '<div class="empty-state">No physical copies yet.<br>Add a book first, then register each physical copy you own here.<div class="library-actions"><button class="secondary-button" type="button" data-goto="books">Go to Books</button></div></div>'; return; }
   const titleOf = (copy) => libraryCollections.books.find((item) => item.id === copy.bookId)?.title || "";
   [...libraryCollections.copies].sort((x, y) => titleOf(x).localeCompare(titleOf(y), ["bn", "en"])).forEach((copy) => {
     const book = libraryCollections.books.find((item) => item.id === copy.bookId);
@@ -1540,7 +1583,7 @@ function renderCopies() {
 }
 function renderLocations() {
   const list = $("#locations-list"); $("#location-count").textContent = `${libraryCollections.locations.length} locations`; list.replaceChildren();
-  if (!libraryCollections.locations.length) { list.innerHTML = '<div class="empty-state">No locations yet. Start by adding a room.</div>'; return; }
+  if (!libraryCollections.locations.length) { list.innerHTML = '<div class="empty-state">No locations yet.<br>Start with a room (for example “Living room”), then add shelves inside it, so you always know where each book lives.</div>'; return; }
   const locations = libraryCollections.locations, copies = libraryCollections.copies;
   const known = new Set(locations.map((item) => item.id)); const children = new Map();
   locations.forEach((item) => { const key = item.parentId && known.has(item.parentId) ? item.parentId : ""; if (!children.has(key)) children.set(key, []); children.get(key).push(item); });
@@ -1594,7 +1637,7 @@ function renderLoans() {
   $("#active-loan-count").textContent = `${active.length} active`;
   $("#returned-loan-count").textContent = `${returned.length} returned`;
   const activeList = $("#active-loans-list"); activeList.replaceChildren();
-  if (!active.length) activeList.innerHTML = '<div class="empty-state">No books are currently borrowed.</div>';
+  if (!active.length) activeList.innerHTML = '<div class="empty-state">Nothing is out right now. Every book is home.</div>';
   active.forEach((loan) => {
     const copy = libraryCollections.copies.find((item) => item.id === loan.copyId);
     const book = libraryCollections.books.find((item) => item.id === loan.bookId);
@@ -2257,6 +2300,27 @@ function setGreeting() {
   $("#greeting-word").textContent = hour < 5 ? "Still up" : hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 }
 document.querySelectorAll("[data-library-tab]").forEach((button) => button.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "auto" })));
+// Stage 6F-1: phone "More" menu
+{
+  const nav = document.querySelector(".side-nav"); const more = $("#nav-more");
+  const closeMore = () => { nav.classList.remove("more-open"); more.setAttribute("aria-expanded", "false"); };
+  const syncMore = () => more.classList.toggle("more-active", [...nav.querySelectorAll(".nav-more-group [data-library-tab]")].some((tab) => tab.classList.contains("active")));
+  more.addEventListener("click", () => { const open = nav.classList.toggle("more-open"); more.setAttribute("aria-expanded", String(open)); });
+  document.querySelectorAll("[data-library-tab]").forEach((button) => button.addEventListener("click", () => { closeMore(); syncMore(); }));
+  document.addEventListener("click", (event) => { if (nav.classList.contains("more-open") && !nav.contains(event.target)) closeMore(); });
+}
+// Stage 6F-1: start guide (shown automatically only for a completely empty library)
+function updateGuideVisibility() {
+  const box = $("#start-guide"); if (!box) return;
+  let pref = ""; try { pref = localStorage.getItem("ourLibrary.guideHidden") || ""; } catch { /* storage unavailable */ }
+  if (pref === "0") { box.classList.remove("hidden"); return; }
+  if (pref === "1") { box.classList.add("hidden"); return; }
+  const empty = guideLoaded.size >= 4 && !libraryCollections.books.length && !libraryCollections.copies.length && !libraryCollections.locations.length;
+  box.classList.toggle("hidden", !empty);
+}
+function setGuidePref(hidden) { try { localStorage.setItem("ourLibrary.guideHidden", hidden ? "1" : "0"); } catch { /* storage unavailable */ } updateGuideVisibility(); }
+$("#guide-hide").addEventListener("click", () => setGuidePref(true));
+$("#guide-show").addEventListener("click", () => { setGuidePref(false); showToast("The start guide is back on Home."); });
 
 // ---- Catalogue controls ----
 function applyViewButtons() {
@@ -2294,20 +2358,21 @@ function openBookDialog(id) {
   const body = $("#book-dialog-body"); body.replaceChildren();
   const top = document.createElement("div"); top.className = "dialog-top";
   const info = document.createElement("div");
-  const title = document.createElement("h2"); title.textContent = book.title || "Untitled book";
-  const author = document.createElement("p"); author.className = "muted"; author.textContent = book.author || "Author unknown";
+  const bnMain = book.language === "bn" && Boolean(book.originalTitle || book.authorOriginal);
+  const title = document.createElement("h2"); title.textContent = (bnMain && book.originalTitle) || book.title || "Untitled book"; if (bnMain && book.originalTitle) title.lang = "bn";
+  const author = document.createElement("p"); author.className = "dialog-author"; author.textContent = (bnMain && book.authorOriginal) || book.author || "Author unknown"; if (bnMain && book.authorOriginal) author.lang = "bn";
   const meta = document.createElement("div"); meta.className = "dialog-meta";
   [LANG_NAMES[book.language], book.genre, book.publicationYear, book.publisher, book.isbn ? `ISBN ${book.isbn}` : ""].filter(Boolean).forEach((value) => { const chip = document.createElement("span"); chip.textContent = String(value); meta.append(chip); });
   const stats = copiesByBook().get(book.id) || emptyStats();
   info.append(title, author);
-  const originals = [book.originalTitle, book.authorOriginal].filter(Boolean);
-  if (originals.length) { const original = document.createElement("p"); original.className = "muted"; if (book.language === "bn") original.lang = "bn"; original.textContent = originals.join(" — "); info.append(original); }
+  const originals = bnMain ? [book.originalTitle && book.title !== book.originalTitle ? book.title : "", book.authorOriginal && book.author !== book.authorOriginal ? book.author : ""].filter(Boolean) : [book.originalTitle, book.authorOriginal].filter(Boolean);
+  if (originals.length) { const original = document.createElement("p"); original.className = "muted"; if (book.language === "bn" && !bnMain) original.lang = "bn"; original.textContent = originals.join(" — "); info.append(original); }
   info.append(meta, availabilityBadge(stats));
   top.append(makeCover(book), info); body.append(top);
   if (book.description) { const desc = document.createElement("p"); desc.className = "dialog-desc"; desc.textContent = book.description; body.append(desc); }
   const heading = document.createElement("h3"); heading.textContent = `Physical copies (${stats.total})`; body.append(heading);
   const copies = libraryCollections.copies.filter((copy) => copy.bookId === book.id);
-  if (!copies.length) { const none = document.createElement("div"); none.className = "empty-state"; none.textContent = "No physical copies registered yet."; body.append(none); }
+  if (!copies.length) { const none = document.createElement("div"); none.className = "empty-state"; none.textContent = "No physical copies yet. Tap “Add copy” below to register one."; body.append(none); }
   copies.forEach((copy) => {
     const row = document.createElement("div"); row.className = "dialog-copy";
     const left = document.createElement("div"); const name = document.createElement("strong"); name.textContent = copy.copyLabel || "Copy";
@@ -2351,6 +2416,7 @@ function openBookDialog(id) {
   const actions = document.createElement("div"); actions.className = "library-actions dialog-actions";
   const hasFree = copies.some((copy) => copy.status === "Available");
   const addCopy = makeActionButton("Add copy", "add-copy-for-book", book.id); const borrow = makeActionButton("Borrow", "borrow-book", book.id);
+  borrow.className = "primary-button";
   if (!hasFree) { borrow.disabled = true; borrow.title = "No available copy"; }
   actions.append(addCopy, borrow, makeActionButton("Edit book", "edit-book", book.id), makeActionButton("Delete", "delete-book", book.id, true));
   body.append(actions);

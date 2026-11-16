@@ -409,6 +409,34 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
 #restore-preview .library-actions { margin-top: 6px; }
 .manual-add-row { margin: 4px 0 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
+/* Stage 6F-3: donut charts and print view */
+.donut-box { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin: 10px 0 14px; }
+.donut-box:empty { display: none; }
+.donut-box svg { width: 132px; height: 132px; flex: none; }
+.donut-box .donut-track { stroke: rgba(var(--ink-rgb),.08); }
+.donut-box .donut-total { fill: var(--text); font-size: 22px; font-weight: 700; }
+.donut-box .donut-sub { fill: var(--muted); font-size: 9px; }
+.donut-legend { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 13px; min-width: 0; flex: 1 1 140px; }
+.donut-legend li { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.donut-legend i { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+.donut-legend span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.donut-legend b { margin-left: auto; font-weight: 600; padding-left: 8px; }
+.section-head-tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+#print-shelves { display: none; }
+@media print {
+  body.printing-shelves > *:not(#print-shelves) { display: none !important; }
+  body.printing-shelves { background: #fff !important; }
+  body.printing-shelves #print-shelves { display: block; color: #000; background: #fff; font: 12pt/1.4 Georgia, "Times New Roman", serif; padding: 0; }
+  #print-shelves h1 { font-size: 20pt; margin: 0 0 2pt; }
+  #print-shelves .ps-sub { margin: 0 0 14pt; font-size: 10pt; color: #444; }
+  #print-shelves h2 { font-size: 15pt; margin: 16pt 0 4pt; border-bottom: 1.5pt solid #000; padding-bottom: 2pt; break-after: avoid; }
+  #print-shelves h3 { font-size: 13pt; margin: 10pt 0 3pt; break-after: avoid; }
+  #print-shelves h4 { font-size: 11.5pt; margin: 8pt 0 2pt; break-after: avoid; }
+  #print-shelves ul { margin: 0 0 4pt 14pt; padding: 0; }
+  #print-shelves li { margin: 1pt 0; break-inside: avoid; }
+  #print-shelves .ps-author { color: #444; }
+  #print-shelves .ps-empty { color: #666; font-style: italic; margin: 0 0 4pt 14pt; }
+}
 /* Stage 5C: reports */
 #reports-section .section-head { --art: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 520 200%22 preserveAspectRatio=%22xMaxYMid meet%22%3E%3Cdefs%3E%3CradialGradient id=%22g%22 cx=%2275%25%22 cy=%2230%25%22 r=%2260%25%22%3E%3Cstop offset=%220%22 stop-color=%22%232DD4BF%22 stop-opacity=%22.55%22/%3E%3Cstop offset=%221%22 stop-color=%22%232DD4BF%22 stop-opacity=%220%22/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width=%22520%22 height=%22200%22 fill=%22url(%23g)%22/%3E%3Cg fill=%22none%22 stroke=%22%232DD4BF%22 stroke-opacity=%22.7%22 stroke-width=%222%22%3E%3Cpath d=%22M330 150h150%22/%3E%3Crect x=%22345%22 y=%22105%22 width=%2222%22 height=%2245%22 rx=%224%22/%3E%3Crect x=%22380%22 y=%2270%22 width=%2222%22 height=%2280%22 rx=%224%22/%3E%3Crect x=%22415%22 y=%2290%22 width=%2222%22 height=%2260%22 rx=%224%22/%3E%3Crect x=%22450%22 y=%2245%22 width=%2222%22 height=%22105%22 rx=%224%22/%3E%3C/g%3E%3C/svg%3E"); }
 .report-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
@@ -813,12 +841,17 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
           <p class="muted" style="font-size:12px">Book metadata supplied by <a href="https://books.google.com/" target="_blank" rel="noopener">Google Books</a>, <a href="https://openlibrary.org/" target="_blank" rel="noopener">Open Library</a> and <a href="https://hardcover.app/" target="_blank" rel="noopener">Hardcover</a>. Results may be incomplete; check the edition and ISBN before adding.</p>
                               <div class="discovery-tools"><h3 class="discovery-tools-title">More ways to add books</h3>
           <details id="sources-panel" class="editor sources-panel">
-            <summary>Sources and Hardcover token</summary>
+            <summary>Sources, Hardcover token and Google Books key</summary>
             <div class="editor-body">
               <p class="muted" style="font-size:13px;margin:0">Paste your Hardcover token once. It is kept only in this browser on this device, never in the library database or the code. <a href="https://hardcover.app/account/api" target="_blank" rel="noopener">Create or renew a token</a>. Tokens expire, so renew it if Hardcover stops working.</p>
               <div class="discovery-form"><input id="hardcover-token" type="password" autocomplete="off" spellcheck="false" placeholder="Paste Hardcover token" aria-label="Hardcover token"><button type="button" class="primary-button" id="hardcover-save">Save token</button></div>
               <div class="library-actions"><button type="button" class="small-button" id="hardcover-test">Test connection</button><button type="button" class="small-button danger" id="hardcover-remove">Remove token</button></div>
               <p id="hardcover-status" class="message" role="status" aria-live="polite"></p>
+              <hr style="border:0;border-top:1px solid var(--line);margin:14px 0">
+              <p class="muted" style="font-size:13px;margin:0"><strong>Google Books key (optional).</strong> Without a key, Google Books shares a small free limit and often says HTTP 429. Your own free key fixes that. It is kept only in this browser on this device, never in the library database or the code. <a href="https://console.cloud.google.com/apis/library/books.googleapis.com" target="_blank" rel="noopener">Enable the Books API and create a key</a>.</p>
+              <div class="discovery-form"><input id="google-key" type="password" autocomplete="off" spellcheck="false" placeholder="Paste Google Books API key" aria-label="Google Books API key"><button type="button" class="primary-button" id="google-key-save">Save key</button></div>
+              <div class="library-actions"><button type="button" class="small-button" id="google-key-test">Test connection</button><button type="button" class="small-button danger" id="google-key-remove">Remove key</button></div>
+              <p id="google-key-status" class="message" role="status" aria-live="polite"></p>
             </div>
           </details>
           <details id="bulk-panel" class="editor sources-panel">
@@ -907,7 +940,7 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
         </section>
 
         <section id="locations-section" class="library-section hidden">
-          <div class="section-head"><div><h2>Locations</h2><p class="muted">Build your hierarchy from room to bookshelf to individual shelf.</p></div><span id="location-count" class="library-count">0 locations</span></div>
+          <div class="section-head"><div><h2>Locations</h2><p class="muted">Build your hierarchy from room to bookshelf to individual shelf.</p></div><div class="section-head-tools"><button type="button" class="small-button" id="print-shelves-button">Print books by shelf</button><span id="location-count" class="library-count">0 locations</span></div></div>
           <details class="editor" open>
             <summary>Add or edit a location</summary>
             <div class="editor-body">
@@ -936,9 +969,9 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
             <article class="stat-card"><span class="stat-label">Average loan</span><strong id="rep-avg">–</strong><small>days kept, returned books</small></article>
           </div>
           <div class="report-grid">
-            <article class="panel"><h2>Books by language</h2><p class="report-note">Books with no language set are counted separately.</p><div id="rep-language" class="bar-list"></div></article>
+            <article class="panel"><h2>Books by language</h2><p class="report-note">Books with no language set are counted separately.</p><div id="rep-language-donut" class="donut-box"></div><div id="rep-language" class="bar-list"></div></article>
             <article class="panel"><h2>Books by genre</h2><p class="report-note" id="rep-genre-note">Top genres.</p><div id="rep-genre" class="bar-list"></div></article>
-            <article class="panel"><h2>Copies by status</h2><p class="report-note">What state your physical copies are in right now.</p><div id="rep-status" class="bar-list"></div></article>
+            <article class="panel"><h2>Copies by status</h2><p class="report-note">What state your physical copies are in right now.</p><div id="rep-status-donut" class="donut-box"></div><div id="rep-status" class="bar-list"></div></article>
             <article class="panel"><h2>Copies by location</h2><p class="report-note" id="rep-location-note">Where your copies are kept.</p><div id="rep-location" class="bar-list"></div></article>
             <article class="panel wide"><h2>Borrowing by month</h2><p class="report-note">Books borrowed in each of the last 12 months.</p><div id="rep-months" class="month-chart" role="img" aria-label="Borrowings per month for the last 12 months"></div></article>
             <article class="panel"><h2>Most borrowed books</h2><p class="report-note">Counted across the whole borrowing history.</p><div id="rep-popular" class="bar-list"></div></article>
@@ -1002,6 +1035,7 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
           </dialog>
     <div id="global-message" class="toast hidden" role="status" aria-live="polite"></div>
   </main>
+  <div id="print-shelves" aria-hidden="true"></div>
   <script>
 setTimeout(function () { var v = document.getElementById("boot-view"), m = document.getElementById("boot-message"); if (v && m && !v.classList.contains("hidden")) m.textContent = "Still connecting… please check your internet connection, then reload the page."; }, 10000);
 </script>
@@ -1830,12 +1864,19 @@ async function enrichBookDetails(candidate) {
 }
 const pickIsbn = (list) => (Array.isArray(list) ? list : []).map(toIsbn13).find(Boolean) || "";
 const yearOf = (value) => { const m = String(value ?? "").match(/\d{4}/); return m ? Number(m[0]) : ""; };
-async function searchGoogleBooks(query, lang) {
+// Stage 6F-3c: optional personal Google Books key (kept in this browser only, like the Hardcover token)
+const GOOGLE_KEY_STORAGE = "ourLibrary.googleBooksKey";
+let googleKeyFallback = "";
+const cleanGoogleKey = (value) => String(value ?? "").trim().replace(/\s+/g, "");
+function getGoogleKey() { let stored = ""; try { stored = localStorage.getItem(GOOGLE_KEY_STORAGE) || ""; } catch { /* storage unavailable */ } return cleanGoogleKey(stored || googleKeyFallback); }
+function setGoogleKey(key) { googleKeyFallback = key; try { if (key) localStorage.setItem(GOOGLE_KEY_STORAGE, key); else localStorage.removeItem(GOOGLE_KEY_STORAGE); } catch { /* storage unavailable: the key lives in memory for this visit only */ } }
+async function searchGoogleBooksRaw(query, lang) {
   const isbn = toIsbn13(query);
   const params = new URLSearchParams({ q: isbn ? `isbn:${isbn}` : query, maxResults: "20", printType: "books" });
   if (!isbn && DISCOVERY_LANG[lang]) params.set("langRestrict", DISCOVERY_LANG[lang].google);
+  const googleKey = getGoogleKey(); if (googleKey) params.set("key", googleKey);
   const response = await fetch(`https://www.googleapis.com/books/v1/volumes?${params.toString()}`, { headers: { "Accept": "application/json" } });
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  if (!response.ok) { const err = new Error(`HTTP ${response.status}`); err.status = response.status; err.hasKey = !!googleKey; throw err; }
   const data = await response.json();
   return (Array.isArray(data.items) ? data.items : []).map((entry) => {
     const info = entry.volumeInfo || {};
@@ -1843,6 +1884,26 @@ async function searchGoogleBooks(query, lang) {
     const cover = String(info.imageLinks?.thumbnail || info.imageLinks?.smallThumbnail || "");
     return { title: clean(info.title) + (info.subtitle ? `: ${clean(info.subtitle)}` : ""), authors: Array.isArray(info.authors) ? info.authors.map(clean).filter(Boolean) : [], isbn: pickIsbn(ids), publisher: clean(info.publisher), genre: pickGenre(info.categories), year: yearOf(info.publishedDate), coverUrl: cover.replace(/^http:/, "https:").replace(/&edge=curl/, ""), description: clean(info.description), link: String(info.infoLink || ""), sources: ["google"] };
   }).filter((item) => item.title);
+}
+// Stage 6F-3b: Google Books without a key has a small shared quota (HTTP 429 when it runs out).
+// So: remember results already fetched, space requests out, retry once, and explain a 429 in plain words.
+const googleCache = new Map(); let lastGoogleRequestAt = 0;
+async function searchGoogleBooks(query, lang) {
+  const cacheKey = `${lang}|${query}`; if (googleCache.has(cacheKey)) return googleCache.get(cacheKey);
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const wait = Math.max(0, 800 - (Date.now() - lastGoogleRequestAt)); if (wait) await new Promise((resolve) => setTimeout(resolve, wait));
+    lastGoogleRequestAt = Date.now();
+    try {
+      const found = await searchGoogleBooksRaw(query, lang);
+      googleCache.set(cacheKey, found); if (googleCache.size > 60) googleCache.delete(googleCache.keys().next().value);
+      return found;
+    } catch (error) {
+      if (error?.status === 429 && attempt === 0) { await new Promise((resolve) => setTimeout(resolve, 2000)); continue; }
+      if (error?.hasKey && (error.status === 400 || error.status === 403)) throw new Error(`Google rejected your key (HTTP ${error.status}). Check it under Sources, or remove it`);
+      if (error?.status === 429) throw new Error("Google is limiting requests right now (HTTP 429). The other sources still work; try Google again in a few minutes");
+      throw error;
+    }
+  }
 }
 async function searchOpenLibrary(query, lang) {
   const wait = Math.max(0, 1100 - (Date.now() - lastDiscoveryRequestAt));
@@ -1927,9 +1988,9 @@ async function runDiscovery(typing) {
   const query = clean($("#discovery-query").value).normalize("NFC"); if (!query) return;
   if (typing && query.length < 3 && !/^\d{10,13}$/.test(query)) return;
   const lang = $("#discovery-language").value;
-  const wanted = []; if ($("#src-google").checked) wanted.push(["google", searchGoogleBooks]); if ($("#src-openlibrary").checked) wanted.push(["openlibrary", searchOpenLibrary]);
+  const googleOn = $("#src-google").checked; const wanted = []; if (googleOn && !typing) wanted.push(["google", searchGoogleBooks]); if ($("#src-openlibrary").checked) wanted.push(["openlibrary", searchOpenLibrary]);
   const hardcoverOn = $("#src-hardcover").checked; if (hardcoverOn && !typing) wanted.push(["hardcover", searchHardcover]);
-  if (!wanted.length) { if (!typing) message("#discovery-message", "Turn on at least one source.", "error"); return; }
+  if (!wanted.length) { message("#discovery-message", typing ? "Press Search books to search Google Books or Hardcover." : "Turn on at least one source.", typing ? "" : "error"); return; }
   const seq = ++discoverySeq;
   const button = $("#discovery-submit"); if (!typing) button.disabled = true;
   message("#discovery-message", `Searching ${wanted.map(([key]) => SOURCE_NAMES[key]).join(" and ")}…`);
@@ -1945,7 +2006,7 @@ async function runDiscovery(typing) {
     }));
     if (seq !== discoverySeq) return;
     if (failed === wanted.length) { message("#discovery-message", "No source could be reached. Please try again later.", "error"); return; }
-    message("#discovery-message", `${discoveryResults.length} books shown after combining sources. Nothing is saved until you confirm.${typing && hardcoverOn ? " Hardcover is searched when you press Search books." : ""}`, "success");
+    message("#discovery-message", `${discoveryResults.length} books shown after combining sources. Nothing is saved until you confirm.${typing && (googleOn || hardcoverOn) ? ` ${[googleOn ? "Google Books" : "", hardcoverOn ? "Hardcover" : ""].filter(Boolean).join(" and ")} ${googleOn && hardcoverOn ? "are" : "is"} searched when you press Search books.` : ""}`, "success");
   } catch (error) { if (seq === discoverySeq) message("#discovery-message", error.message || "Unable to search books right now.", "error"); }
   finally { if (!typing) button.disabled = false; }
 }
@@ -1981,6 +2042,26 @@ $("#hardcover-test").addEventListener("click", async () => {
   finally { button.disabled = false; }
 });
 refreshHardcoverStatus(); if (getHardcoverToken()) $("#src-hardcover").checked = true;
+
+// Google Books key panel
+function refreshGoogleKeyStatus() {
+  const has = !!getGoogleKey();
+  message("#google-key-status", has ? "A Google Books key is saved on this device." : "No Google Books key saved. Google Books works without one but is often rate-limited.", has ? "success" : "");
+}
+$("#google-key-save").addEventListener("click", () => {
+  const key = cleanGoogleKey($("#google-key").value);
+  if (key.length < 30 || !/^[\w-]+$/.test(key)) { message("#google-key-status", "That does not look like a Google API key. Paste the whole key.", "error"); return; }
+  setGoogleKey(key); googleCache.clear(); $("#google-key").value = ""; refreshGoogleKeyStatus();
+  message("#google-key-status", "Key saved on this device only. Use Test connection to check it.", "success");
+});
+$("#google-key-remove").addEventListener("click", () => { setGoogleKey(""); googleCache.clear(); $("#google-key").value = ""; refreshGoogleKeyStatus(); });
+$("#google-key-test").addEventListener("click", async () => {
+  const button = $("#google-key-test"); button.disabled = true; message("#google-key-status", "Testing Google Books…");
+  try { const found = await searchGoogleBooksRaw("dune", "all"); message("#google-key-status", `Google Books works${getGoogleKey() ? " with your key" : " (no key)"}: ${found.length} results for a test search.`, "success"); }
+  catch (error) { message("#google-key-status", error.status === 429 ? "Google is limiting requests (HTTP 429)." + (getGoogleKey() ? " Check your key's quota in Google Cloud." : " A personal key avoids this.") : error.hasKey && (error.status === 400 || error.status === 403) ? `Google rejected your key (HTTP ${error.status}). Check that the Books API is enabled and the key restrictions allow this site.` : `Google test failed: ${error.message}`, "error"); }
+  finally { button.disabled = false; }
+});
+refreshGoogleKeyStatus();
 
 // Stage 4A (slice 3): bulk add (pasted ISBNs or a Goodreads CSV) and barcode scanning.
 SOURCE_NAMES.csv = "Goodreads file";
@@ -2759,6 +2840,34 @@ function reportTop(entries, limit, otherLabel) {
   return entries.slice(0, limit).concat([{ label: `${otherLabel} (${rest.length})`, count: rest.reduce((sum, entry) => sum + entry.count, 0), tone: "teal" }]);
 }
 function reportDayNumber(dateInput) { const [y, m, d] = dateInput.split("-").map(Number); return Date.UTC(y, m - 1, d) / 86400000; }
+function reportDonut(container, entries, colorOf, centerLabel) {
+  container.replaceChildren();
+  const total = entries.reduce((sum, entry) => sum + entry.count, 0);
+  if (!total) return;
+  const NS = "http://www.w3.org/2000/svg"; const R = 40, C = 2 * Math.PI * R;
+  const svg = document.createElementNS(NS, "svg"); svg.setAttribute("viewBox", "0 0 100 100"); svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", entries.map((entry) => `${entry.label}: ${entry.count}`).join(", "));
+  const track = document.createElementNS(NS, "circle"); track.setAttribute("class", "donut-track"); track.setAttribute("cx", "50"); track.setAttribute("cy", "50"); track.setAttribute("r", String(R)); track.setAttribute("fill", "none"); track.setAttribute("stroke-width", "14"); svg.append(track);
+  let offset = 0;
+  entries.forEach((entry, index) => {
+    if (!entry.count) return;
+    const len = (entry.count / total) * C; const seg = document.createElementNS(NS, "circle");
+    seg.setAttribute("cx", "50"); seg.setAttribute("cy", "50"); seg.setAttribute("r", String(R)); seg.setAttribute("fill", "none"); seg.setAttribute("stroke-width", "14");
+    seg.setAttribute("transform", "rotate(-90 50 50)"); seg.setAttribute("stroke-dasharray", `${Math.max(len - (entries.length > 1 ? 1 : 0), 0.5)} ${C}`); seg.setAttribute("stroke-dashoffset", String(-offset));
+    seg.style.stroke = colorOf(entry, index); offset += len; svg.append(seg);
+  });
+  const big = document.createElementNS(NS, "text"); big.setAttribute("class", "donut-total"); big.setAttribute("x", "50"); big.setAttribute("y", "51"); big.setAttribute("text-anchor", "middle"); big.textContent = String(total); svg.append(big);
+  const sub = document.createElementNS(NS, "text"); sub.setAttribute("class", "donut-sub"); sub.setAttribute("x", "50"); sub.setAttribute("y", "62"); sub.setAttribute("text-anchor", "middle"); sub.textContent = centerLabel; svg.append(sub);
+  const legend = document.createElement("ul"); legend.className = "donut-legend";
+  entries.forEach((entry, index) => {
+    const li = document.createElement("li"); const swatch = document.createElement("i"); swatch.style.background = colorOf(entry, index);
+    const name = document.createElement("span"); name.textContent = entry.label; name.title = entry.label; const count = document.createElement("b"); count.textContent = String(entry.count);
+    li.append(swatch, name, count); legend.append(li);
+  });
+  container.append(svg, legend);
+}
+const DONUT_PALETTE = ["var(--green)", "var(--teal)", "var(--warn)", "var(--danger)", "var(--lime)", "rgba(var(--ink-rgb),.45)"];
+const DONUT_TONES = { "": "var(--green)", warn: "var(--warn)", teal: "var(--teal)", danger: "var(--danger)" };
 function renderReports() {
   if (!$("#reports-section")) return;
   const { books, copies, loans } = libraryCollections;
@@ -2782,6 +2891,7 @@ function renderReports() {
   // language
   const languageName = { bn: "Bengali", en: "English", other: "Other" };
   const languageEntries = reportTally(books, (book) => languageName[book.language] || "Not set");
+  reportDonut($("#rep-language-donut"), languageEntries, (entry, index) => DONUT_PALETTE[index % DONUT_PALETTE.length], "books");
   reportBars($("#rep-language"), languageEntries, { total: books.length, showPercent: true, empty: "Add books to see the language mix." });
 
   // genre
@@ -2794,6 +2904,7 @@ function renderReports() {
   // copy status
   const statusTone = { Available: "", Loaned: "warn", Reading: "teal", Repair: "danger" };
   const statusEntries = reportTally(copies, (copy) => copy.status || "Status not set").map((entry) => ({ ...entry, tone: statusTone[entry.label] || "warn" }));
+  reportDonut($("#rep-status-donut"), statusEntries, (entry, index) => DONUT_TONES[entry.tone] || DONUT_PALETTE[(index + 2) % DONUT_PALETTE.length], "copies");
   reportBars($("#rep-status"), statusEntries, { total: copies.length, showPercent: true, empty: "Add copies to see their status." });
 
   // location
@@ -2862,6 +2973,41 @@ function renderReports() {
 }
 $("#rep-borrower").addEventListener("change", (event) => { reportBorrower = event.target.value; reportShowAll = false; renderReports(); });
 $("#rep-borrower-more").addEventListener("click", () => { reportShowAll = !reportShowAll; renderReports(); });
+
+// ---- Stage 6F-3: print view of books by shelf (read-only; nothing here writes to Firebase) ----
+function buildShelfPrint() {
+  const root = $("#print-shelves"); root.replaceChildren();
+  const { books, copies, locations } = libraryCollections;
+  const el = (tag, text, cls) => { const node = document.createElement(tag); if (cls) node.className = cls; if (text !== undefined) node.textContent = text; return node; };
+  const byTitle = (a, b) => String(a.title || "").localeCompare(String(b.title || ""), ["bn", "en"]);
+  const byName = (a, b) => String(a.name || "").localeCompare(String(b.name || ""), ["bn", "en"]);
+  root.append(el("h1", "Our Library: books by shelf"), el("p", `${books.length} book${books.length === 1 ? "" : "s"}, ${copies.length} cop${copies.length === 1 ? "y" : "ies"} · printed ${localDateInputValue()}`, "ps-sub"));
+  const bookList = (locId) => {
+    const items = copies.filter((copy) => (copy.locationId || "") === locId).map((copy) => ({ copy, book: books.find((b) => b.id === copy.bookId) || { title: "Unknown book" } })).sort((x, y) => byTitle(x.book, y.book));
+    if (!items.length) return null;
+    const ul = el("ul");
+    items.forEach(({ copy, book }) => { const li = el("li", book.title || "Untitled book"); if (book.author) li.append(el("span", ` · ${book.author}`, "ps-author")); if (copy.status && copy.status !== "Available") li.append(el("span", ` (${copy.status})`, "ps-author")); ul.append(li); });
+    return ul;
+  };
+  const known = new Set(locations.map((l) => l.id)); const children = new Map();
+  locations.forEach((l) => { const key = l.parentId && known.has(l.parentId) ? l.parentId : ""; if (!children.has(key)) children.set(key, []); children.get(key).push(l); });
+  const shown = new Set();
+  const walk = (key, depth) => (children.get(key) || []).sort(byName).forEach((loc) => {
+    if (shown.has(loc.id)) return; shown.add(loc.id);
+    root.append(el(depth === 0 ? "h2" : depth === 1 ? "h3" : "h4", loc.name || "Unnamed location"));
+    const list = bookList(loc.id); if (list) root.append(list); else if (!(children.get(loc.id) || []).length) root.append(el("p", "No books here yet.", "ps-empty"));
+    walk(loc.id, depth + 1);
+  });
+  walk("", 0);
+  const loose = bookList(""); const orphan = copies.filter((c) => c.locationId && !known.has(c.locationId));
+  if (loose || orphan.length) { root.append(el("h2", "Not assigned to a location")); if (loose) root.append(loose); }
+}
+$("#print-shelves-button").addEventListener("click", () => {
+  if (!libraryCollections.locations.length && !libraryCollections.copies.length) { showToast("Add locations and copies first."); return; }
+  buildShelfPrint(); document.body.classList.add("printing-shelves");
+  const done = () => { document.body.classList.remove("printing-shelves"); window.removeEventListener("afterprint", done); };
+  window.addEventListener("afterprint", done); window.print(); setTimeout(() => { if (!document.hidden) done(); }, 1500);
+});
 
 // ---- Stage 5A: activate / deactivate a member (admin only; rules allow the "active" field only) ----
 document.addEventListener("click", async (event) => {

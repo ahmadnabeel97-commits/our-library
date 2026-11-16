@@ -425,6 +425,18 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
 .donut-legend span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .donut-legend b { margin-left: auto; font-weight: 600; padding-left: 8px; }
 .section-head-tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+/* Stage 6I: copies filter and bulk edit */
+.copy-tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 14px 0 10px; }
+.copy-tools input[type=search] { flex: 1 1 220px; min-width: 0; width: auto; }
+.bulk-bar { margin: 0 0 12px; padding: 14px 16px; background: var(--surface); border: 1px solid rgba(var(--lime-rgb),.35); border-radius: 14px; display: grid; gap: 12px; }
+@media (min-width: 861px) { .bulk-bar { position: sticky; top: 8px; z-index: 5; } }
+.bulk-bar-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.bulk-bar-top strong { margin-right: auto; }
+.bulk-bar-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+.bulk-bar-fields label { display: grid; gap: 4px; font-size: 12.5px; color: var(--muted); font-weight: 600; }
+.library-item.selectable { cursor: pointer; }
+.library-item.selected { border-color: var(--lime); background: rgba(var(--lime-rgb),.08); }
+.copy-pick { width: 20px; height: 20px; flex: none; accent-color: var(--lime); cursor: pointer; }
 #print-shelves { display: none; }
 @media print {
   body.printing-shelves > *:not(#print-shelves) { display: none !important; }
@@ -910,7 +922,7 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
 
         <section id="copies-section" class="library-section hidden">
           <div class="section-head"><div><h2>Physical copies</h2><p class="muted">Each entry is one actual copy you can locate and track independently.</p></div><span id="copy-count" class="library-count">0 copies</span></div>
-          <details class="editor" open>
+          <details id="copy-editor" class="editor">
             <summary>Add or edit a copy</summary>
             <div class="editor-body">
               <form id="copy-form" class="library-form">
@@ -926,6 +938,24 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
               <p id="copy-message" class="message" role="status"></p>
             </div>
           </details>
+          <div id="copy-tools" class="copy-tools hidden">
+            <input type="search" id="copy-filter" placeholder="Filter copies by title, author, shelf, status…" aria-label="Filter copies" autocomplete="off">
+            <button class="secondary-button" type="button" id="copy-select-toggle">Select copies</button>
+          </div>
+          <div id="copy-bulk-bar" class="bulk-bar hidden">
+            <div class="bulk-bar-top">
+              <strong id="copy-bulk-count">0 selected</strong>
+              <button class="small-button" type="button" id="copy-select-all">Select all shown</button>
+              <button class="small-button" type="button" id="copy-select-none">Clear selection</button>
+            </div>
+            <div class="bulk-bar-fields">
+              <label>Status<select id="bulk-status"><option value="">Keep as is</option><option>Available</option><option>Reading</option><option>Repair</option></select></label>
+              <label>Condition<select id="bulk-condition"><option value="">Keep as is</option><option>Good</option><option>Like new</option><option>Fair</option><option>Poor</option></select></label>
+              <label>Location<select id="bulk-location"><option value="">Keep as is</option></select></label>
+            </div>
+            <div class="library-actions"><button class="primary-button" type="button" id="copy-bulk-apply">Apply to selected</button><button class="secondary-button" type="button" id="copy-bulk-cancel">Done</button></div>
+            <p id="copy-bulk-message" class="message" role="status"></p>
+          </div>
           <div id="copies-list" class="library-list"><div class="empty-state">Loading copies…</div></div>
         </section>
 
@@ -1655,18 +1685,49 @@ function renderBooks() {
   matches.forEach((book) => list.append(makeBookTile(book, byBook.get(book.id) || emptyStats())));
 }
 
-function renderCopies() {
-  const list = $("#copies-list"); $("#copy-count").textContent = `${libraryCollections.copies.length} copies`; list.replaceChildren();
-  if (!libraryCollections.copies.length) { list.innerHTML = '<div class="empty-state">No physical copies yet.<br>Add a book first, then register each physical copy you own here.<div class="library-actions"><button class="secondary-button" type="button" data-goto="books">Go to Books</button></div></div>'; return; }
+const copyBulk = { on: false, selected: new Set(), filter: "", busy: false };
+function copyMatchesFilter(copy) {
+  const q = copyBulk.filter.trim().toLowerCase(); if (!q) return true;
+  const book = libraryCollections.books.find((item) => item.id === copy.bookId);
+  return [book?.title, book?.author, copy.copyLabel, copy.status, copy.condition, displayLocation(copy.locationId)].some((part) => String(part || "").toLowerCase().includes(q));
+}
+function visibleCopies() {
   const titleOf = (copy) => libraryCollections.books.find((item) => item.id === copy.bookId)?.title || "";
-  [...libraryCollections.copies].sort((x, y) => titleOf(x).localeCompare(titleOf(y), ["bn", "en"])).forEach((copy) => {
+  return [...libraryCollections.copies].filter(copyMatchesFilter).sort((x, y) => titleOf(x).localeCompare(titleOf(y), ["bn", "en"]));
+}
+function updateCopyBulkBar() {
+  const n = copyBulk.selected.size;
+  $("#copy-bulk-count").textContent = `${n} selected`;
+  $("#copy-bulk-apply").disabled = copyBulk.busy || n === 0;
+}
+function renderCopies() {
+  const all = libraryCollections.copies; const list = $("#copies-list"); list.replaceChildren();
+  $("#copy-tools").classList.toggle("hidden", !all.length);
+  if (!all.length) {
+    copyBulk.on = false; copyBulk.selected.clear(); $("#copy-bulk-bar").classList.add("hidden"); $("#copy-count").textContent = "0 copies";
+    list.innerHTML = '<div class="empty-state">No physical copies yet.<br>Add a book first, then register each physical copy you own here.<div class="library-actions"><button class="secondary-button" type="button" data-goto="books">Go to Books</button></div></div>'; return;
+  }
+  const knownIds = new Set(all.map((copy) => copy.id)); [...copyBulk.selected].forEach((id) => { if (!knownIds.has(id)) copyBulk.selected.delete(id); });
+  const bulkLocation = $("#bulk-location"); const pickedLocation = bulkLocation.value; bulkLocation.replaceChildren(new Option("Keep as is", ""));
+  [...libraryCollections.locations].map((location) => ({ id: location.id, label: displayLocation(location.id) })).sort((x, y) => x.label.localeCompare(y.label, ["bn", "en"])).forEach((entry) => bulkLocation.add(new Option(entry.label, entry.id)));
+  if (libraryCollections.locations.some((location) => location.id === pickedLocation)) bulkLocation.value = pickedLocation;
+  const shown = visibleCopies();
+  $("#copy-count").textContent = shown.length === all.length ? `${all.length} copies` : `${shown.length} of ${all.length} copies`;
+  $("#copy-bulk-bar").classList.toggle("hidden", !copyBulk.on); $("#copy-select-toggle").textContent = copyBulk.on ? "Stop selecting" : "Select copies"; updateCopyBulkBar();
+  if (!shown.length) { list.innerHTML = '<div class="empty-state">No copies match your filter.</div>'; return; }
+  shown.forEach((copy) => {
     const book = libraryCollections.books.find((item) => item.id === copy.bookId);
     const item = document.createElement("div"); item.className = "library-item";
     const details = document.createElement("div"); const title = document.createElement("strong"); title.textContent = `${book?.title || "Unknown book"}${copy.copyLabel ? ` — ${copy.copyLabel}` : ""}`;
     const meta = document.createElement("small"); meta.textContent = `${copy.condition || "Condition not set"} · ${displayLocation(copy.locationId)}${copy.status === "Loaned" && !copy.activeLoanId ? " · No linked loan record — review this legacy status" : ""}`;
     const state = document.createElement("span"); state.className = "pill"; state.textContent = copy.status || "Status not set";
     details.append(title, meta, state); const actions = document.createElement("div"); actions.className = "library-actions";
-    actions.append(makeActionButton("Edit", "edit-copy", copy.id), makeActionButton("Delete", "delete-copy", copy.id, true));
+    if (copyBulk.on) {
+      const box = document.createElement("input"); box.type = "checkbox"; box.className = "copy-pick"; box.checked = copyBulk.selected.has(copy.id); box.setAttribute("aria-label", `Select ${title.textContent}`);
+      item.classList.add("selectable"); item.classList.toggle("selected", box.checked); item.dataset.copyId = copy.id; actions.append(box);
+    } else {
+      actions.append(makeActionButton("Edit", "edit-copy", copy.id), makeActionButton("Delete", "delete-copy", copy.id, true));
+    }
     item.append(details, actions); list.append(item);
   });
 }
@@ -2257,7 +2318,7 @@ $("#copy-form").addEventListener("submit", async (event) => {
     const status = existingCopy?.status === "Loaned" ? "Loaned" : clean(values.get("status"));
     const data = { bookId, condition: clean(values.get("condition")), status, updatedAt: serverTimestamp(), updatedBy: currentUser.uid };
     for (const key of ["copyLabel", "locationId", "notes"]) { const value = clean(values.get(key)); if (value) data[key] = value; }
-    await saveRecord("copies", id, data); $("#copy-form").elements.bookId.disabled = false; $("#copy-form").elements.status.disabled = false; resetEditor("#copy-form", "#copy-message", "#copy-submit", "Add copy"); message("#copy-message", id ? "Physical copy updated." : "Physical copy added.", "success");
+    await saveRecord("copies", id, data); $("#copy-form").elements.bookId.disabled = false; $("#copy-form").elements.status.disabled = false; resetEditor("#copy-form", "#copy-message", "#copy-submit", "Add copy"); message("#copy-message", id ? "Physical copy updated." : "Physical copy added.", "success"); $("#copy-editor").open = false; showToast(id ? "Physical copy updated." : "Physical copy added.");
   } catch (error) { message("#copy-message", friendlyError(error), "error"); } finally { button.disabled = false; }
 });
 $("#loan-form").elements.borrowedAt.value = todayLocal();
@@ -2321,7 +2382,61 @@ $("#location-form").addEventListener("submit", async (event) => {
 });
 function isDescendant(candidateId, ancestorId) { let current = libraryCollections.locations.find((item) => item.id === candidateId); while (current?.parentId) { if (current.parentId === ancestorId) return true; current = libraryCollections.locations.find((item) => item.id === current.parentId); } return false; }
 $("#book-cancel").addEventListener("click", () => { pendingWishlistId = ""; resetEditor("#book-form", "#book-message", "#book-submit", "Add book"); $("#book-editor").open = false; });
-$("#copy-cancel").addEventListener("click", () => { $("#copy-form").elements.bookId.disabled = false; $("#copy-form").elements.status.disabled = false; [...$("#copy-form").elements.status.options].filter((option) => option.dataset.legacy === "true").forEach((option) => option.remove()); resetEditor("#copy-form", "#copy-message", "#copy-submit", "Add copy"); });
+$("#copy-cancel").addEventListener("click", () => { $("#copy-form").elements.bookId.disabled = false; $("#copy-form").elements.status.disabled = false; [...$("#copy-form").elements.status.options].filter((option) => option.dataset.legacy === "true").forEach((option) => option.remove()); resetEditor("#copy-form", "#copy-message", "#copy-submit", "Add copy"); $("#copy-editor").open = false; });
+
+// ---- Stage 6I: copies filter and bulk edit ----
+$("#copy-filter").addEventListener("input", (event) => { copyBulk.filter = event.target.value; renderCopies(); });
+function setCopySelecting(on) { copyBulk.on = on; if (!on) copyBulk.selected.clear(); message("#copy-bulk-message", ""); renderCopies(); }
+$("#copy-select-toggle").addEventListener("click", () => setCopySelecting(!copyBulk.on));
+$("#copy-bulk-cancel").addEventListener("click", () => setCopySelecting(false));
+$("#copy-select-all").addEventListener("click", () => { visibleCopies().forEach((copy) => copyBulk.selected.add(copy.id)); renderCopies(); });
+$("#copy-select-none").addEventListener("click", () => { copyBulk.selected.clear(); renderCopies(); });
+$("#copies-list").addEventListener("click", (event) => {
+  const row = event.target.closest(".library-item[data-copy-id]"); if (!copyBulk.on || !row) return;
+  const box = row.querySelector(".copy-pick"); if (event.target !== box) box.checked = !box.checked;
+  if (box.checked) copyBulk.selected.add(row.dataset.copyId); else copyBulk.selected.delete(row.dataset.copyId);
+  row.classList.toggle("selected", box.checked); updateCopyBulkBar();
+});
+$("#copy-bulk-apply").addEventListener("click", async () => {
+  if (copyBulk.busy) return;
+  const status = $("#bulk-status").value, condition = $("#bulk-condition").value, locationId = $("#bulk-location").value;
+  const targets = libraryCollections.copies.filter((copy) => copyBulk.selected.has(copy.id));
+  if (!targets.length) { message("#copy-bulk-message", "Tick at least one copy first.", "error"); return; }
+  if (!status && !condition && !locationId) { message("#copy-bulk-message", "Choose at least one thing to change (status, condition or location).", "error"); return; }
+  if (!navigator.onLine) { message("#copy-bulk-message", "You are offline. This needs an internet connection, so nothing was changed.", "error"); return; }
+  const plan = targets.map((copy) => {
+    const change = {};
+    if (status && copy.status !== "Loaned" && copy.status !== status) change.status = status;
+    if (condition && copy.condition !== condition) change.condition = condition;
+    if (locationId && copy.locationId !== locationId) change.locationId = locationId;
+    return { copy, change };
+  }).filter((entry) => Object.keys(entry.change).length);
+  const loanedSkipped = status ? targets.filter((copy) => copy.status === "Loaned").length : 0;
+  const parts = []; if (status) parts.push(`status → ${status}`); if (condition) parts.push(`condition → ${condition}`);
+  if (locationId) parts.push(`location → ${displayLocation(locationId)}`);
+  const loanedNote = loanedSkipped ? ` ${loanedSkipped} loaned ${loanedSkipped === 1 ? "copy keeps" : "copies keep"} its current status; borrowing manages that.` : "";
+  if (!plan.length) { message("#copy-bulk-message", `Nothing to change: the selected copies already match.${loanedNote}`, ""); return; }
+  const ok = await askConfirm(`Change ${plan.length} ${plan.length === 1 ? "copy" : "copies"}: ${parts.join(", ")}?${loanedNote}`, "Apply");
+  if (!ok) return;
+  copyBulk.busy = true; activityPaused = true; updateCopyBulkBar(); message("#copy-bulk-message", "Saving…", "");
+  let done = 0; const failedIds = new Set(); let firstError = "";
+  try {
+    for (const { copy, change } of plan) {
+      const data = { bookId: copy.bookId, updatedAt: serverTimestamp(), updatedBy: currentUser.uid };
+      const nextCondition = change.condition ?? copy.condition; if (nextCondition) data.condition = nextCondition;
+      const nextStatus = change.status ?? copy.status; if (nextStatus) data.status = nextStatus;
+      if (change.locationId) data.locationId = change.locationId;
+      try { await saveRecord("copies", copy.id, data); done += 1; } catch (error) { failedIds.add(copy.id); if (!firstError) firstError = friendlyError(error); }
+    }
+  } finally { activityPaused = false; copyBulk.busy = false; }
+  if (done) logActivity("copy_edited", `Bulk edited ${done} ${done === 1 ? "copy" : "copies"} (${parts.join(", ")})`);
+  copyBulk.selected = failedIds;
+  if (!failedIds.size) { $("#bulk-status").value = ""; $("#bulk-condition").value = ""; $("#bulk-location").value = ""; }
+  const unchanged = targets.length - plan.length;
+  const summary = `Updated ${done} ${done === 1 ? "copy" : "copies"}.${unchanged ? ` ${unchanged} already matched.` : ""}${loanedNote}${failedIds.size ? ` ${failedIds.size} could not be saved (${firstError}); they stay selected so you can try again.` : ""}`;
+  message("#copy-bulk-message", summary, failedIds.size ? "error" : "success"); if (done) showToast(`Updated ${done} ${done === 1 ? "copy" : "copies"}.`);
+  renderCopies();
+});
 $("#location-cancel").addEventListener("click", () => resetEditor("#location-form", "#location-message", "#location-submit", "Add location"));
 document.querySelectorAll("[data-library-tab]").forEach((button) => button.addEventListener("click", () => {
   document.querySelectorAll("[data-library-tab]").forEach((tab) => tab.classList.toggle("active", tab === button));
@@ -2449,14 +2564,14 @@ document.querySelector(".library-tools").addEventListener("click", async (event)
     }
     if (action === "extend-loan") { await extendLoan(id); }
     if (action === "edit-book") { const item = libraryCollections.books.find((entry) => entry.id === id); if (!item) return; const form = $("#book-form"); for (const key of ["title", "author", "language", "originalTitle", "authorOriginal", "genre", "isbn", "publisher", "publicationYear", "coverUrl", "description"]) form.elements[key].value = item[key] ?? ""; form.elements.recordId.value = id; setAlsoCopyVisible(false); $("#book-submit").textContent = "Save book"; $("#book-editor").open = true; goTab("books"); form.scrollIntoView({ behavior: "smooth", block: "center" }); }
-    if (action === "edit-copy") { const item = libraryCollections.copies.find((entry) => entry.id === id); if (!item) return; const form = $("#copy-form"); const statusSelect = form.elements.status; [...statusSelect.options].filter((option) => option.dataset.legacy === "true").forEach((option) => option.remove()); if (item.status === "Loaned") { const legacy = new Option("Loaned (managed by borrowing)", "Loaned"); legacy.disabled = true; legacy.dataset.legacy = "true"; statusSelect.add(legacy); } for (const key of ["bookId", "copyLabel", "condition", "status", "locationId", "notes"]) form.elements[key].value = item[key] ?? ""; form.elements.bookId.disabled = item.status === "Loaned"; form.elements.status.disabled = item.status === "Loaned"; form.elements.recordId.value = id; $("#copy-submit").textContent = "Save copy"; document.querySelector('[data-library-tab="copies"]').click(); form.scrollIntoView({ behavior: "smooth", block: "center" }); }
+    if (action === "edit-copy") { const item = libraryCollections.copies.find((entry) => entry.id === id); if (!item) return; const form = $("#copy-form"); $("#copy-editor").open = true; const statusSelect = form.elements.status; [...statusSelect.options].filter((option) => option.dataset.legacy === "true").forEach((option) => option.remove()); if (item.status === "Loaned") { const legacy = new Option("Loaned (managed by borrowing)", "Loaned"); legacy.disabled = true; legacy.dataset.legacy = "true"; statusSelect.add(legacy); } for (const key of ["bookId", "copyLabel", "condition", "status", "locationId", "notes"]) form.elements[key].value = item[key] ?? ""; form.elements.bookId.disabled = item.status === "Loaned"; form.elements.status.disabled = item.status === "Loaned"; form.elements.recordId.value = id; $("#copy-submit").textContent = "Save copy"; document.querySelector('[data-library-tab="copies"]').click(); form.scrollIntoView({ behavior: "smooth", block: "center" }); }
     if (action === "edit-location") { const item = libraryCollections.locations.find((entry) => entry.id === id); if (!item) return; const form = $("#location-form"); for (const key of ["name", "type", "parentId", "notes"]) form.elements[key].value = item[key] ?? ""; form.elements.recordId.value = id; $("#location-submit").textContent = "Save location"; document.querySelector('[data-library-tab="locations"]').click(); form.scrollIntoView({ behavior: "smooth", block: "center" }); }
     if (action === "return-loan") {
       const dateInput = document.querySelector(`[data-return-date-for="${CSS.escape(id)}"]`);
       await returnLoan(id, dateInput ? dateInput.value : todayLocal());
     }
     if (action === "add-copy-for-book") {
-      goTab("copies"); $("#copy-cancel").click(); $("#copy-form").elements.bookId.value = id;
+      goTab("copies"); $("#copy-cancel").click(); $("#copy-editor").open = true; $("#copy-form").elements.bookId.value = id;
       $("#copy-form").scrollIntoView({ behavior: "smooth", block: "center" }); $("#copy-form").elements.copyLabel.focus();
     }
     if (action === "borrow-book") {

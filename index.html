@@ -68,6 +68,7 @@ a { color: var(--lime); }
 .brand strong { display: block; font-family: var(--font-display); font-size: 18px; line-height: 1.1; }
 .brand small { display: block; color: var(--faint); font-size: 11px; margin-top: 2px; }
 .connection-pill { white-space: nowrap; display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: rgba(248,250,252,.04); color: var(--muted); border-radius: 99px; padding: 6px 12px; font-size: 12px; }
+.connection-pill.offline::before { background: var(--warn); box-shadow: 0 0 10px var(--warn); }
 .connection-pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 10px var(--lime); }
 
 /* Buttons and fields */
@@ -927,7 +928,7 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
 import {
-  getFirestore, collection, doc, getDoc, onSnapshot, serverTimestamp, setDoc, updateDoc, addDoc, deleteDoc, runTransaction, Timestamp, deleteField, query, orderBy, limit
+  getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, getDocFromCache, collection, doc, getDoc, onSnapshot, serverTimestamp, setDoc as fsSetDoc, updateDoc as fsUpdateDoc, addDoc as fsAddDoc, deleteDoc as fsDeleteDoc, runTransaction as fsRunTransaction, Timestamp, deleteField, query, orderBy, limit
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
 
 /*
@@ -961,7 +962,23 @@ if (!isConfigured) {
 }
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
+// Stage 6E: keep a local copy of the library on this device so it opens fast (and can be browsed offline).
+let db;
+try {
+  db = initializeFirestore(app, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) });
+} catch (cacheError) {
+  console.warn("Local cache not available, using the normal connection.", cacheError);
+  db = getFirestore(app);
+}
+// Every write needs internet, so nothing is ever queued silently and synced later.
+function requireOnline() {
+  if (!navigator.onLine) throw new Error("You are offline. This needs an internet connection, so nothing was changed.");
+}
+const setDoc = (...args) => { requireOnline(); return fsSetDoc(...args); };
+const updateDoc = (...args) => { requireOnline(); return fsUpdateDoc(...args); };
+const addDoc = (...args) => { requireOnline(); return fsAddDoc(...args); };
+const deleteDoc = (...args) => { requireOnline(); return fsDeleteDoc(...args); };
+const runTransaction = (...args) => { requireOnline(); return fsRunTransaction(...args); };
 
 async function registerAccount({ displayName, email, password }) {
   const credential = await createUserWithEmailAndPassword(auth, email.trim(), password);
@@ -1100,9 +1117,17 @@ function stopMemberListener() {
   if (memberUnsubscribe) memberUnsubscribe();
   memberUnsubscribe = null;
 }
-function setConnection(text) {
-  $("#connection-state").textContent = text;
+let connectionBase = "Connecting…";
+function paintConnection() {
+  const offline = !navigator.onLine && connectionBase === "Account connected";
+  $("#connection-state").textContent = offline ? "Offline · saved data" : connectionBase;
+  $("#connection-state").classList.toggle("offline", offline);
 }
+function setConnection(text) {
+  connectionBase = text; paintConnection();
+}
+window.addEventListener("offline", () => { paintConnection(); if (currentUser) showToast("You are offline. You can browse saved data; changes need internet."); });
+window.addEventListener("online", () => { paintConnection(); if (currentUser) showToast("Back online."); });
 
 $("#show-login").addEventListener("click", () => switchAuthMode("login"));
 $("#show-register").addEventListener("click", () => switchAuthMode("register"));
@@ -1161,10 +1186,33 @@ $("#forgot-password").addEventListener("click", async () => {
   }
 });
 
+async function getSavedDoc(ref) {
+  try { const snap = await getDocFromCache(ref); return snap.exists() ? snap.data() : null; } catch (error) { return null; }
+}
+async function verifyMembershipInBackground(uid) {
+  try {
+    const fresh = await getMembership(uid);
+    if (!currentUser || currentUser.uid !== uid) return;
+    if (!fresh || fresh.active !== true) {
+      stopMemberListener(); stopLibraryListeners();
+      showView("#pending-view"); $("#pending-uid").textContent = uid;
+      message("#pending-message", "Your membership is no longer active.");
+    }
+  } catch (error) { /* offline or temporary problem: keep showing the saved library */ }
+}
 async function refreshMembership() {
   if (!currentUser) return;
   message("#pending-message", "Checking membership…");
   try {
+    // Stage 6E: open from this device's saved copy first (fast), then confirm with the server in the background.
+    const savedMembership = await getSavedDoc(doc(db, "libraries", LIBRARY_ID, "members", currentUser.uid));
+    const savedLibrary = savedMembership && savedMembership.active === true ? await getSavedDoc(libraryRef) : null;
+    if (savedMembership && savedMembership.active === true && savedLibrary) {
+      const uid = currentUser.uid;
+      showDashboard({ id: uid, ...savedMembership }, savedLibrary);
+      verifyMembershipInBackground(uid);
+      return;
+    }
     const membership = await getMembership(currentUser.uid);
     if (!membership || membership.active !== true) {
       showView("#pending-view");
@@ -1945,6 +1993,7 @@ async function runBulkLookup() {
 }
 async function addBulkSelected() {
   const chosen = bulkRows.filter((r) => r.checked && r.status === "ready"); if (!chosen.length || bulkBusy) return;
+  if (!navigator.onLine) { message("#bulk-message", "Adding books needs an internet connection. Try again when you are online.", "error"); return; }
   bulkBusy = true; activityPaused = true; $("#bulk-add").disabled = true; let added = 0; let skipped = 0; let failed = 0; let firstError = "";
   for (const row of chosen) {
     const item = row.item;
@@ -2929,6 +2978,7 @@ function showRestorePreview(plan, exportedAt) {
 }
 async function runRestore() {
   if (restoreBusy || !restoreData || !currentUser) return;
+  if (!navigator.onLine) { message("#backup-message", "Restore needs an internet connection. Try again when you are online.", "error"); return; }
   const plan = buildRestorePlan(restoreData); // checked again against the library as it is right now
   const total = restoreTotal(plan);
   if (!total) { showRestorePreview(plan, restoreData.exportedAt); return; }

@@ -221,12 +221,22 @@ label { display: grid; gap: 6px; font-size: 12px; font-weight: 600; color: var(-
 .search-wrap { flex: 1 1 260px; display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--line-strong); border-radius: 12px; padding: 0 12px; }
 .search-wrap:focus-within { border-color: var(--lime); box-shadow: 0 0 0 3px rgba(var(--lime-rgb),.14); }
 .search-wrap input { border: 0; background: transparent; box-shadow: none !important; padding: 11px 0; }
-#book-sort { width: auto; min-width: 150px; background: var(--surface); }
+#book-sort, #book-owner { width: auto; min-width: 150px; background: var(--surface); }
 .pane-switch { width: fit-content; max-width: 100%; display: inline-flex; gap: 4px; padding: 4px; margin: 0 0 18px; border: 1px solid var(--line-strong); border-radius: 12px; background: var(--surface); }
 .pane-switch button { border: 0; background: none; color: var(--muted); font: inherit; font-weight: 600; font-size: 14px; padding: 9px 16px; border-radius: 9px; cursor: pointer; }
 .pane-switch button[aria-pressed="true"] { background: rgba(var(--lime-rgb),.14); color: var(--lime); }
 .reading-controls { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .stars { display: inline-flex; }
+.mr-panel { border: 1px solid rgba(128,128,128,.25); border-radius: 14px; padding: 14px; margin: 14px 0; }
+.mr-panel h3 { margin: 0 0 10px; }
+.mr-panel svg { max-width: 100%; height: auto; display: block; }
+.mr-panel .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.mr-item { padding: 8px 0; border-top: 1px solid rgba(128,128,128,.18); }
+.read-bar { height: 6px; border-radius: 99px; background: rgba(var(--ink-rgb), .12); overflow: hidden; margin: 6px 0; }
+.read-bar span { display: block; height: 100%; background: rgb(var(--lime-rgb)); border-radius: 99px; }
+.read-progress { display: grid; gap: 8px; margin-top: 10px; }
+.read-progress .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.read-progress input { max-width: 120px; }
 .stars button { border: 0; background: none; color: var(--muted); font-size: 22px; line-height: 1; padding: 2px 3px; cursor: pointer; }
 .stars button[aria-pressed="true"] { color: var(--star); }
 .nav-badge { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 99px; background: var(--lime); color: var(--on-lime); font-size: 11px; font-weight: 700; margin-left: 6px; }
@@ -265,6 +275,11 @@ label { display: grid; gap: 6px; font-size: 12px; font-weight: 600; color: var(-
 .badge.ok { background: rgba(var(--lime-rgb),.14); color: var(--lime); }
 .badge.warn { background: rgba(var(--warn-rgb),.14); color: var(--warn); }
 .badge.none { background: rgba(var(--ink-rgb),.07); color: var(--muted); }
+/* Stage 7A: ownership chips */
+.owner-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.owner-chip { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 99px; background: rgba(var(--ink-rgb),.07); color: var(--muted); }
+.pill.pill-owner { margin-left: 6px; background: rgba(var(--ink-rgb),.07); color: var(--muted); }
+.pill.pill-owner.pill-owner-none { background: rgba(var(--warn-rgb),.14); color: var(--warn); }
 .tile-actions { display: flex; gap: 6px; }
 .books-list-view { display: grid; gap: 10px; }
 .books-list-view .book-tile { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px 10px 10px; }
@@ -362,7 +377,7 @@ label { display: grid; gap: 6px; font-size: 12px; font-weight: 600; color: var(-
   .hero { flex-direction: column; }
   .dialog-top { grid-template-columns: 96px minmax(0, 1fr); gap: 14px; }
   .auth-card { padding: 22px; }
-  #book-sort { flex: 1 1 140px; }
+  #book-sort, #book-owner { flex: 1 1 140px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
   
@@ -436,6 +451,7 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
 /* Stage 6I: copies filter and bulk edit */
 .copy-tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 14px 0 10px; }
 .copy-tools input[type=search] { flex: 1 1 220px; min-width: 0; width: auto; }
+.copy-tools select { width: auto; max-width: 100%; }
 .bulk-bar { margin: 0 0 12px; padding: 14px 16px; background: var(--surface); border: 1px solid rgba(var(--lime-rgb),.35); border-radius: 14px; display: grid; gap: 12px; }
 @media (min-width: 861px) { .bulk-bar { position: sticky; top: 8px; z-index: 5; } .bulk-collapse { display: none; } }
 .bulk-bar-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -446,7 +462,7 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
 @media (max-width: 860px) {
   .bulk-bar { position: fixed; left: 12px; right: 12px; bottom: calc(var(--nav-h, 76px) + 8px); z-index: 30; margin: 0; padding: 10px 12px; gap: 8px; max-height: 52vh; overflow-y: auto; box-shadow: 0 -10px 30px rgba(var(--shadow-rgb), .4); }
   .bulk-bar-fields { grid-template-columns: 1fr 1fr; gap: 8px; }
-  .bulk-bar-fields label:last-child { grid-column: 1 / -1; }
+  .bulk-bar-fields label:nth-child(n+5) { grid-column: 1 / -1; }
   .bulk-bar.compact .bulk-bar-fields { display: none; }
   #copies-section.bulk-on { padding-bottom: 320px; }
 }
@@ -660,6 +676,7 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
             <button class="nav-item library-tab" type="button" data-library-tab="copies"><svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5"/></svg>Copies</button>
             <button class="nav-item library-tab" type="button" data-library-tab="locations"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Locations</button>
             <button class="nav-item library-tab" type="button" data-library-tab="reports"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Reports</button>
+            <button class="nav-item library-tab" type="button" data-library-tab="reading"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2V5zM19 17H6"/></svg>My reading</button>
             <button class="nav-item library-tab" type="button" data-library-tab="activity"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.5 2"/></svg>Activity</button>
             <button class="nav-item library-tab hidden" id="members-tab" type="button" data-library-tab="members"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5M17 5.5a3.2 3.2 0 010 6M21.5 20c-.3-2.3-1.4-3.8-3-4.6"/></svg>Members</button>
           </div>
@@ -702,6 +719,7 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
           </div>
           <div class="home-grid">
             <div class="home-main">
+              <article class="panel hidden" id="owner-nudge"><div class="panel-head"><h2>Who owns what?</h2></div><p class="muted" id="owner-nudge-text"></p><div class="library-actions"><button class="secondary-button" type="button" id="owner-nudge-button">Set owners</button></div></article>
               <article class="panel">
                 <div class="panel-head"><h2>Needs attention</h2><button class="text-button" type="button" data-goto="borrowing">Open borrowing</button></div>
                 <div id="attention-list" class="attention-list"></div>
@@ -784,9 +802,10 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
                 <label>ISBN<input name="isbn" maxlength="30"></label>
                 <label>Publisher<input name="publisher" maxlength="120"></label>
                 <label>Publication year<input name="publicationYear" type="number" min="0" max="2100"></label>
+                <label>Total pages (optional)<input name="totalPages" type="text" inputmode="numeric" maxlength="6" placeholder="e.g. 320"></label>
                 <label class="wide">Cover image URL (optional)<input name="coverUrl" type="url" placeholder="https://..."></label>
                 <label class="wide">Description / notes<textarea name="description" maxlength="2000"></textarea></label>
-                <div id="also-copy-block" class="wide also-copy"><label class="also-copy-check"><input type="checkbox" name="alsoCopy" checked><span>I own this book: also add a physical copy<small>Untick it if you only want the book in the catalogue (you can add copies later in Copies).</small></span></label><label>Shelf / location for the copy<select name="copyLocationId"><option value="">Not assigned yet</option></select></label></div>
+                <div id="also-copy-block" class="wide also-copy"><label class="also-copy-check"><input type="checkbox" name="alsoCopy" checked><span>I own this book: also add a physical copy<small>Untick it if you only want the book in the catalogue (you can add copies later in Copies).</small></span></label><label>Shelf / location for the copy<select name="copyLocationId"><option value="">Not assigned yet</option></select></label><label>Owner of the copy<select name="copyOwnerId"></select></label></div>
                 <div class="library-actions wide"><button class="primary-button" type="submit" id="book-submit">Add book</button><button class="secondary-button" type="button" id="book-cancel">Clear form</button></div>
               </form>
               <p id="book-message" class="message" role="status"></p>
@@ -805,6 +824,7 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
                 <option value="recent">Recently added</option>
                 <option value="year-new">Newest published</option>
               </select>
+              <select id="book-owner" aria-label="Filter books by owner"><option value="any">Anyone's books</option></select>
               <button type="button" id="filters-toggle" class="secondary-button" aria-expanded="false" aria-controls="advanced-panel">Filters<span id="filter-count" class="count-badge hidden">0</span></button>
               <div class="view-switch" role="group" aria-label="Catalogue view">
                 <button type="button" id="view-grid" aria-pressed="true" title="Tile view" aria-label="Tile view"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg></button>
@@ -841,6 +861,9 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
                   <option value="none">Not set</option>
                 </select>
               </label>
+              <label>Owner
+                <select id="adv-owner"><option value="any">Anyone</option></select>
+              </label>
               <div class="adv-actions" style="grid-column:1/-1"><button type="button" id="filters-reset" class="secondary-button">Clear all filters</button></div>
             </div>
           </div>
@@ -865,6 +888,7 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
             <label><input type="checkbox" id="src-hardcover" disabled> Hardcover</label>
             <label><input type="checkbox" id="quick-copy" checked> Add a physical copy</label>
             <label>Shelf <select id="quick-location" aria-label="Shelf for new copies"><option value="">Not assigned yet</option></select></label>
+            <label>Owner <select id="quick-owner" aria-label="Owner of new copies"></select></label>
           </div>
           <p id="discovery-counts" class="muted" style="font-size:13px;margin:0 0 8px" aria-live="polite"></p>
           <p id="discovery-message" class="message" role="status" aria-live="polite"></p>
@@ -947,6 +971,7 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
                 <label>Copy label<input name="copyLabel" maxlength="60" placeholder="e.g. Copy 1"></label>
                 <label>Condition<select name="condition"><option>Good</option><option>Like new</option><option>Fair</option><option>Poor</option></select></label>
                 <label>Status<select name="status"><option>Available</option><option>Reading</option><option>Repair</option></select></label>
+                <label>Owner<select name="ownerId"></select></label>
                 <label class="wide">Location<select name="locationId"><option value="">Not assigned yet</option></select></label>
                 <label class="wide">Notes<textarea name="notes" maxlength="1000"></textarea></label>
                 <div class="library-actions wide"><button class="primary-button" type="submit" id="copy-submit">Add copy</button><button class="secondary-button" type="button" id="copy-cancel">Clear form</button></div>
@@ -956,6 +981,7 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
           </details>
           <div id="copy-tools" class="copy-tools hidden">
             <input type="search" id="copy-filter" placeholder="Title, author, shelf…" aria-label="Filter copies" autocomplete="off">
+            <select id="copy-owner-filter" aria-label="Filter copies by owner"><option value="any">Any owner</option></select>
             <button class="secondary-button" type="button" id="copy-select-toggle">Select copies</button>
           </div>
           <div id="copy-bulk-bar" class="bulk-bar hidden">
@@ -969,6 +995,7 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
               <label>Status<select id="bulk-status"><option value="">Keep as is</option><option>Available</option><option>Reading</option><option>Repair</option></select></label>
               <label>Condition<select id="bulk-condition"><option value="">Keep as is</option><option>Good</option><option>Like new</option><option>Fair</option><option>Poor</option></select></label>
               <label>Location<select id="bulk-location"><option value="">Keep as is</option></select></label>
+              <label>Owner<select id="bulk-owner"><option value="">Keep as is</option></select></label>
             </div>
             <div class="library-actions"><button class="primary-button" type="button" id="copy-bulk-apply">Apply to selected</button><button class="secondary-button" type="button" id="copy-bulk-cancel">Done</button></div>
             <p id="copy-bulk-message" class="message" role="status"></p>
@@ -1018,6 +1045,11 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
           <div id="locations-list" class="library-list"><div class="empty-state">Loading locations…</div></div>
         </section>
 
+        <section id="reading-section" class="library-section hidden">
+          <div class="section-head"><div><h2>My reading</h2><p class="muted">Your own reading habit. Only you can see this page.</p></div></div>
+          <div id="reading-body"></div>
+        </section>
+
         <section id="reports-section" class="library-section hidden">
           <div class="section-head"><div><h2>Library reports</h2><p class="muted">Statistics about your books, copies and borrowing. Read-only; it updates as the library changes.</p></div></div>
           <div class="report-stats">
@@ -1032,6 +1064,7 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
             <article class="panel"><h2>Books by language</h2><p class="report-note">Books with no language set are counted separately.</p><div id="rep-language-donut" class="donut-box"></div><div id="rep-language" class="bar-list"></div></article>
             <article class="panel"><h2>Books by genre</h2><p class="report-note" id="rep-genre-note">Top genres.</p><div id="rep-genre" class="bar-list"></div></article>
             <article class="panel"><h2>Copies by status</h2><p class="report-note">What state your physical copies are in right now.</p><div id="rep-status-donut" class="donut-box"></div><div id="rep-status" class="bar-list"></div></article>
+            <article class="panel"><h2>Copies by owner</h2><p class="report-note">Who owns your physical copies. Copies with no owner set are counted separately.</p><div id="rep-owner-donut" class="donut-box"></div><div id="rep-owner" class="bar-list"></div></article>
             <article class="panel"><h2>Copies by location</h2><p class="report-note" id="rep-location-note">Where your copies are kept.</p><div id="rep-location" class="bar-list"></div></article>
             <article class="panel wide"><h2>Borrowing by month</h2><p class="report-note">Books borrowed in each of the last 12 months.</p><div id="rep-months" class="month-chart" role="img" aria-label="Borrowings per month for the last 12 months"></div></article>
             <article class="panel"><h2>Most borrowed books</h2><p class="report-note">Counted across the whole borrowing history.</p><div id="rep-popular" class="bar-list"></div></article>
@@ -1107,7 +1140,7 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
 import {
-  getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, getDocFromCache, collection, doc, getDoc, onSnapshot, serverTimestamp, setDoc as fsSetDoc, updateDoc as fsUpdateDoc, addDoc as fsAddDoc, deleteDoc as fsDeleteDoc, runTransaction as fsRunTransaction, Timestamp, deleteField, query, orderBy, limit
+  getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, getDocFromCache, collection, doc, getDoc, onSnapshot, serverTimestamp, setDoc as fsSetDoc, updateDoc as fsUpdateDoc, addDoc as fsAddDoc, deleteDoc as fsDeleteDoc, runTransaction as fsRunTransaction, Timestamp, deleteField, query, orderBy, limit, where
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
 
 /*
@@ -1507,7 +1540,10 @@ $("#signout-button").addEventListener("click", logoutAccount);
 // Stage 1B + Stage 3: shared catalogue, locations, borrowing and returns.
 const libraryCollections = { books: [], copies: [], locations: [], loans: [] };
 let readingItems = [];
+let challengeItems = []; let challengeError = ""; let challengeEditing = false; const challengeLastDone = new Map();
+let readingLogItems = []; let readingLogError = ""; let myReadingYear = new Date().getFullYear();
 let wishlistItems = [];
+let memberChoices = [];
 let readingError = "";
 let wishlistError = "";
 let pendingWishlistId = "";
@@ -1520,7 +1556,7 @@ const escapeText = (value) => String(value ?? "");
 function stopLibraryListeners() {
   libraryUnsubscribers.forEach((unsubscribe) => unsubscribe());
   libraryUnsubscribers = [];
-  readingItems = []; wishlistItems = [];
+  readingItems = []; wishlistItems = []; memberChoices = []; readingLogItems = []; readingLogError = ""; challengeItems = []; challengeError = "";
 }
 function startLibraryListeners() {
   stopLibraryListeners();
@@ -1529,9 +1565,20 @@ function startLibraryListeners() {
   libraryUnsubscribers.push(onSnapshot(libraryPath("readings"), (snapshot) => {
     readingItems = snapshot.docs.map((item) => ({ id: item.id, ...item.data() })); readingError = ""; renderReadingViews();
   }, (error) => { readingItems = []; readingError = error?.code === "permission-denied" ? rulesHint("Reading status and ratings") : `Reading status could not be loaded: ${friendlyError(error)}`; renderReadingViews(); }));
+  libraryUnsubscribers.push(onSnapshot(query(libraryPath("readingLogs"), where("userId", "==", currentUser.uid)), (snapshot) => {
+    readingLogItems = snapshot.docs.map((item) => ({ id: item.id, ...item.data() })); readingLogError = ""; renderMyReading();
+  }, (error) => { readingLogItems = []; readingLogError = error?.code === "permission-denied" ? rulesHint("Your reading log") : `Your reading log could not be loaded: ${friendlyError(error)}`; renderMyReading(); }));
+  libraryUnsubscribers.push(onSnapshot(query(libraryPath("challenges"), where("userId", "==", currentUser.uid)), (snapshot) => {
+    challengeItems = snapshot.docs.map((item) => ({ id: item.id, ...item.data() })); challengeError = ""; renderMyReading();
+  }, (error) => { challengeItems = []; challengeError = error?.code === "permission-denied" ? rulesHint("Your reading challenge") : `Your reading challenge could not be loaded: ${friendlyError(error)}`; renderMyReading(); }));
   libraryUnsubscribers.push(onSnapshot(libraryPath("wishlist"), (snapshot) => {
     wishlistItems = snapshot.docs.map((item) => ({ id: item.id, ...item.data() })); wishlistError = ""; renderWishlist();
   }, (error) => { wishlistItems = []; wishlistError = error?.code === "permission-denied" ? rulesHint("The wish list") : `The wish list could not be loaded: ${friendlyError(error)}`; renderWishlist(); }));
+  // Stage 7A: active members, for the owner choices (any active member may list members under the rules).
+  libraryUnsubscribers.push(onSnapshot(libraryPath("members"), (snapshot) => {
+    memberChoices = snapshot.docs.map((item) => ({ id: item.id, ...item.data() })).filter((member) => member.active === true);
+    renderLibrary();
+  }, () => { memberChoices = []; refreshOwnerSelects(); }));
   ["books", "copies", "locations", "loans"].forEach((name) => {
     const unsubscribe = onSnapshot(libraryPath(name), (snapshot) => {
       libraryCollections[name] = snapshot.docs.map((item) => ({ id: item.id, ...item.data() })); guideLoaded.add(name);
@@ -1555,7 +1602,7 @@ function displayLocation(locationId) {
   return parent ? `${parent.name} → ${location.name}` : location.name;
 }
 function renderLibrary() {
-  renderBooks(); renderCopies(); renderLocations(); renderLoans(); renderHome(); renderReports(); refreshLibrarySelects(); updateGuideVisibility();
+  renderBooks(); renderCopies(); renderLocations(); renderLoans(); renderHome(); renderReports(); renderMyReading(); refreshLibrarySelects(); updateGuideVisibility();
 }
 // ---- Catalogue: tiles / list view, combined search and filters ----
 const bookView = { mode: "grid" };
@@ -1594,7 +1641,69 @@ function bookCreatedMs(book) {
   const created = book.createdAt;
   return created && typeof created.toMillis === "function" ? created.toMillis() : Number.MAX_SAFE_INTEGER;
 }
-function emptyStats() { return { total: 0, available: 0, loaned: 0 }; }
+// ---- Stage 7A: ownership. Each physical copy has an owner: a member id, or "shared". ----
+const OWNER_SHARED = "shared";
+const myDisplayName = () => (clean($("#member-name")?.textContent) || "Reader").slice(0, 60);
+function memberNameOf(uid) { const member = memberChoices.find((item) => (item.uid || item.id) === uid); return member ? clean(member.displayName || member.email) : ""; }
+function ownerFullName(ownerId, fallbackName = "") {
+  if (!ownerId) return "Owner not set";
+  if (ownerId === OWNER_SHARED) return "Shared";
+  if (currentUser && ownerId === currentUser.uid) return myDisplayName();
+  return memberNameOf(ownerId) || clean(fallbackName) || clean(libraryCollections.copies.find((copy) => copy.ownerId === ownerId && copy.ownerName)?.ownerName) || "Member";
+}
+const ownerShortName = (ownerId, fallbackName) => ownerFullName(ownerId, fallbackName).split(/\s+/)[0];
+const ownerNameForSave = (ownerId) => ownerFullName(ownerId).slice(0, 60);
+function otherOwners() {
+  const seen = new Map();
+  memberChoices.forEach((member) => { const uid = member.uid || member.id; if (uid && uid !== currentUser.uid) seen.set(uid, clean(member.displayName || member.email) || "Member"); });
+  libraryCollections.copies.forEach((copy) => { if (copy.ownerId && copy.ownerId !== OWNER_SHARED && copy.ownerId !== currentUser.uid && !seen.has(copy.ownerId)) seen.set(copy.ownerId, clean(copy.ownerName) || "Member"); });
+  return [...seen.entries()].map(([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name, ["bn", "en"]));
+}
+// kinds: "pick" (Me first, the default), "pick-edit" (same plus "Not set"), "bulk" (Keep as is first), "filter" (anyLabel first)
+function fillOwnerSelect(select, kind, anyLabel = "Anyone") {
+  if (!select || !currentUser) return;
+  const picked = select.value; const wasFilled = select.dataset.filled === "1"; select.replaceChildren();
+  const add = (label, value) => select.add(new Option(label, value));
+  const others = otherOwners();
+  if (kind === "filter") {
+    add(anyLabel, "any"); add("Mine", "mine"); others.forEach((entry) => add(entry.name, entry.id)); add("Shared", OWNER_SHARED); add("Not set", "none");
+  } else {
+    if (kind === "bulk") add("Keep as is", "");
+    add("Me", currentUser.uid); add("Shared (both of us)", OWNER_SHARED); others.forEach((entry) => add(entry.name, entry.id));
+    if (kind === "pick-edit") add("Not set", "");
+  }
+  if (wasFilled && [...select.options].some((option) => option.value === picked)) select.value = picked;
+  select.dataset.filled = "1";
+}
+function refreshOwnerSelects() {
+  fillOwnerSelect($("#copy-form [name=ownerId]"), "pick-edit");
+  fillOwnerSelect($("#book-form [name=copyOwnerId]"), "pick");
+  fillOwnerSelect($("#quick-owner"), "pick");
+  fillOwnerSelect($("#bulk-owner"), "bulk");
+  fillOwnerSelect($("#copy-owner-filter"), "filter", "Any owner");
+  fillOwnerSelect($("#book-owner"), "filter", "Anyone's books");
+  fillOwnerSelect($("#adv-owner"), "filter", "Anyone");
+}
+function setOwnerSelectValue(select, ownerId, ownerName) {
+  const value = ownerId || "";
+  if (value && ![...select.options].some((option) => option.value === value)) select.add(new Option(ownerFullName(value, ownerName), value));
+  select.value = value;
+}
+function copyOwnerMatches(copy, filter) {
+  if (!filter || filter === "any") return true;
+  if (filter === "none") return !copy.ownerId;
+  if (filter === "mine") return copy.ownerId === currentUser.uid;
+  return copy.ownerId === filter;
+}
+function ownerChips(stats) {
+  if (!stats || !stats.owners || !stats.owners.size) return null;
+  const row = document.createElement("div"); row.className = "owner-chips";
+  [...stats.owners].map((id) => ({ id, label: ownerShortName(id) }))
+    .sort((a, b) => (a.id === currentUser.uid ? -1 : 0) - (b.id === currentUser.uid ? -1 : 0) || a.label.localeCompare(b.label, ["bn", "en"]))
+    .forEach((entry) => { const chip = document.createElement("span"); chip.className = "owner-chip"; chip.textContent = entry.label; chip.title = `Owner: ${ownerFullName(entry.id)}`; row.append(chip); });
+  return row;
+}
+function emptyStats() { return { total: 0, available: 0, loaned: 0, owners: new Set(), noOwner: 0 }; }
 function copiesByBook() {
   const map = new Map();
   libraryCollections.copies.forEach((copy) => {
@@ -1602,6 +1711,7 @@ function copiesByBook() {
     stats.total += 1;
     if (copy.status === "Available") stats.available += 1;
     if (copy.status === "Loaned") stats.loaned += 1;
+    if (copy.ownerId) stats.owners.add(copy.ownerId); else stats.noOwner += 1;
     map.set(copy.bookId, stats);
   });
   return map;
@@ -1620,12 +1730,12 @@ function getBookFilters() {
     title: text("adv-title"), author: text("adv-author"), genre: text("adv-genre"),
     isbn: text("adv-isbn").replace(/[-\s]/g, ""), publisher: text("adv-publisher"),
     yearFrom: Number($("#adv-year-from").value) || null, yearTo: Number($("#adv-year-to").value) || null,
-    availability: $("#adv-availability").value, reading: $("#adv-reading").value, sort: $("#book-sort").value
+    availability: $("#adv-availability").value, reading: $("#adv-reading").value, owner: $("#book-owner").value || "any", sort: $("#book-sort").value
   };
 }
 function activeFilterCount(filters) {
   return [filters.title, filters.author, filters.genre, filters.isbn, filters.publisher].filter(Boolean).length
-    + (filters.yearFrom ? 1 : 0) + (filters.yearTo ? 1 : 0) + (filters.availability !== "any" ? 1 : 0) + (filters.reading !== "any" ? 1 : 0);
+    + (filters.yearFrom ? 1 : 0) + (filters.yearTo ? 1 : 0) + (filters.availability !== "any" ? 1 : 0) + (filters.reading !== "any" ? 1 : 0) + (filters.owner !== "any" ? 1 : 0);
 }
 function textHas(value, needle) { return !needle || escapeText(value).toLowerCase().includes(needle); }
 function bookMatches(book, filters, stats) {
@@ -1640,11 +1750,15 @@ function bookMatches(book, filters, stats) {
   if (filters.availability === "unavailable" && !(stats.total > 0 && stats.available === 0)) return false;
   if (filters.availability === "nocopies" && stats.total !== 0) return false;
   if (filters.reading !== "any") { const mine = myReading(book.id); if ((mine ? mine.status : "none") !== filters.reading) return false; }
+  if (filters.owner !== "any") {
+    if (filters.owner === "none") { if (!(stats.noOwner > 0)) return false; }
+    else { const wanted = filters.owner === "mine" ? currentUser.uid : filters.owner; if (!stats.owners.has(wanted)) return false; }
+  }
   return true;
 }
 function resetBookFilters() {
   ["book-search", "adv-title", "adv-author", "adv-genre", "adv-isbn", "adv-publisher", "adv-year-from", "adv-year-to"].forEach((id) => { $(`#${id}`).value = ""; });
-  $("#adv-availability").value = "any"; $("#adv-reading").value = "any";
+  $("#adv-availability").value = "any"; $("#adv-reading").value = "any"; $("#book-owner").value = "any"; $("#adv-owner").value = "any";
   renderBooks();
 }
 function makeBookTile(book, stats) {
@@ -1658,7 +1772,9 @@ function makeBookTile(book, stats) {
   info.append(title, author);
   if (book.originalTitle) { const original = document.createElement("span"); original.className = "author"; original.textContent = book.originalTitle; info.append(original); }
   if (meta.textContent) info.append(meta);
+  const tileBar = tileProgress(book.id); if (tileBar) info.append(tileBar);
   info.append(availabilityBadge(stats));
+  const ownerRow = ownerChips(stats); if (ownerRow) info.append(ownerRow);
   hit.append(makeCover(book), info);
   const actions = document.createElement("div"); actions.className = "tile-actions";
   actions.append(makeActionButton("Edit", "edit-book", book.id), makeActionButton("Delete", "delete-book", book.id, true));
@@ -1717,11 +1833,12 @@ function copyLabelFor(copy) {
   siblings.sort((x, y) => stamp(x) - stamp(y) || String(x.id).localeCompare(String(y.id)));
   return `Copy ${siblings.findIndex((item) => item.id === copy.id) + 1}`;
 }
-const copyBulk = { on: false, selected: new Set(), filter: "", busy: false };
+const copyBulk = { on: false, selected: new Set(), filter: "", owner: "any", busy: false };
 function copyMatchesFilter(copy) {
+  if (!copyOwnerMatches(copy, copyBulk.owner)) return false;
   const q = copyBulk.filter.trim().toLowerCase(); if (!q) return true;
   const book = libraryCollections.books.find((item) => item.id === copy.bookId);
-  return [book?.title, book?.author, book?.originalTitle, book?.authorOriginal, copy.copyLabel, copy.status, copy.condition, displayLocation(copy.locationId)].some((part) => String(part || "").toLowerCase().includes(q));
+  return [book?.title, book?.author, book?.originalTitle, book?.authorOriginal, copy.copyLabel, copy.status, copy.condition, displayLocation(copy.locationId), copy.ownerId ? ownerFullName(copy.ownerId, copy.ownerName) : "owner not set"].some((part) => String(part || "").toLowerCase().includes(q));
 }
 function visibleCopies() {
   const titleOf = (copy) => libraryCollections.books.find((item) => item.id === copy.bookId)?.title || "";
@@ -1755,7 +1872,8 @@ function renderCopies() {
     const details = document.createElement("div"); const title = document.createElement("strong"); title.textContent = `${book?.title || "Unknown book"}${copyLabelFor(copy) ? ` — ${copyLabelFor(copy)}` : ""}`;
     const meta = document.createElement("small"); meta.textContent = `${copy.condition || "Condition not set"} · ${displayLocation(copy.locationId)}${copy.status === "Loaned" && !copy.activeLoanId ? " · No linked loan record — review this legacy status" : ""}`;
     const state = document.createElement("span"); state.className = `pill${["Available", "Reading", "Repair"].includes(copy.status) ? ` pill-${copy.status}` : ""}`; state.textContent = copy.status || "Status not set";
-    details.append(title, meta, state); const actions = document.createElement("div"); actions.className = "library-actions";
+    const ownerPill = document.createElement("span"); ownerPill.className = `pill pill-owner${copy.ownerId ? "" : " pill-owner-none"}`; ownerPill.textContent = copy.ownerId ? ownerFullName(copy.ownerId, copy.ownerName) : "Owner not set";
+    details.append(title, meta, state, ownerPill); const actions = document.createElement("div"); actions.className = "library-actions";
     if (copyBulk.on) {
       const box = document.createElement("input"); box.type = "checkbox"; box.className = "copy-pick"; box.checked = copyBulk.selected.has(copy.id); box.setAttribute("aria-label", `Select ${title.textContent}`);
       item.classList.add("selectable"); item.classList.toggle("selected", box.checked); item.dataset.copyId = copy.id; actions.append(box);
@@ -1897,6 +2015,7 @@ function refreshLibrarySelects() {
   parentSelect.replaceChildren(new Option("No parent (top level)", ""));
   libraryCollections.locations.forEach((location) => parentSelect.add(new Option(`${location.name} (${location.type})`, location.id)));
   if (libraryCollections.locations.some((location) => location.id === selectedParent)) parentSelect.value = selectedParent;
+  refreshOwnerSelects();
 }
 function setAlsoCopyVisible(show) { $("#also-copy-block").hidden = !show; }
 function resetEditor(formSelector, messageSelector, buttonSelector, label) {
@@ -1908,6 +2027,7 @@ function bookPayload(form) {
   for (const key of ["genre", "isbn", "publisher", "coverUrl", "description"]) { const value = clean(form.get(key)); if (value) data[key] = value; }
   const year = clean(form.get("publicationYear")); if (year) data.publicationYear = Number(year);
   const editing = Boolean(clean(form.get("recordId")));
+  { const pagesText = normDigits(form.get("totalPages")); if (pagesText) { const pages = Number(pagesText); if (!/^\d+$/.test(pagesText) || pages < 1 || pages > 20000) throw new Error("Total pages must be a whole number from 1 to 20000."); data.totalPages = pages; } else if (editing) data.totalPages = deleteField(); }
   for (const key of ["language", "originalTitle", "authorOriginal"]) { const value = clean(form.get(key)); if (value) data[key] = value; else if (editing) data[key] = deleteField(); }
   return data;
 }
@@ -2352,7 +2472,7 @@ $("#bulk-csv").addEventListener("change", async (event) => {
 $("#book-form").addEventListener("submit", async (event) => {
   event.preventDefault(); const form = event.currentTarget; const values = new FormData(form); const id = clean(values.get("recordId"));
   const button = $("#book-submit"); button.disabled = true;
-  try { if (!clean(values.get("title")) || !clean(values.get("author"))) throw new Error("Enter both the book title and author."); const candidate = { title: values.get("title"), author: values.get("author"), isbn: values.get("isbn") }; const duplicate = !id ? findBookDuplicate(candidate) : null; if (duplicate) throw new Error(`This book may already exist: ${duplicate.title} — ${duplicate.author}. Edit the existing record instead of adding a duplicate.`); const savedBookId = await saveRecord("books", id, bookPayload(values)); let copyAdded = false, copyFailed = false; if (!id && values.get("alsoCopy")) { try { const copyData = { bookId: savedBookId, condition: "Good", status: "Available", updatedAt: serverTimestamp(), updatedBy: currentUser.uid }; const copyLocation = clean(values.get("copyLocationId")); if (copyLocation) copyData.locationId = copyLocation; await saveRecord("copies", "", copyData); copyAdded = true; } catch { copyFailed = true; } } if (!id && pendingWishlistId) { const wishId = pendingWishlistId; pendingWishlistId = ""; try { await deleteDoc(doc(db, "libraries", LIBRARY_ID, "wishlist", wishId)); } catch { /* the book is saved; the wish list entry can be removed by hand */ } } resetEditor("#book-form", "#book-message", "#book-submit", "Add book"); $("#book-editor").open = false; showToast(id ? "Book updated successfully." : copyFailed ? "Book added, but its physical copy could not be saved. Add it in Copies." : copyAdded ? "Book and physical copy added." : "Book added successfully."); }
+  try { if (!clean(values.get("title")) || !clean(values.get("author"))) throw new Error("Enter both the book title and author."); const candidate = { title: values.get("title"), author: values.get("author"), isbn: values.get("isbn") }; const duplicate = !id ? findBookDuplicate(candidate) : null; if (duplicate) throw new Error(`This book may already exist: ${duplicate.title} — ${duplicate.author}. Edit the existing record instead of adding a duplicate.`); const savedBookId = await saveRecord("books", id, bookPayload(values)); let copyAdded = false, copyFailed = false; if (!id && values.get("alsoCopy")) { try { const copyData = { bookId: savedBookId, condition: "Good", status: "Available", updatedAt: serverTimestamp(), updatedBy: currentUser.uid }; const copyLocation = clean(values.get("copyLocationId")); if (copyLocation) copyData.locationId = copyLocation; const copyOwner = clean(values.get("copyOwnerId")); if (copyOwner) { copyData.ownerId = copyOwner; copyData.ownerName = ownerNameForSave(copyOwner); } await saveRecord("copies", "", copyData); copyAdded = true; } catch { copyFailed = true; } } if (!id && pendingWishlistId) { const wishId = pendingWishlistId; pendingWishlistId = ""; try { await deleteDoc(doc(db, "libraries", LIBRARY_ID, "wishlist", wishId)); } catch { /* the book is saved; the wish list entry can be removed by hand */ } } resetEditor("#book-form", "#book-message", "#book-submit", "Add book"); $("#book-editor").open = false; showToast(id ? "Book updated successfully." : copyFailed ? "Book added, but its physical copy could not be saved. Add it in Copies." : copyAdded ? "Book and physical copy added." : "Book added successfully."); }
   catch (error) { message("#book-message", friendlyError(error), "error"); } finally { button.disabled = false; }
 });
 $("#copy-form").addEventListener("submit", async (event) => {
@@ -2365,6 +2485,9 @@ $("#copy-form").addEventListener("submit", async (event) => {
     const status = existingCopy?.status === "Loaned" ? "Loaned" : clean(values.get("status"));
     const data = { bookId, condition: clean(values.get("condition")), status, updatedAt: serverTimestamp(), updatedBy: currentUser.uid };
     for (const key of ["copyLabel", "locationId", "notes"]) { const value = clean(values.get(key)); if (value) data[key] = value; }
+    const ownerId = clean(values.get("ownerId"));
+    if (ownerId) { data.ownerId = ownerId; data.ownerName = ownerNameForSave(ownerId); }
+    else if (id && existingCopy?.ownerId) { data.ownerId = deleteField(); data.ownerName = deleteField(); }
     await saveRecord("copies", id, data); $("#copy-form").elements.bookId.disabled = false; $("#copy-form").elements.status.disabled = false; resetEditor("#copy-form", "#copy-message", "#copy-submit", "Add copy"); message("#copy-message", id ? "Physical copy updated." : "Physical copy added.", "success"); $("#copy-editor").open = false; showToast(id ? "Physical copy updated." : "Physical copy added.");
   } catch (error) { message("#copy-message", friendlyError(error), "error"); } finally { button.disabled = false; }
 });
@@ -2438,6 +2561,8 @@ $("#copy-select-toggle").addEventListener("click", () => setCopySelecting(!copyB
 $("#copy-bulk-cancel").addEventListener("click", () => setCopySelecting(false));
 $("#copy-bulk-collapse").addEventListener("click", () => { const bar = $("#copy-bulk-bar"); const compact = bar.classList.toggle("compact"); $("#copy-bulk-collapse").textContent = compact ? "Show options" : "Hide options"; $("#copy-bulk-collapse").setAttribute("aria-expanded", String(!compact)); });
 window.addEventListener("resize", () => { if (copyBulk.on) updateCopyBulkBar(); });
+$("#copy-owner-filter").addEventListener("change", (event) => { copyBulk.owner = event.target.value || "any"; renderCopies(); });
+$("#owner-nudge-button").addEventListener("click", () => { copyBulk.owner = "none"; $("#copy-owner-filter").value = "none"; document.querySelector('[data-library-tab="copies"]').click(); setCopySelecting(true); });
 $("#copy-select-all").addEventListener("click", () => { visibleCopies().forEach((copy) => copyBulk.selected.add(copy.id)); renderCopies(); });
 $("#copy-select-none").addEventListener("click", () => { copyBulk.selected.clear(); renderCopies(); });
 $("#copies-list").addEventListener("click", (event) => {
@@ -2448,21 +2573,23 @@ $("#copies-list").addEventListener("click", (event) => {
 });
 $("#copy-bulk-apply").addEventListener("click", async () => {
   if (copyBulk.busy) return;
-  const status = $("#bulk-status").value, condition = $("#bulk-condition").value, locationId = $("#bulk-location").value;
+  const status = $("#bulk-status").value, condition = $("#bulk-condition").value, locationId = $("#bulk-location").value, ownerId = $("#bulk-owner").value;
   const targets = libraryCollections.copies.filter((copy) => copyBulk.selected.has(copy.id));
   if (!targets.length) { message("#copy-bulk-message", "Tick at least one copy first.", "error"); return; }
-  if (!status && !condition && !locationId) { message("#copy-bulk-message", "Choose at least one thing to change (status, condition or location).", "error"); return; }
+  if (!status && !condition && !locationId && !ownerId) { message("#copy-bulk-message", "Choose at least one thing to change (status, condition, location or owner).", "error"); return; }
   if (!navigator.onLine) { message("#copy-bulk-message", "You are offline. This needs an internet connection, so nothing was changed.", "error"); return; }
   const plan = targets.map((copy) => {
     const change = {};
     if (status && copy.status !== "Loaned" && copy.status !== status) change.status = status;
     if (condition && copy.condition !== condition) change.condition = condition;
     if (locationId && copy.locationId !== locationId) change.locationId = locationId;
+    if (ownerId && copy.ownerId !== ownerId) change.ownerId = ownerId;
     return { copy, change };
   }).filter((entry) => Object.keys(entry.change).length);
   const loanedSkipped = status ? targets.filter((copy) => copy.status === "Loaned").length : 0;
   const parts = []; if (status) parts.push(`status → ${status}`); if (condition) parts.push(`condition → ${condition}`);
   if (locationId) parts.push(`location → ${displayLocation(locationId)}`);
+  if (ownerId) parts.push(`owner → ${ownerFullName(ownerId)}`);
   const loanedNote = loanedSkipped ? ` ${loanedSkipped} loaned ${loanedSkipped === 1 ? "copy keeps" : "copies keep"} its current status; borrowing manages that.` : "";
   if (!plan.length) { message("#copy-bulk-message", `Nothing to change: the selected copies already match.${loanedNote}`, ""); return; }
   const ok = await askConfirm(`Change ${plan.length} ${plan.length === 1 ? "copy" : "copies"}: ${parts.join(", ")}?${loanedNote}`, "Apply");
@@ -2475,12 +2602,13 @@ $("#copy-bulk-apply").addEventListener("click", async () => {
       const nextCondition = change.condition ?? copy.condition; if (nextCondition) data.condition = nextCondition;
       const nextStatus = change.status ?? copy.status; if (nextStatus) data.status = nextStatus;
       if (change.locationId) data.locationId = change.locationId;
+      if (change.ownerId) { data.ownerId = change.ownerId; data.ownerName = ownerNameForSave(change.ownerId); }
       try { await saveRecord("copies", copy.id, data); done += 1; } catch (error) { failedIds.add(copy.id); if (!firstError) firstError = friendlyError(error); }
     }
   } finally { activityPaused = false; copyBulk.busy = false; }
   if (done) logActivity("copy_edited", `Bulk edited ${done} ${done === 1 ? "copy" : "copies"} (${parts.join(", ")})`);
   copyBulk.selected = failedIds;
-  if (!failedIds.size) { $("#bulk-status").value = ""; $("#bulk-condition").value = ""; $("#bulk-location").value = ""; }
+  if (!failedIds.size) { $("#bulk-status").value = ""; $("#bulk-condition").value = ""; $("#bulk-location").value = ""; $("#bulk-owner").value = ""; }
   const unchanged = targets.length - plan.length;
   const summary = `Updated ${done} ${done === 1 ? "copy" : "copies"}.${unchanged ? ` ${unchanged} already matched.` : ""}${loanedNote}${failedIds.size ? ` ${failedIds.size} could not be saved (${firstError}); they stay selected so you can try again.` : ""}`;
   message("#copy-bulk-message", summary, failedIds.size ? "error" : "success"); if (done) showToast(`Updated ${done} ${done === 1 ? "copy" : "copies"}.`);
@@ -2489,7 +2617,7 @@ $("#copy-bulk-apply").addEventListener("click", async () => {
 $("#location-cancel").addEventListener("click", () => resetEditor("#location-form", "#location-message", "#location-submit", "Add location"));
 document.querySelectorAll("[data-library-tab]").forEach((button) => button.addEventListener("click", () => {
   document.querySelectorAll("[data-library-tab]").forEach((tab) => tab.classList.toggle("active", tab === button));
-  ["home", "discover", "books", "copies", "locations", "borrowing", "reports", "activity", "members"].forEach((name) => $(`#${name}-section`).classList.toggle("hidden", button.dataset.libraryTab !== name));
+  ["home", "discover", "books", "copies", "locations", "borrowing", "reports", "reading", "activity", "members"].forEach((name) => $(`#${name}-section`).classList.toggle("hidden", button.dataset.libraryTab !== name));
 }));
 function askConfirm(text, label = "Delete") {
   return new Promise((resolve) => {
@@ -2546,7 +2674,7 @@ document.querySelector(".library-tools").addEventListener("click", async (event)
         const bookId = await saveRecord("books", "", bookPayload(values));
         let copyNote = "";
         if ($("#quick-copy").checked) {
-          try { const copyData = { bookId, condition: "Good", status: "Available", updatedAt: serverTimestamp(), updatedBy: currentUser.uid }; const shelf = $("#quick-location").value; if (shelf) copyData.locationId = shelf; await saveRecord("copies", "", copyData); copyNote = " with a physical copy"; }
+          try { const copyData = { bookId, condition: "Good", status: "Available", updatedAt: serverTimestamp(), updatedBy: currentUser.uid }; const shelf = $("#quick-location").value; if (shelf) copyData.locationId = shelf; const quickOwner = $("#quick-owner").value; if (quickOwner) { copyData.ownerId = quickOwner; copyData.ownerName = ownerNameForSave(quickOwner); } await saveRecord("copies", "", copyData); copyNote = " with a physical copy"; }
           catch { copyNote = ", but its physical copy could not be saved (add it in Copies)"; }
         }
         button.textContent = "Added ✓"; button.classList.add("added");
@@ -2612,8 +2740,8 @@ document.querySelector(".library-tools").addEventListener("click", async (event)
       form.scrollIntoView({ behavior: "smooth", block: "center" });
     }
     if (action === "extend-loan") { await extendLoan(id); }
-    if (action === "edit-book") { const item = libraryCollections.books.find((entry) => entry.id === id); if (!item) return; const form = $("#book-form"); for (const key of ["title", "author", "language", "originalTitle", "authorOriginal", "genre", "isbn", "publisher", "publicationYear", "coverUrl", "description"]) form.elements[key].value = item[key] ?? ""; form.elements.recordId.value = id; setAlsoCopyVisible(false); $("#book-submit").textContent = "Save book"; $("#book-editor").open = true; goTab("books"); form.scrollIntoView({ behavior: "smooth", block: "center" }); }
-    if (action === "edit-copy") { const item = libraryCollections.copies.find((entry) => entry.id === id); if (!item) return; const form = $("#copy-form"); $("#copy-editor").open = true; const statusSelect = form.elements.status; [...statusSelect.options].filter((option) => option.dataset.legacy === "true").forEach((option) => option.remove()); if (item.status === "Loaned") { const legacy = new Option("Loaned (managed by borrowing)", "Loaned"); legacy.disabled = true; legacy.dataset.legacy = "true"; statusSelect.add(legacy); } for (const key of ["bookId", "copyLabel", "condition", "status", "locationId", "notes"]) form.elements[key].value = item[key] ?? ""; form.elements.bookId.disabled = item.status === "Loaned"; form.elements.status.disabled = item.status === "Loaned"; form.elements.recordId.value = id; $("#copy-submit").textContent = "Save copy"; document.querySelector('[data-library-tab="copies"]').click(); form.scrollIntoView({ behavior: "smooth", block: "center" }); }
+    if (action === "edit-book") { const item = libraryCollections.books.find((entry) => entry.id === id); if (!item) return; const form = $("#book-form"); for (const key of ["title", "author", "language", "originalTitle", "authorOriginal", "genre", "isbn", "publisher", "publicationYear", "totalPages", "coverUrl", "description"]) form.elements[key].value = item[key] ?? ""; form.elements.recordId.value = id; setAlsoCopyVisible(false); $("#book-submit").textContent = "Save book"; $("#book-editor").open = true; goTab("books"); form.scrollIntoView({ behavior: "smooth", block: "center" }); }
+    if (action === "edit-copy") { const item = libraryCollections.copies.find((entry) => entry.id === id); if (!item) return; const form = $("#copy-form"); $("#copy-editor").open = true; const statusSelect = form.elements.status; [...statusSelect.options].filter((option) => option.dataset.legacy === "true").forEach((option) => option.remove()); if (item.status === "Loaned") { const legacy = new Option("Loaned (managed by borrowing)", "Loaned"); legacy.disabled = true; legacy.dataset.legacy = "true"; statusSelect.add(legacy); } for (const key of ["bookId", "copyLabel", "condition", "status", "locationId", "notes"]) form.elements[key].value = item[key] ?? ""; form.elements.bookId.disabled = item.status === "Loaned"; form.elements.status.disabled = item.status === "Loaned"; setOwnerSelectValue(form.elements.ownerId, item.ownerId, item.ownerName); form.elements.recordId.value = id; $("#copy-submit").textContent = "Save copy"; document.querySelector('[data-library-tab="copies"]').click(); form.scrollIntoView({ behavior: "smooth", block: "center" }); }
     if (action === "edit-location") { const item = libraryCollections.locations.find((entry) => entry.id === id); if (!item) return; const form = $("#location-form"); for (const key of ["name", "type", "parentId", "notes"]) form.elements[key].value = item[key] ?? ""; form.elements.recordId.value = id; $("#location-submit").textContent = "Save location"; document.querySelector('[data-library-tab="locations"]').click(); form.scrollIntoView({ behavior: "smooth", block: "center" }); }
     if (action === "return-loan") {
       const dateInput = document.querySelector(`[data-return-date-for="${CSS.escape(id)}"]`);
@@ -2702,6 +2830,7 @@ $("#filters-toggle").addEventListener("click", () => {
   $("#filters-toggle").setAttribute("aria-expanded", String(open));
 });
 function openAdvancedFilters() { $("#advanced-panel").classList.remove("hidden"); $("#filters-toggle").setAttribute("aria-expanded", "true"); }
+$("#book-toolbar").addEventListener("input", (event) => { if (event.target.id === "adv-owner") $("#book-owner").value = event.target.value; else if (event.target.id === "book-owner") $("#adv-owner").value = event.target.value; });
 $("#book-toolbar").addEventListener("input", renderBooks);
 $("#filters-reset").addEventListener("click", resetBookFilters);
 
@@ -2717,12 +2846,13 @@ function openBookDialog(id) {
   const title = document.createElement("h2"); title.textContent = (bnMain && book.originalTitle) || book.title || "Untitled book"; if (bnMain && book.originalTitle) title.lang = "bn";
   const author = document.createElement("p"); author.className = "dialog-author"; author.textContent = (bnMain && book.authorOriginal) || book.author || "Author unknown"; if (bnMain && book.authorOriginal) author.lang = "bn";
   const meta = document.createElement("div"); meta.className = "dialog-meta";
-  [LANG_NAMES[book.language], book.genre, book.publicationYear, book.publisher, book.isbn ? `ISBN ${book.isbn}` : ""].filter(Boolean).forEach((value) => { const chip = document.createElement("span"); chip.textContent = String(value); meta.append(chip); });
+  [LANG_NAMES[book.language], book.genre, book.publicationYear, book.publisher, book.totalPages ? `${book.totalPages} pages` : "", book.isbn ? `ISBN ${book.isbn}` : ""].filter(Boolean).forEach((value) => { const chip = document.createElement("span"); chip.textContent = String(value); meta.append(chip); });
   const stats = copiesByBook().get(book.id) || emptyStats();
   info.append(title, author);
   const originals = bnMain ? [book.originalTitle && book.title !== book.originalTitle ? book.title : "", book.authorOriginal && book.author !== book.authorOriginal ? book.author : ""].filter(Boolean) : [book.originalTitle, book.authorOriginal].filter(Boolean);
   if (originals.length) { const original = document.createElement("p"); original.className = "muted"; if (book.language === "bn" && !bnMain) original.lang = "bn"; original.textContent = originals.join(" — "); info.append(original); }
   info.append(meta, availabilityBadge(stats));
+  const dialogOwners = ownerChips(stats); if (dialogOwners) info.append(dialogOwners);
   top.append(makeCover(book), info); body.append(top);
   if (book.description) { const desc = document.createElement("p"); desc.className = "dialog-desc"; desc.textContent = book.description; body.append(desc); }
   const heading = document.createElement("h3"); heading.textContent = `Physical copies (${stats.total})`; body.append(heading);
@@ -2731,7 +2861,7 @@ function openBookDialog(id) {
   copies.forEach((copy) => {
     const row = document.createElement("div"); row.className = "dialog-copy";
     const left = document.createElement("div"); const name = document.createElement("strong"); name.textContent = copy.copyLabel || "Copy";
-    const where = document.createElement("small"); where.textContent = `${displayLocation(copy.locationId)} · ${copy.condition || "Condition not set"}`;
+    const where = document.createElement("small"); where.textContent = `${displayLocation(copy.locationId)} · ${copy.condition || "Condition not set"}${copy.ownerId ? ` · Owner: ${ownerFullName(copy.ownerId, copy.ownerName)}` : " · Owner not set"}`;
     { const activeLoan = copy.status === "Loaned" ? libraryCollections.loans.find((loan) => loan.id === copy.activeLoanId) : null; if (activeLoan) where.textContent += ` · With ${activeLoan.borrowerName || "someone"}, due ${formatLibraryDate(activeLoan.dueAt)}`; }
     left.append(name, where);
     const state = document.createElement("span"); state.className = `pill${copy.status === "Available" ? "" : ""}`; state.textContent = copy.status || "Status not set";
@@ -2812,12 +2942,68 @@ function readingSummary(bookId) {
   if (rated.length) parts.push(`★ ${(rated.reduce((sum, value) => sum + value, 0) / rated.length).toFixed(1)}`);
   return parts.filter(Boolean).join(" · ");
 }
-async function saveMyReading(bookId, status, rating) {
+// ---- Stage 7B: total pages and reading progress ----
+function normDigits(value) { return String(value ?? "").replace(/[\u09E6-\u09EF]/g, (d) => String(d.charCodeAt(0) - 0x09E6)).replace(/[\u0660-\u0669]/g, (d) => String(d.charCodeAt(0) - 0x0660)).replace(/[\s,]/g, ""); }
+function parsePages(value, min, max) { const t = normDigits(value); if (!/^\d+$/.test(t)) return null; const n = Number(t); return n >= min && n <= max ? n : null; }
+const bookTotalPages = (bookId) => Number(libraryCollections.books.find((b) => b.id === bookId)?.totalPages) || 0;
+function progressLine(item, total) { const page = Number(item?.currentPage) || 0; return total ? `Page ${page} of ${total} (${Math.min(100, Math.round(page * 100 / total))}%)` : `Page ${page}`; }
+function progressBarNode(pct) { const bar = document.createElement("div"); bar.className = "read-bar"; bar.setAttribute("role", "progressbar"); bar.setAttribute("aria-valuemin", "0"); bar.setAttribute("aria-valuemax", "100"); bar.setAttribute("aria-valuenow", String(pct)); const fill = document.createElement("span"); fill.style.width = `${pct}%`; bar.append(fill); return bar; }
+function tileProgress(bookId) { const mine = myReading(bookId); const total = bookTotalPages(bookId); if (!mine || mine.status !== "reading" || !total || !(Number(mine.currentPage) > 0)) return null; return progressBarNode(Math.min(100, Math.round(mine.currentPage * 100 / total))); }
+async function saveMyReading(bookId, status, rating, extra = {}) {
   const ref = doc(db, "libraries", LIBRARY_ID, "readings", `${bookId}_${currentUser.uid}`);
-  if (status === "none" && !rating) { if (myReading(bookId)) await deleteDoc(ref); return; }
+  const mine = myReading(bookId);
+  // Keep progress fields: setDoc replaces the whole document, so carry the old values over (null in extra removes one).
+  const merged = { currentPage: mine?.currentPage, startedAt: mine?.startedAt, finishedAt: mine?.finishedAt, ...extra };
+  if (status === "none" && !rating) {
+    if (!mine) return;
+    const hasProgress = merged.currentPage != null || merged.startedAt || merged.finishedAt;
+    if (hasProgress && !(await askConfirm("Remove your reading status? Your page progress and dates for this book will be deleted too.", "Remove"))) return false;
+    await deleteDoc(ref); return;
+  }
   const data = { bookId, userId: currentUser.uid, userName: (clean($("#member-name")?.textContent) || "Reader").slice(0, 60), status, updatedAt: serverTimestamp() };
   if (rating) data.rating = rating;
+  for (const key of ["currentPage", "startedAt", "finishedAt"]) if (merged[key] != null && merged[key] !== "") data[key] = merged[key];
   await setDoc(ref, data);
+  const before = Number(mine?.currentPage) || 0, after = Number(data.currentPage) || 0;
+  if ((status === "reading" || status === "finished") && after > before) {
+    try { await addDoc(libraryPath("readingLogs"), { userId: currentUser.uid, bookId, date: todayLocal(), pages: Math.min(5000, after - before), toPage: Math.min(20000, after), createdAt: serverTimestamp(), createdBy: currentUser.uid }); }
+    catch (error) { showToast("Your progress was saved, but the reading log could not be updated."); }
+  }
+}
+function readingSaveError(error) { showToast(error?.code === "permission-denied" ? "Could not save: publish the updated Firestore rules first." : `Could not save: ${friendlyError(error)}`); }
+function drawProgressPanel(bookId, mine, getRating) {
+  const total = bookTotalPages(bookId); const today = () => dateInputToTimestamp(todayLocal());
+  const panel = document.createElement("div"); panel.className = "read-progress";
+  const row = () => { const r = document.createElement("div"); r.className = "row"; return r; };
+  const input = (label, value) => { const el = document.createElement("input"); el.type = "text"; el.inputMode = "numeric"; el.maxLength = 6; el.setAttribute("aria-label", label); el.placeholder = label; if (value) el.value = value; return el; };
+  const button = (text, onClick) => { const b = document.createElement("button"); b.type = "button"; b.className = "secondary-button"; b.textContent = text; b.addEventListener("click", onClick); return b; };
+  const saveTotal = async (text) => {
+    const pages = parsePages(text, 1, 20000);
+    if (!pages) { showToast("Enter the total pages as a whole number from 1 to 20000."); return; }
+    if (mine.currentPage > pages) { showToast(`You are already on page ${mine.currentPage}. Enter a total that is at least that.`); return; }
+    try { await saveRecord("books", bookId, { totalPages: pages, updatedAt: serverTimestamp(), updatedBy: currentUser.uid }); showToast("Total pages saved."); } catch (error) { readingSaveError(error); }
+  };
+  const askTotal = (prompt, current) => { const r = row(); const label = document.createElement("small"); label.textContent = prompt; const field = input("Total pages", current); r.append(field, button("Save pages", () => saveTotal(field.value))); panel.append(label, r); };
+  if (mine.status === "finished") {
+    const r = row(); const label = document.createElement("small"); label.textContent = total ? `Finished · ${total} pages · finished on` : "Finished on";
+    const date = document.createElement("input"); date.type = "date"; date.max = todayLocal(); date.value = timestampToDateInput(mine.finishedAt) || ""; date.setAttribute("aria-label", "Finished on");
+    date.addEventListener("change", async () => { if (!date.value) return; try { await saveMyReading(bookId, "finished", getRating(), { finishedAt: dateInputToTimestamp(date.value) }); showToast("Finish date saved."); } catch (error) { readingSaveError(error); } });
+    r.append(label, date); panel.append(r); return panel;
+  }
+  if (!total) { askTotal("How many pages does this book have? (needed to track progress)", ""); return panel; }
+  const page = Number(mine.currentPage) || 0;
+  const line = document.createElement("small"); line.textContent = progressLine(mine, total); panel.append(progressBarNode(Math.min(100, Math.round(page * 100 / total))), line);
+  const setPage = async (n) => {
+    if (n > total) { showToast(`This book has ${total} pages.`); return; }
+    const started = mine.startedAt || today();
+    try {
+      await saveMyReading(bookId, "reading", getRating(), { currentPage: n, startedAt: started });
+      if (n === total && await askConfirm("You reached the last page. Mark this book as finished?", "Mark finished")) await saveMyReading(bookId, "finished", getRating(), { currentPage: total, startedAt: started, finishedAt: today() });
+    } catch (error) { readingSaveError(error); }
+  };
+  const r = row(); const pageInput = input("Page number", String(page || ""));
+  r.append(pageInput, button("Update", () => { const n = parsePages(pageInput.value, 0, 20000); if (n === null) { showToast("Enter a page number (digits only)."); return; } setPage(n); }), button("+10", () => setPage(Math.min(total, page + 10))), button("+25", () => setPage(Math.min(total, page + 25))), button("Edit total", () => { r.remove(); askTotal("New total pages", String(total)); }));
+  panel.append(r); return panel;
 }
 function drawReadingBox(box, bookId) {
   box.replaceChildren();
@@ -2841,19 +3027,155 @@ function drawReadingBox(box, bookId) {
     catch (error) { showToast(error?.code === "permission-denied" ? "Could not save: publish the updated Firestore rules first." : `Could not save: ${friendlyError(error)}`); }
   };
   starButtons.forEach((button, i) => button.addEventListener("click", () => { rating = rating === i + 1 ? 0 : i + 1; paint(); save(); }));
-  select.addEventListener("change", save);
+  select.addEventListener("change", async () => {
+    const status = select.value, was = mine?.status || "none", extra = {};
+    if (status === "reading") { if (!mine?.startedAt) extra.startedAt = dateInputToTimestamp(todayLocal()); if (was === "finished") { if (!(await askConfirm("Move this back to Reading? The finished date will be cleared.", "Move back"))) { select.value = was; return; } extra.finishedAt = null; } }
+    else if (status === "finished") { extra.finishedAt = mine?.finishedAt || dateInputToTimestamp(todayLocal()); const total = bookTotalPages(bookId); if (total) extra.currentPage = total; }
+    else if (was === "finished") extra.finishedAt = null;
+    try { if ((await saveMyReading(bookId, status, rating, extra)) === false) select.value = was; } catch (error) { readingSaveError(error); }
+  });
   paint(); controls.append(select, stars); row.append(label, controls); box.append(row);
+  if (mine && (mine.status === "reading" || mine.status === "finished")) box.append(drawProgressPanel(bookId, mine, () => rating));
   readingsFor(bookId).filter((item) => item.userId !== currentUser?.uid).forEach((item) => {
     const other = document.createElement("div"); other.className = "dialog-copy";
     const name = document.createElement("strong"); name.textContent = clean(item.userName) || "Reader";
-    const state = document.createElement("small"); state.textContent = [READING_LABELS[item.status] && item.status !== "none" ? READING_LABELS[item.status] : "", item.rating ? "★".repeat(Number(item.rating)) + "☆".repeat(5 - Number(item.rating)) : ""].filter(Boolean).join(" · ") || "Nothing set";
+    const state = document.createElement("small"); state.textContent = [READING_LABELS[item.status] && item.status !== "none" ? READING_LABELS[item.status] : "", item.status === "reading" && Number(item.currentPage) > 0 ? progressLine(item, bookTotalPages(bookId)) : "", item.rating ? "★".repeat(Number(item.rating)) + "☆".repeat(5 - Number(item.rating)) : ""].filter(Boolean).join(" · ") || "Nothing set";
     other.append(name, state); box.append(other);
   });
 }
 function renderReadingViews() {
-  renderBooks();
+  renderBooks(); renderMyReading();
   const box = $("#dialog-reading-box");
   if ($("#book-dialog").open && box && dialogBookId) drawReadingBox(box, dialogBookId);
+}
+// ---- Stage 7C: reading log and personal habit graph ----
+const SVG_NS = "http://www.w3.org/2000/svg";
+function svgNode(name, attrs = {}, text) { const n = document.createElementNS(SVG_NS, name); Object.entries(attrs).forEach(([k, v]) => n.setAttribute(k, String(v))); if (text) n.textContent = text; return n; }
+const mk = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; };
+const dayAt = (base, offset) => new Date(base.getFullYear(), base.getMonth(), base.getDate() + offset, 12);
+const dayLabel = (d) => d.toLocaleDateString(undefined, { day: "numeric", month: "short" });
+const bookTitleOf = (id) => libraryCollections.books.find((b) => b.id === id)?.title || "A book";
+function pagesByDate() { const map = new Map(); readingLogItems.forEach((l) => { if (typeof l.date === "string") map.set(l.date, (map.get(l.date) || 0) + (Number(l.pages) || 0)); }); return map; }
+function readingStreaks(map) {
+  const dates = [...map.keys()].filter((k) => map.get(k) > 0).sort(); let longest = 0, run = 0, prev = null;
+  dates.forEach((k) => { const [y, m, d] = k.split("-").map(Number); const cur = new Date(y, m - 1, d, 12); run = prev && Math.round((cur - prev) / 86400000) === 1 ? run + 1 : 1; longest = Math.max(longest, run); prev = cur; });
+  const today = new Date(); let cursor = map.get(localDateInputValue(today)) > 0 ? today : dayAt(today, -1), current = 0;
+  while (map.get(localDateInputValue(cursor)) > 0) { current += 1; cursor = dayAt(cursor, -1); }
+  return { current, longest };
+}
+async function undoLastReadingUpdate() {
+  const last = [...readingLogItems].sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0) || String(b.date).localeCompare(String(a.date)))[0]; if (!last) return;
+  const mine = myReading(last.bookId); const sameSpot = mine && Number(mine.currentPage) === Number(last.toPage);
+  if (!(await askConfirm(`Undo your last update (${last.pages} pages of “${bookTitleOf(last.bookId)}”)?${sameSpot ? ` Your page goes back to ${last.toPage - last.pages}.` : " Your current page will stay as it is."}`, "Undo"))) return;
+  try {
+    if (sameSpot) await saveMyReading(last.bookId, "reading", Number(mine.rating) || 0, { currentPage: last.toPage - last.pages, finishedAt: null });
+    await deleteDoc(doc(db, "libraries", LIBRARY_ID, "readingLogs", last.id));
+  } catch (error) { readingSaveError(error); }
+}
+const guessNote = " (date guessed)";
+function finishedRow(r, dateText) {
+  const item = mk("div", "mr-item"); item.append(mk("strong", "", bookTitleOf(r.bookId)));
+  if (r.finishedAt) { item.append(mk("small", "", ` · ${formatLibraryDate(r.finishedAt)}`)); return item; }
+  item.append(mk("small", "", ` · ${formatLibraryDate(r.updatedAt)}${guessNote} `));
+  const date = document.createElement("input"); date.type = "date"; date.max = todayLocal(); date.setAttribute("aria-label", `Set finish date for ${bookTitleOf(r.bookId)}`);
+  date.addEventListener("change", async () => { if (!date.value) return; try { await saveMyReading(r.bookId, "finished", Number(r.rating) || 0, { finishedAt: dateInputToTimestamp(date.value) }); } catch (error) { readingSaveError(error); } });
+  item.append(date); return item;
+}
+async function saveChallenge(year, books, pages) {
+  const id = `${currentUser.uid}_${year}`; const ref = doc(db, "libraries", LIBRARY_ID, "challenges", id); const uid = currentUser.uid;
+  if (challengeItems.some((c) => c.id === id)) await updateDoc(ref, { goalBooks: books, goalPages: pages || deleteField(), updatedAt: serverTimestamp(), updatedBy: uid });
+  else { const data = { userId: uid, year, goalBooks: books, createdAt: serverTimestamp(), createdBy: uid, updatedAt: serverTimestamp(), updatedBy: uid }; if (pages) data.goalPages = pages; await setDoc(ref, data); }
+}
+function challengePanel(year, finishedYear, finDate) {
+  const p = mk("section", "mr-panel"); p.append(mk("h3", "", `${year} reading challenge`));
+  const id = `${currentUser.uid}_${year}`; const ch = challengeItems.find((c) => c.id === id); const today = new Date();
+  if (challengeError) { p.append(mk("p", "muted", challengeError)); return p; }
+  const form = (goal) => {
+    const r = mk("div", "row"); const inputOf = (label, value) => { const el = document.createElement("input"); el.type = "text"; el.inputMode = "numeric"; el.maxLength = 6; el.placeholder = label; el.setAttribute("aria-label", label); if (value) el.value = String(value); return el; };
+    const books = inputOf("Books goal", goal?.goalBooks), pages = inputOf("Pages goal (optional)", goal?.goalPages);
+    const save = mk("button", "primary-button", "Save goal"); save.type = "button";
+    save.addEventListener("click", async () => {
+      const b = parsePages(books.value, 1, 1000), pg = pages.value.trim() ? parsePages(pages.value, 1, 1000000) : 0;
+      if (!b) { showToast("Enter the number of books as a whole number from 1 to 1000."); return; }
+      if (pg === null) { showToast("Pages goal must be a whole number from 1 to 1000000, or empty."); return; }
+      try { await saveChallenge(year, b, pg); challengeEditing = false; renderMyReading(); } catch (error) { readingSaveError(error); }
+    });
+    r.append(books, pages, save);
+    if (goal) { const cancel = mk("button", "secondary-button", "Cancel"); cancel.type = "button"; cancel.addEventListener("click", () => { challengeEditing = false; renderMyReading(); }); r.append(cancel); }
+    return r;
+  };
+  if (!ch) { p.append(mk("p", "muted", `Set a goal for ${year}: how many books do you want to finish?`), form(null)); return p; }
+  if (challengeEditing) { p.append(form(ch)); return p; }
+  const goal = Number(ch.goalBooks) || 0, done = finishedYear.length;
+  if (goal) {
+    p.append(mk("strong", "", `${done} of ${goal} books (${Math.min(100, Math.round(done * 100 / goal))}%)`), progressBarNode(Math.min(100, Math.round(done * 100 / goal))));
+    const key = id; const was = challengeLastDone.get(key); challengeLastDone.set(key, done);
+    if (done >= goal) { p.append(mk("small", "", done > goal ? `Goal exceeded by ${done - goal}.` : "Goal reached. Well done!")); if (was !== undefined && was < goal) showToast("You reached your reading goal!"); }
+    else if (year === today.getFullYear()) {
+      const start = new Date(year, 0, 1, 12), end = new Date(year, 11, 31, 12); const dayNo = Math.round((today - start) / 86400000) + 1, days = Math.round((end - start) / 86400000) + 1, daysLeft = Math.max(0, days - dayNo);
+      const ahead = done - goal * dayNo / days; let pace;
+      if (Math.abs(ahead) < 0.5) pace = "Right on pace.";
+      else if (ahead > 0) pace = `${Math.floor(ahead) || "Less than 1"} book${Math.floor(ahead) > 1 ? "s" : ""} ahead of pace.`;
+      else { const monthsLeft = Math.max(daysLeft / 30.4, 0.5); const need = (goal - done) / monthsLeft; pace = `${Math.max(1, Math.round(-ahead))} behind pace: about ${need >= 10 ? Math.round(need) : need.toFixed(1)} a month to catch up.`; }
+      p.append(mk("small", "", `${pace} ${daysLeft} day${daysLeft === 1 ? "" : "s"} left in ${year}.`));
+    } else if (year < today.getFullYear()) p.append(mk("small", "", "This year is over."));
+  }
+  if (ch.goalPages) {
+    let read = 0; pagesByDate().forEach((v, k) => { if (k.startsWith(String(year))) read += v; });
+    const goalP = Number(ch.goalPages); p.append(mk("div", "", ""), mk("strong", "", `${read} of ${goalP} pages`), progressBarNode(Math.min(100, Math.round(read * 100 / goalP))), mk("small", "", "Pages come from your progress updates. Books finished without updates add nothing."));
+  }
+  const row = mk("div", "row"); const edit = mk("button", "secondary-button", "Edit goal"); edit.type = "button"; edit.addEventListener("click", () => { challengeEditing = true; renderMyReading(); });
+  const remove = mk("button", "secondary-button", "Remove"); remove.type = "button";
+  remove.addEventListener("click", async () => { if (!(await askConfirm(`Remove your ${year} challenge? Your books and reading log stay.`, "Remove"))) return; try { await deleteDoc(doc(db, "libraries", LIBRARY_ID, "challenges", id)); } catch (error) { readingSaveError(error); } });
+  row.append(edit, remove); p.append(row); return p;
+}
+function renderMyReading() {
+  const root = $("#reading-body"); if (!root || !currentUser) return; root.replaceChildren();
+  if (readingLogError) root.append(emptyNode(readingLogError));
+  const panel = (title) => { const p = mk("section", "mr-panel"); p.append(mk("h3", "", title)); root.append(p); return p; };
+  const map = pagesByDate(); const today = new Date(); const todayKey = localDateInputValue(today); const { current, longest } = readingStreaks(map);
+  const monthKey = todayKey.slice(0, 7); let monthPages = 0, total = 0; map.forEach((v, k) => { total += v; if (k.startsWith(monthKey)) monthPages += v; });
+  const mineAll = readingItems.filter((r) => r.userId === currentUser.uid);
+  const finished = mineAll.filter((r) => r.status === "finished");
+  const finDate = (r) => timestampToDateInput(r.finishedAt || r.updatedAt);
+  const finishedYear = finished.filter((r) => finDate(r).startsWith(String(myReadingYear)));
+  const stats = mk("div", "report-stats"); root.append(stats); root.insertBefore(challengePanel(myReadingYear, finishedYear, finDate), stats);
+  [["Current streak", `${current} day${current === 1 ? "" : "s"}`, "days in a row with an update"], ["Longest streak", `${longest} day${longest === 1 ? "" : "s"}`, "your best run"], ["Pages this month", String(monthPages), "from your progress updates"], ["Pages per reading day", map.size ? String(Math.round(total / map.size)) : "0", "average"], [`Finished in ${myReadingYear}`, String(finishedYear.length), "finished books"]].forEach(([label, value, note]) => {
+    const card = mk("article", "stat-card"); card.append(mk("span", "stat-label", label), mk("strong", "", value), mk("small", "", note)); stats.append(card);
+  });
+  const reading = mineAll.filter((r) => r.status === "reading");
+  const now = panel("Currently reading");
+  if (!reading.length) now.append(mk("p", "muted", "Nothing marked as Reading. Open a book and set your status to Reading."));
+  reading.forEach((r) => { const t = bookTotalPages(r.bookId); const item = mk("div", "mr-item"); item.append(mk("strong", "", bookTitleOf(r.bookId))); if (Number(r.currentPage) > 0) { item.append(mk("div", "", "")); item.lastChild.append(progressBarNode(t ? Math.min(100, Math.round(r.currentPage * 100 / t)) : 0), mk("small", "", progressLine(r, t))); } else item.append(mk("small", "", " No progress entered yet")); now.append(item); });
+  const habit = panel("Your habit");
+  if (!readingLogItems.length) habit.append(mk("p", "muted", "Update your progress on a book you are reading and your habit will appear here."));
+  else {
+    const start = dayAt(today, -(((today.getDay() + 6) % 7) + 77)); const cell = 18, gap = 4; const weekly = [];
+    habit.append(mk("small", "", "Last 12 weeks, one square per day (darker means more pages)"));
+    const heat = svgNode("svg", { viewBox: `0 0 ${12 * (cell + gap)} ${7 * (cell + gap)}`, role: "img", "aria-label": "Calendar of pages read per day over the last 12 weeks" });
+    const max = Math.max(1, ...[...map.values()]);
+    for (let c = 0; c < 12; c++) { let sum = 0; for (let r = 0; r < 7; r++) {
+      const d = dayAt(start, c * 7 + r); if (d > today) continue; const pages = map.get(localDateInputValue(d)) || 0; sum += pages;
+      const level = pages === 0 ? 0 : Math.ceil(pages / max * 4);
+      const rect = svgNode("rect", { x: c * (cell + gap), y: r * (cell + gap), width: cell, height: cell, rx: 4, fill: level ? "rgb(var(--lime-rgb))" : "currentColor", "fill-opacity": level ? [0, .25, .5, .75, 1][level] : .1 });
+      rect.append(svgNode("title", {}, `${dayLabel(d)}: ${pages} page${pages === 1 ? "" : "s"}`)); heat.append(rect);
+    } weekly.push({ d: dayAt(start, c * 7), sum }); }
+    habit.append(heat);
+    habit.append(mk("small", "", "Pages per week (last 12 weeks)"));
+    const wmax = Math.max(1, ...weekly.map((w) => w.sum)); const bars = svgNode("svg", { viewBox: "0 0 288 100", role: "img", "aria-label": "Pages read per week over the last 12 weeks" });
+    weekly.forEach((w, i) => { const h = Math.round(w.sum / wmax * 80); const rect = svgNode("rect", { x: i * 24 + 3, y: 85 - h, width: 18, height: Math.max(h, w.sum ? 2 : 0), rx: 3, fill: "rgb(var(--lime-rgb))" }); rect.append(svgNode("title", {}, `Week of ${dayLabel(w.d)}: ${w.sum} pages`)); bars.append(rect); });
+    bars.append(svgNode("text", { x: 0, y: 98, "font-size": 9, fill: "currentColor" }, dayLabel(weekly[0].d)), svgNode("text", { x: 288, y: 98, "font-size": 9, "text-anchor": "end", fill: "currentColor" }, "this week")); habit.append(bars);
+    const undo = mk("button", "secondary-button", "Undo last update"); undo.type = "button"; undo.addEventListener("click", undoLastReadingUpdate); habit.append(undo);
+  }
+  const fin = panel(`Books finished in ${myReadingYear}`);
+  const nav = mk("div", "row"); const prev = mk("button", "secondary-button", "‹"); const next = mk("button", "secondary-button", "›"); prev.type = next.type = "button"; prev.setAttribute("aria-label", "Previous year"); next.setAttribute("aria-label", "Next year");
+  prev.addEventListener("click", () => { myReadingYear -= 1; renderMyReading(); }); next.addEventListener("click", () => { myReadingYear += 1; renderMyReading(); }); next.disabled = myReadingYear >= today.getFullYear(); nav.append(prev, mk("strong", "", String(myReadingYear)), next); fin.append(nav);
+  const perMonth = Array(12).fill(0); finishedYear.forEach((r) => { perMonth[Number(finDate(r).slice(5, 7)) - 1] += 1; });
+  const mmax = Math.max(1, ...perMonth); const mbars = svgNode("svg", { viewBox: "0 0 288 100", role: "img", "aria-label": `Books finished per month in ${myReadingYear}` });
+  perMonth.forEach((n, i) => { const h = Math.round(n / mmax * 70); const rect = svgNode("rect", { x: i * 24 + 3, y: 80 - h, width: 18, height: Math.max(h, n ? 2 : 0), rx: 3, fill: "rgb(var(--lime-rgb))" }); rect.append(svgNode("title", {}, `${new Date(myReadingYear, i, 1).toLocaleDateString(undefined, { month: "long" })}: ${n} book${n === 1 ? "" : "s"}`)); mbars.append(rect, svgNode("text", { x: i * 24 + 12, y: 94, "font-size": 9, "text-anchor": "middle", fill: "currentColor" }, "JFMAMJJASOND"[i])); });
+  fin.append(mbars);
+  if (!finishedYear.length) fin.append(mk("p", "muted", "No finished books in this year."));
+  [...finishedYear].sort((a, b) => finDate(b).localeCompare(finDate(a))).slice(0, 60).forEach((r) => fin.append(finishedRow(r, finDate(r))));
 }
 function wishlistPayload(source) {
   const data = { title: clean(source.title).slice(0, 180), updatedAt: serverTimestamp(), updatedBy: currentUser.uid };
@@ -2926,6 +3248,7 @@ function renderHome() {
   const { books, copies, loans } = libraryCollections;
   $("#stat-books").textContent = String(books.length);
   $("#stat-copies").textContent = `${copies.filter((copy) => copy.status === "Available").length}/${copies.length}`;
+  { const noOwner = copies.filter((copy) => !copy.ownerId).length; $("#owner-nudge").classList.toggle("hidden", noOwner === 0); if (noOwner) $("#owner-nudge-text").textContent = `${noOwner} ${noOwner === 1 ? "copy has" : "copies have"} no owner yet. Tick yours and set the owner in one go.`; }
   $("#loan-stat-overdue").closest(".stat-card").classList.toggle("alert", Number($("#loan-stat-overdue").textContent) > 0);
 
   const due = loans.filter((loan) => loan.status === "Borrowed")
@@ -3126,6 +3449,11 @@ function renderReports() {
   reportDonut($("#rep-status-donut"), statusEntries, (entry, index) => DONUT_TONES[entry.tone] || DONUT_PALETTE[(index + 2) % DONUT_PALETTE.length], "copies");
   reportBars($("#rep-status"), statusEntries, { total: copies.length, showPercent: true, empty: "Add copies to see their status." });
 
+  // Stage 7A: copies by owner
+  const ownerEntries = reportTally(copies, (copy) => ownerFullName(copy.ownerId, copy.ownerName)).map((entry) => ({ ...entry, tone: entry.label === "Owner not set" ? "warn" : "" }));
+  reportDonut($("#rep-owner-donut"), ownerEntries, (entry, index) => (entry.tone === "warn" ? "var(--warn)" : LANG_DONUT_PALETTE[index % LANG_DONUT_PALETTE.length]), "copies");
+  reportBars($("#rep-owner"), ownerEntries, { total: copies.length, showPercent: true, empty: "Add copies to see who owns them." });
+
   // location
   const locationEntries = reportTally(copies, (copy) => copy.locationId ? displayLocation(copy.locationId) : "Not assigned").map((entry) => entry.label === "Not assigned" ? { ...entry, tone: "warn" } : entry);
   reportBars($("#rep-location"), reportTop(locationEntries, 8, "Other places"), { empty: "Add copies and locations to see where books are kept." });
@@ -3282,8 +3610,8 @@ function runExport(kind) {
     if (!books.length && !copies.length && !locations.length && !loans.length) { showToast("There is nothing to back up yet."); return; }
     const data = {
       app: "Our Library", format: 1, libraryId: LIBRARY_ID, exportedAt: new Date().toISOString(),
-      counts: { books: books.length, copies: copies.length, locations: locations.length, loans: loans.length, activity: activityItems.length, readings: readingItems.length, wishlist: wishlistItems.length },
-      books: books.map(exportJsonValue), copies: copies.map(exportJsonValue), locations: locations.map(exportJsonValue), loans: loans.map(exportJsonValue), activity: activityItems.map(exportJsonValue), readings: readingItems.map(exportJsonValue), wishlist: wishlistItems.map(exportJsonValue)
+      counts: { books: books.length, copies: copies.length, locations: locations.length, loans: loans.length, activity: activityItems.length, readings: readingItems.length, readingLogs: readingLogItems.length, challenges: challengeItems.length, wishlist: wishlistItems.length },
+      books: books.map(exportJsonValue), copies: copies.map(exportJsonValue), locations: locations.map(exportJsonValue), loans: loans.map(exportJsonValue), activity: activityItems.map(exportJsonValue), readings: readingItems.map(exportJsonValue), readingLogs: readingLogItems.map(exportJsonValue), challenges: challengeItems.map(exportJsonValue), wishlist: wishlistItems.map(exportJsonValue)
     };
     downloadFile(`our-library-backup-${exportStamp()}.json`, JSON.stringify(data, null, 2), "application/json");
     message("#backup-message", `Backup saved: ${books.length} books, ${copies.length} copies, ${locations.length} locations, ${loans.length} loans.`, "success");
@@ -3295,8 +3623,8 @@ function runExport(kind) {
       [...books].sort(byTitle).map((b) => [b.id, b.title, b.author, b.language, b.originalTitle, b.authorOriginal, b.genre, b.isbn, b.publisher, b.publicationYear, b.coverUrl, b.description, tsToIso(b.createdAt), tsToIso(b.updatedAt)]));
   } else if (kind === "copies") {
     if (!copies.length) { showToast("No copies to export yet."); return; }
-    downloadCsv("copies", ["id", "bookId", "bookTitle", "copyLabel", "condition", "status", "location", "locationId", "notes", "activeLoanId", "createdAt", "updatedAt"],
-      [...copies].sort((a, b) => bookTitle(a.bookId).localeCompare(bookTitle(b.bookId), ["bn", "en"])).map((c) => [c.id, c.bookId, bookTitle(c.bookId), c.copyLabel, c.condition, c.status, c.locationId ? displayLocation(c.locationId) : "", c.locationId, c.notes, c.activeLoanId, tsToIso(c.createdAt), tsToIso(c.updatedAt)]));
+    downloadCsv("copies", ["id", "bookId", "bookTitle", "copyLabel", "condition", "status", "location", "locationId", "owner", "ownerId", "notes", "activeLoanId", "createdAt", "updatedAt"],
+      [...copies].sort((a, b) => bookTitle(a.bookId).localeCompare(bookTitle(b.bookId), ["bn", "en"])).map((c) => [c.id, c.bookId, bookTitle(c.bookId), c.copyLabel, c.condition, c.status, c.locationId ? displayLocation(c.locationId) : "", c.locationId, c.ownerId ? ownerFullName(c.ownerId, c.ownerName) : "", c.ownerId, c.notes, c.activeLoanId, tsToIso(c.createdAt), tsToIso(c.updatedAt)]));
   } else if (kind === "locations") {
     if (!locations.length) { showToast("No locations to export yet."); return; }
     downloadCsv("locations", ["id", "name", "type", "parentId", "path", "notes"],
@@ -3388,6 +3716,7 @@ function buildRestorePlan(data) {
     if (["bn", "en", "other"].includes(item.language)) record.language = item.language;
     const original = restoreStr(item.originalTitle, 180); if (original) record.originalTitle = original;
     const authorOriginal = restoreStr(item.authorOriginal, 140); if (authorOriginal) record.authorOriginal = authorOriginal;
+    { const pages = Number(item.totalPages); if (Number.isInteger(pages) && pages >= 1 && pages <= 20000) record.totalPages = pages; }
     restoredBook.add(item.id); plan.books.push({ id: item.id, label: title, data: record });
   });
 
@@ -3400,6 +3729,7 @@ function buildRestorePlan(data) {
     if (!liveBook.has(item.bookId) && !restoredBook.has(item.bookId)) { skip(`${what}: its book is not in the library`); return; }
     const record = { bookId: item.bookId, condition: item.condition, status: item.status };
     const label = restoreStr(item.copyLabel, 200); if (label) record.copyLabel = label;
+    const ownerId = restoreStr(item.ownerId, 128); if (ownerId) { record.ownerId = ownerId; const ownerName = restoreStr(item.ownerName, 60); if (ownerName) record.ownerName = ownerName; }
     const notes = restoreStr(item.notes, 2000); if (notes) record.notes = notes;
     if (goodId(item.locationId)) { if (liveLoc.has(item.locationId) || restoredLoc.has(item.locationId)) record.locationId = item.locationId; else plan.noLocation += 1; }
     plan.copies.push({ id: item.id, label: what, data: record });
@@ -3435,6 +3765,7 @@ function buildRestorePlan(data) {
     if (!RESTORE_READING_STATUSES.includes(item.status) || (rating && !(Number.isInteger(rating) && rating >= 1 && rating <= 5))) { skip(`${what}: details are not valid`); return; }
     if (!liveBook.has(item.bookId) && !restoredBook.has(item.bookId)) { skip(`${what}: the book is not in the library`); return; }
     const record = { bookId: item.bookId, status: item.status }; if (rating) record.rating = rating;
+    { const page = Number(item.currentPage); if (Number.isInteger(page) && page >= 0 && page <= 20000) record.currentPage = page; const asTs = (v) => { const d = typeof v === "string" ? new Date(v) : v && typeof v.seconds === "number" ? new Date(v.seconds * 1000) : null; return d && !Number.isNaN(d.getTime()) ? Timestamp.fromDate(d) : null; }; const s = asTs(item.startedAt), f = asTs(item.finishedAt); if (s) record.startedAt = s; if (f) record.finishedAt = f; }
     plan.readings.push({ id: item.id, label: what, data: record });
   });
   if (others) plan.notes.push(`${restorePlural(others, "reading entry", "reading entries")} from the other reader cannot be restored from here. Each person restores their own.`);

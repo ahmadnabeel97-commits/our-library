@@ -51,7 +51,7 @@
   --faint: rgba(var(--ink-rgb),.42);
   --warn: #F5B942;
   --danger: #FF6B6B;
-  --teal: #2DD4BF;
+  --teal: #2DD4BF; --blue: #6EA8FE;
   --radius: 16px;
   --font-display: "Space Grotesk", "Inter", "Noto Sans Bengali", system-ui, sans-serif;
   --font-body: "Inter", "Noto Sans Bengali", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -181,6 +181,11 @@ label { display: grid; gap: 6px; font-size: 12px; font-weight: 600; color: var(-
 .attention-row.overdue { border-color: rgba(var(--danger-rgb),.4); }
 .pill { white-space: nowrap; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 99px; background: rgba(var(--warn-rgb),.14); color: var(--warn); }
 .attention-row.overdue .pill { background: rgba(var(--danger-rgb),.14); color: var(--danger); }
+/* Stage 6J: status pills share the colours of the status bar (green available, amber loaned, teal reading, red repair). */
+.pill.pill-Available { background: rgba(var(--lime-rgb),.16); color: var(--lime); }
+.pill.pill-Reading { background: rgba(45,212,191,.16); color: var(--teal); }
+.pill.pill-Repair { background: rgba(var(--danger-rgb),.14); color: var(--danger); }
+:root[data-theme="light"] .pill.pill-Reading { background: rgba(11,127,115,.12); }
 .shelf { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x proximity; }
 .shelf-item { flex: none; width: 112px; border: 0; background: none; text-align: left; padding: 0; scroll-snap-align: start; }
 .shelf-item .cover { width: 112px; transition: transform .2s; }
@@ -247,6 +252,9 @@ label { display: grid; gap: 6px; font-size: 12px; font-weight: 600; color: var(-
 .shelf-item .cover.no-image { padding: 10px; }
 .shelf-item .cover.no-image span { font-size: 12.5px; }
 .cover.no-image span { overflow-wrap: anywhere; font-family: var(--font-display); font-weight: 700; font-size: 15px; line-height: 1.2; color: var(--white); display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+.cover.no-image .cover-initial, .shelf-item .cover.no-image .cover-initial, .books-list-view .cover.no-image .cover-initial { display: block; -webkit-line-clamp: unset; place-self: center; align-self: center; justify-self: center; font-size: 58px; line-height: 1; font-weight: 700; opacity: .88; }
+.shelf-item .cover.no-image .cover-initial { font-size: 42px; }
+.books-list-view .cover.no-image .cover-initial { font-size: 22px; }
 .cover.no-image::after { content: ""; position: absolute; left: 14px; top: 14px; width: 26px; height: 3px; border-radius: 2px; background: var(--lime); }
 .tile-hit:hover .cover { transform: translateY(-4px); border-color: rgba(var(--lime-rgb),.55); box-shadow: 0 18px 36px rgba(var(--shadow-rgb),calc(.5*var(--shadow-k))), 0 0 0 1px rgba(var(--lime-rgb),.3); }
 .tile-info { display: grid; gap: 3px; padding-top: 10px; }
@@ -429,11 +437,19 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
 .copy-tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 14px 0 10px; }
 .copy-tools input[type=search] { flex: 1 1 220px; min-width: 0; width: auto; }
 .bulk-bar { margin: 0 0 12px; padding: 14px 16px; background: var(--surface); border: 1px solid rgba(var(--lime-rgb),.35); border-radius: 14px; display: grid; gap: 12px; }
-@media (min-width: 861px) { .bulk-bar { position: sticky; top: 8px; z-index: 5; } }
+@media (min-width: 861px) { .bulk-bar { position: sticky; top: 8px; z-index: 5; } .bulk-collapse { display: none; } }
 .bulk-bar-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .bulk-bar-top strong { margin-right: auto; }
 .bulk-bar-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
 .bulk-bar-fields label { display: grid; gap: 4px; font-size: 12.5px; color: var(--muted); font-weight: 600; }
+/* Stage 6K: on phones the bulk bar stays pinned just above the bottom navigation, so Apply is always reachable. */
+@media (max-width: 860px) {
+  .bulk-bar { position: fixed; left: 12px; right: 12px; bottom: calc(var(--nav-h, 76px) + 8px); z-index: 30; margin: 0; padding: 10px 12px; gap: 8px; max-height: 52vh; overflow-y: auto; box-shadow: 0 -10px 30px rgba(var(--shadow-rgb), .4); }
+  .bulk-bar-fields { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .bulk-bar-fields label:last-child { grid-column: 1 / -1; }
+  .bulk-bar.compact .bulk-bar-fields { display: none; }
+  #copies-section.bulk-on { padding-bottom: 320px; }
+}
 .library-item.selectable { cursor: pointer; }
 .library-item.selected { border-color: var(--lime); background: rgba(var(--lime-rgb),.08); }
 .copy-pick { width: 20px; height: 20px; flex: none; accent-color: var(--lime); cursor: pointer; }
@@ -552,7 +568,7 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
   --lime: #09803D; --green: #047857;
   --bg: #F3F4F7; --surface: #FFFFFF; --surface-2: #ECEEF3; --inset: #F1F3F7;
   --text: #14161C; --muted: rgba(20,22,28,.72); --faint: rgba(20,22,28,.6);
-  --warn: #9A6200; --danger: #C62828; --teal: #0B7F73;
+  --warn: #9A6200; --danger: #C62828; --teal: #0B7F73; --blue: #1D5FD1;
 }
 :root[data-theme="light"] .cover { box-shadow: 0 10px 22px rgba(40,46,64,.18); }
 .top-actions { display: flex; align-items: center; gap: 10px; }
@@ -664,7 +680,7 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
           </div>
           <form id="home-search-form" class="home-search" role="search">
             <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/></svg>
-            <input id="home-search" type="search" maxlength="160" placeholder="Search your library by title, author, ISBN or genre…" aria-label="Search your library">
+            <input id="home-search" type="search" maxlength="160" placeholder="Title, author, ISBN…" aria-label="Search your library">
             <button class="primary-button" type="submit">Search</button>
           </form>
           <article class="panel start-guide hidden" id="start-guide">
@@ -724,9 +740,9 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
                   <button class="secondary-button" type="button" data-export="locations">Locations (CSV)</button>
                   <button class="secondary-button" type="button" data-export="loans">Borrowing history (CSV)</button>
                   <button class="small-button" type="button" id="backup-check-button">Check a backup file</button>
-                  <input id="backup-check-file" type="file" accept=".json,application/json" class="hidden">
+                  <input id="backup-check-file" aria-label="Choose a backup file to check" type="file" accept=".json,application/json" class="hidden">
                   <button class="small-button" type="button" id="restore-button">Restore from backup</button>
-                  <input id="restore-file" type="file" accept=".json,application/json" class="hidden">
+                  <input id="restore-file" aria-label="Choose a backup file to restore" type="file" accept=".json,application/json" class="hidden">
                 </div>
                 <p id="backup-message" class="message" role="status" aria-live="polite"></p>
                 <div id="restore-preview" class="hidden">
@@ -939,12 +955,13 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
             </div>
           </details>
           <div id="copy-tools" class="copy-tools hidden">
-            <input type="search" id="copy-filter" placeholder="Filter copies by title, author, shelf, status…" aria-label="Filter copies" autocomplete="off">
+            <input type="search" id="copy-filter" placeholder="Title, author, shelf…" aria-label="Filter copies" autocomplete="off">
             <button class="secondary-button" type="button" id="copy-select-toggle">Select copies</button>
           </div>
           <div id="copy-bulk-bar" class="bulk-bar hidden">
             <div class="bulk-bar-top">
               <strong id="copy-bulk-count">0 selected</strong>
+              <button class="small-button bulk-collapse" type="button" id="copy-bulk-collapse" aria-expanded="true">Hide options</button>
               <button class="small-button" type="button" id="copy-select-all">Select all shown</button>
               <button class="small-button" type="button" id="copy-select-none">Clear selection</button>
             </div>
@@ -961,12 +978,13 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
 
         <section id="borrowing-section" class="library-section hidden">
           <div class="section-head"><div><h2>Borrowing &amp; returns</h2><p class="muted">Record who borrowed a copy and when it's due. Only available copies can be borrowed.</p></div></div>
-          <details class="editor" open>
+          <details id="loan-editor" class="editor">
             <summary>Record a borrowing</summary>
             <div class="editor-body">
               <form id="loan-form" class="library-form">
                 <label class="wide">Available physical copy *<select name="copyId" required><option value="">Loading available copies…</option></select></label>
-                <label>Borrower name *<input name="borrowerName" maxlength="120" required placeholder="Name of the borrower"></label>
+                <label>Borrower name *<input name="borrowerName" maxlength="120" required placeholder="Name of the borrower" list="borrower-options" autocomplete="off"></label>
+                <datalist id="borrower-options"></datalist>
                 <label>Borrowing date *<input name="borrowedAt" type="date" required></label>
                 <label>Due date *<input name="dueAt" type="date" required></label>
                 <label class="wide">Notes (optional)<textarea name="notes" maxlength="1000" placeholder="Any condition or borrowing notes"></textarea></label>
@@ -1557,7 +1575,11 @@ function makeCover(book) {
   const wrap = document.createElement("div"); wrap.className = "cover";
   const fallback = () => {
     wrap.classList.add("no-image"); wrap.style.setProperty("--hue", String(hueFor(book.title)));
-    const label = document.createElement("span"); label.textContent = book.title || "Untitled book";
+    // Stage 6L: the title is already printed next to every cover, so the placeholder shows just its first letter.
+    const title = clean(book.title) || "Untitled book";
+    const first = typeof Intl !== "undefined" && Intl.Segmenter ? ([...new Intl.Segmenter(undefined, { granularity: "grapheme" }).segment(title)][0]?.segment || "") : (Array.from(title)[0] || "");
+    const label = document.createElement("span"); label.className = "cover-initial"; label.setAttribute("aria-hidden", "true"); label.textContent = first.toLocaleUpperCase();
+    wrap.setAttribute("role", "img"); wrap.setAttribute("aria-label", `No cover image for ${title}`);
     wrap.replaceChildren(label);
   };
   const url = safeUrl(clean(book.coverUrl));
@@ -1685,11 +1707,21 @@ function renderBooks() {
   matches.forEach((book) => list.append(makeBookTile(book, byBook.get(book.id) || emptyStats())));
 }
 
+// Stage 6J: when a book has several copies and one has no label of its own, show "Copy 1", "Copy 2"… (display only, nothing is saved).
+function copyLabelFor(copy) {
+  if (!copy) return "";
+  if (copy.copyLabel) return copy.copyLabel;
+  const siblings = libraryCollections.copies.filter((item) => item.bookId === copy.bookId);
+  if (siblings.length < 2) return "";
+  const stamp = (item) => (item.createdAt && typeof item.createdAt.toMillis === "function" ? item.createdAt.toMillis() : 0);
+  siblings.sort((x, y) => stamp(x) - stamp(y) || String(x.id).localeCompare(String(y.id)));
+  return `Copy ${siblings.findIndex((item) => item.id === copy.id) + 1}`;
+}
 const copyBulk = { on: false, selected: new Set(), filter: "", busy: false };
 function copyMatchesFilter(copy) {
   const q = copyBulk.filter.trim().toLowerCase(); if (!q) return true;
   const book = libraryCollections.books.find((item) => item.id === copy.bookId);
-  return [book?.title, book?.author, copy.copyLabel, copy.status, copy.condition, displayLocation(copy.locationId)].some((part) => String(part || "").toLowerCase().includes(q));
+  return [book?.title, book?.author, book?.originalTitle, book?.authorOriginal, copy.copyLabel, copy.status, copy.condition, displayLocation(copy.locationId)].some((part) => String(part || "").toLowerCase().includes(q));
 }
 function visibleCopies() {
   const titleOf = (copy) => libraryCollections.books.find((item) => item.id === copy.bookId)?.title || "";
@@ -1697,6 +1729,8 @@ function visibleCopies() {
 }
 function updateCopyBulkBar() {
   const n = copyBulk.selected.size;
+  const sidebar = document.querySelector(".sidebar"); if (sidebar && window.matchMedia("(max-width: 860px)").matches) document.documentElement.style.setProperty("--nav-h", `${sidebar.offsetHeight}px`);
+  $("#copies-section").classList.toggle("bulk-on", copyBulk.on);
   $("#copy-bulk-count").textContent = `${n} selected`;
   $("#copy-bulk-apply").disabled = copyBulk.busy || n === 0;
 }
@@ -1718,9 +1752,9 @@ function renderCopies() {
   shown.forEach((copy) => {
     const book = libraryCollections.books.find((item) => item.id === copy.bookId);
     const item = document.createElement("div"); item.className = "library-item";
-    const details = document.createElement("div"); const title = document.createElement("strong"); title.textContent = `${book?.title || "Unknown book"}${copy.copyLabel ? ` — ${copy.copyLabel}` : ""}`;
+    const details = document.createElement("div"); const title = document.createElement("strong"); title.textContent = `${book?.title || "Unknown book"}${copyLabelFor(copy) ? ` — ${copyLabelFor(copy)}` : ""}`;
     const meta = document.createElement("small"); meta.textContent = `${copy.condition || "Condition not set"} · ${displayLocation(copy.locationId)}${copy.status === "Loaned" && !copy.activeLoanId ? " · No linked loan record — review this legacy status" : ""}`;
-    const state = document.createElement("span"); state.className = "pill"; state.textContent = copy.status || "Status not set";
+    const state = document.createElement("span"); state.className = `pill${["Available", "Reading", "Repair"].includes(copy.status) ? ` pill-${copy.status}` : ""}`; state.textContent = copy.status || "Status not set";
     details.append(title, meta, state); const actions = document.createElement("div"); actions.className = "library-actions";
     if (copyBulk.on) {
       const box = document.createElement("input"); box.type = "checkbox"; box.className = "copy-pick"; box.checked = copyBulk.selected.has(copy.id); box.setAttribute("aria-label", `Select ${title.textContent}`);
@@ -1794,7 +1828,7 @@ function renderLoans() {
     const isOverdue = timestampToDateInput(loan.dueAt) < today;
     const item = document.createElement("div"); item.className = `library-item${isOverdue ? " loan-overdue" : ""}`;
     const details = document.createElement("div");
-    const title = document.createElement("strong"); title.textContent = `${loan.bookTitle || book?.title || "Unknown book"}${loan.copyLabel || copy?.copyLabel ? ` — ${loan.copyLabel || copy?.copyLabel}` : ""}`;
+    const title = document.createElement("strong"); title.textContent = `${loan.bookTitle || book?.title || "Unknown book"}${loan.copyLabel || copyLabelFor(copy) ? ` — ${loan.copyLabel || copyLabelFor(copy)}` : ""}`;
     const meta = document.createElement("small"); meta.textContent = `Borrower: ${loan.borrowerName} · Borrowed: ${formatLibraryDate(loan.borrowedAt)} · Due: ${formatLibraryDate(loan.dueAt)}${loan.notes ? ` · ${loan.notes}` : ""}`;
     const status = document.createElement("span"); status.className = `loan-status${isOverdue ? " overdue" : ""}`; { const left = dayDiff(timestampToDateInput(loan.dueAt)); status.textContent = left < 0 ? `OVERDUE · ${-left} DAY${left === -1 ? "" : "S"}` : left === 0 ? "DUE TODAY" : `BORROWED · DUE IN ${left} DAY${left === 1 ? "" : "S"}`; }
     details.append(title, meta, status);
@@ -1811,7 +1845,7 @@ function renderLoans() {
     const copy = libraryCollections.copies.find((item) => item.id === loan.copyId);
     const book = libraryCollections.books.find((item) => item.id === loan.bookId);
     const item = document.createElement("div"); item.className = "library-item";
-    const details = document.createElement("div"); const title = document.createElement("strong"); title.textContent = `${loan.bookTitle || book?.title || "Unknown book"}${loan.copyLabel || copy?.copyLabel ? ` — ${loan.copyLabel || copy?.copyLabel}` : ""}`;
+    const details = document.createElement("div"); const title = document.createElement("strong"); title.textContent = `${loan.bookTitle || book?.title || "Unknown book"}${loan.copyLabel || copyLabelFor(copy) ? ` — ${loan.copyLabel || copyLabelFor(copy)}` : ""}`;
     const meta = document.createElement("small"); meta.textContent = `Borrower: ${loan.borrowerName} · Borrowed: ${formatLibraryDate(loan.borrowedAt)} · Due: ${formatLibraryDate(loan.dueAt)} · Returned: ${formatLibraryDate(loan.returnedAt)}`;
     details.append(title, meta); item.append(details); returnedList.append(item);
   });
@@ -1826,7 +1860,20 @@ function makeActionButton(label, action, id, danger = false) {
   const button = document.createElement("button"); button.type = "button"; button.className = `small-button${danger ? " danger" : ""}`;
   button.textContent = label; button.dataset.action = action; button.dataset.id = id; return button;
 }
+// Stage 6L: suggest names already used in earlier loans, so "Rafi" is not typed as "Rafi Ahmed" next time.
+function refreshBorrowerOptions() {
+  const list = $("#borrower-options"); if (!list) return;
+  const stamp = (loan) => (loan.borrowedAt && typeof loan.borrowedAt.toMillis === "function" ? loan.borrowedAt.toMillis() : 0);
+  const seen = new Map();
+  [...libraryCollections.loans].sort((x, y) => stamp(y) - stamp(x)).forEach((loan) => {
+    const name = clean(loan.borrowerName); if (!name) return;
+    const key = name.toLowerCase().replace(/\s+/g, " ");
+    if (!seen.has(key)) seen.set(key, name.replace(/\s+/g, " "));
+  });
+  list.replaceChildren(...[...seen.values()].slice(0, 50).map((name) => { const option = document.createElement("option"); option.value = name; return option; }));
+}
 function refreshLibrarySelects() {
+  refreshBorrowerOptions();
   const bookSelect = $("#copy-form [name=bookId]"); const selectedBook = bookSelect.value;
   bookSelect.replaceChildren(new Option(libraryCollections.books.length ? "Choose a book" : "Add a book first", ""));
   libraryCollections.books.sort((a,b) => escapeText(a.title).localeCompare(escapeText(b.title), ["bn", "en"])).forEach((book) => bookSelect.add(new Option(`${book.title} — ${book.author}`, book.id)));
@@ -1844,7 +1891,7 @@ function refreshLibrarySelects() {
   const copySelect = $("#loan-form [name=copyId]"); const selectedCopy = copySelect.value;
   const availableCopies = libraryCollections.copies.filter((copy) => copy.status === "Available");
   copySelect.replaceChildren(new Option(availableCopies.length ? "Choose an available copy" : "No available copies", ""));
-  availableCopies.forEach((copy) => { const book = libraryCollections.books.find((item) => item.id === copy.bookId); copySelect.add(new Option(`${book?.title || "Unknown book"}${copy.copyLabel ? ` — ${copy.copyLabel}` : ""}`, copy.id)); });
+  availableCopies.forEach((copy) => { const book = libraryCollections.books.find((item) => item.id === copy.bookId); const where = copy.locationId ? ` · ${displayLocation(copy.locationId)}` : ""; copySelect.add(new Option(`${book?.title || "Unknown book"}${copyLabelFor(copy) ? ` — ${copyLabelFor(copy)}` : ""}${where}`, copy.id)); });
   if (availableCopies.some((copy) => copy.id === selectedCopy)) copySelect.value = selectedCopy;
   const parentSelect = $("#location-form [name=parentId]"); const selectedParent = parentSelect.value;
   parentSelect.replaceChildren(new Option("No parent (top level)", ""));
@@ -2351,7 +2398,7 @@ $("#loan-form").addEventListener("submit", async (event) => {
         returnedAt: null, status: "Borrowed", createdBy: currentUser.uid,
         createdAt: now, updatedBy: currentUser.uid, updatedAt: now
       };
-      if (copy.copyLabel) loanData.copyLabel = copy.copyLabel;
+      if (copyLabelFor(copy)) loanData.copyLabel = copyLabelFor(copy);
       if (notes) loanData.notes = notes;
       transaction.set(loanRef, loanData);
       transaction.update(copyRef, { status: "Loaned", activeLoanId: loanRef.id, updatedBy: currentUser.uid, updatedAt: now });
@@ -2386,9 +2433,11 @@ $("#copy-cancel").addEventListener("click", () => { $("#copy-form").elements.boo
 
 // ---- Stage 6I: copies filter and bulk edit ----
 $("#copy-filter").addEventListener("input", (event) => { copyBulk.filter = event.target.value; renderCopies(); });
-function setCopySelecting(on) { copyBulk.on = on; if (!on) copyBulk.selected.clear(); message("#copy-bulk-message", ""); renderCopies(); }
+function setCopySelecting(on) { if (!on && copyBulk.on && copyBulk.selected.size) showToast(`Selection cleared (${copyBulk.selected.size} ${copyBulk.selected.size === 1 ? "copy" : "copies"}).`); copyBulk.on = on; if (!on) copyBulk.selected.clear(); message("#copy-bulk-message", ""); renderCopies(); }
 $("#copy-select-toggle").addEventListener("click", () => setCopySelecting(!copyBulk.on));
 $("#copy-bulk-cancel").addEventListener("click", () => setCopySelecting(false));
+$("#copy-bulk-collapse").addEventListener("click", () => { const bar = $("#copy-bulk-bar"); const compact = bar.classList.toggle("compact"); $("#copy-bulk-collapse").textContent = compact ? "Show options" : "Hide options"; $("#copy-bulk-collapse").setAttribute("aria-expanded", String(!compact)); });
+window.addEventListener("resize", () => { if (copyBulk.on) updateCopyBulkBar(); });
 $("#copy-select-all").addEventListener("click", () => { visibleCopies().forEach((copy) => copyBulk.selected.add(copy.id)); renderCopies(); });
 $("#copy-select-none").addEventListener("click", () => { copyBulk.selected.clear(); renderCopies(); });
 $("#copies-list").addEventListener("click", (event) => {
@@ -2577,7 +2626,7 @@ document.querySelector(".library-tools").addEventListener("click", async (event)
     if (action === "borrow-book") {
       const free = libraryCollections.copies.find((copy) => copy.bookId === id && copy.status === "Available");
       if (!free) { showToast("No available copy of this book right now."); return; }
-      goTab("borrowing"); $("#loan-form").elements.copyId.value = free.id;
+      goTab("borrowing"); $("#loan-editor").open = true; $("#loan-form").elements.copyId.value = free.id;
       $("#loan-form").scrollIntoView({ behavior: "smooth", block: "center" }); $("#loan-form").elements.borrowerName?.focus();
     }
     if (action === "delete-book") { if (libraryCollections.copies.some((copy) => copy.bookId === id)) { showToast("Delete this book's physical copies first."); return; } if (!(await askConfirm("Delete this book from the catalogue? This cannot be undone."))) return; const doomedBook = libraryCollections.books.find((item) => item.id === id); await deleteDoc(doc(db, "libraries", LIBRARY_ID, "books", id)); logActivity("book_deleted", `Deleted book “${doomedBook?.title || "a book"}”`, { targetType: "book", targetId: id }); showToast("Book deleted."); }
@@ -3036,6 +3085,7 @@ function reportDonut(container, entries, colorOf, centerLabel) {
   container.append(svg, legend);
 }
 const DONUT_PALETTE = ["var(--green)", "var(--teal)", "var(--warn)", "var(--danger)", "var(--lime)", "rgba(var(--ink-rgb),.45)"];
+const LANG_DONUT_PALETTE = ["var(--lime)", "var(--blue)", "var(--warn)", "var(--teal)", "var(--danger)", "rgba(var(--ink-rgb),.45)"];
 const DONUT_TONES = { "": "var(--green)", warn: "var(--warn)", teal: "var(--teal)", danger: "var(--danger)" };
 function renderReports() {
   if (!$("#reports-section")) return;
@@ -3060,7 +3110,7 @@ function renderReports() {
   // language
   const languageName = { bn: "Bengali", en: "English", other: "Other" };
   const languageEntries = reportTally(books, (book) => languageName[book.language] || "Not set");
-  reportDonut($("#rep-language-donut"), languageEntries, (entry, index) => DONUT_PALETTE[index % DONUT_PALETTE.length], "books");
+  reportDonut($("#rep-language-donut"), languageEntries, (entry, index) => LANG_DONUT_PALETTE[index % LANG_DONUT_PALETTE.length], "books");
   reportBars($("#rep-language"), languageEntries, { total: books.length, showPercent: true, empty: "Add books to see the language mix." });
 
   // genre

@@ -191,6 +191,55 @@ label { display: grid; gap: 6px; font-size: 12px; font-weight: 600; color: var(-
 .shelf-item .cover { width: 112px; transition: transform .2s; }
 .shelf-item:hover .cover { transform: translateY(-4px); }
 .shelf-item span { display: block; margin-top: 8px; font-size: 12px; font-weight: 600; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+#home-reading { background: linear-gradient(135deg, rgba(var(--lime-rgb),.10), transparent 60%), var(--surface); }
+.hr-count:not(:empty) { display: inline-block; margin-left: 6px; min-width: 22px; padding: 1px 7px; border-radius: 99px; background: rgba(var(--lime-rgb),.18); color: var(--lime); font-size: 12px; font-weight: 700; text-align: center; vertical-align: middle; }
+#home-reading-list, .hr-row { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x proximity; padding: 2px 2px 8px; margin: 0 -2px; }
+.hr-card { flex: none; width: min(272px, 82%); display: flex; gap: 12px; align-items: center; scroll-snap-align: start; text-align: left; font: inherit; color: inherit; cursor: pointer; padding: 10px; border-radius: 14px; border: 1px solid var(--line); background: var(--inset); transition: transform .2s, border-color .2s; }
+.hr-card:hover { transform: translateY(-2px); border-color: rgba(var(--lime-rgb),.5); }
+.hr-card .cover { width: 54px; flex: none; border-radius: 8px; box-shadow: 0 8px 16px rgba(var(--shadow-rgb),calc(.35*var(--shadow-k))); }
+.hr-card .cover.no-image { padding: 5px; }
+.hr-card .cover.no-image .cover-initial { font-size: 24px; }
+.hr-card .cover.no-image::after { display: none; }
+.hr-info { min-width: 0; flex: 1; }
+.hr-info strong { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 13.5px; line-height: 1.25; }
+.hr-author { display: block; color: var(--muted); font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hr-info .read-bar { height: 5px; margin: 7px 0 4px; }
+.hr-meta { color: var(--muted); font-size: 11.5px; font-weight: 600; }
+#home-challenge:not(:empty) { margin-top: 6px; padding-top: 10px; border-top: 1px solid var(--line); }
+.hr-challenge-head { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--muted); }
+.hr-challenge-head b { color: var(--lime); }
+#home-challenge .read-bar { margin: 6px 0 0; }
+.mr-panel { background: radial-gradient(120% 90% at 0% 0%, rgba(var(--lime-rgb),.13), transparent 60%), var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px; margin-top: 12px; }
+.mr-panel h3 { margin: 0 0 8px; }
+.mr-panel.alt { background: radial-gradient(120% 90% at 100% 0%, rgba(45,212,191,.16), transparent 60%), var(--surface); }
+.mr-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+.mr-stats .stat-card { --t: var(--lime-rgb); padding: 10px; background: linear-gradient(160deg, rgba(var(--t),.20), rgba(var(--t),.04) 70%), var(--surface); border: 1px solid rgba(var(--t),.25); border-radius: 14px; }
+.mr-stats .stat-card:nth-child(2) { --t: 45,212,191; } .mr-stats .stat-card:nth-child(3) { --t: 245,185,66; } .mr-stats .stat-card:nth-child(4) { --t: 110,168,254; }
+.mr-stats .stat-label { font-size: 11px; line-height: 1.2; min-height: 26px; display: block; }
+.mr-stats strong { font-size: 21px; color: rgb(var(--t)); }
+:root[data-theme="light"] .mr-stats strong { filter: brightness(.7); }
+.mr-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.mr-duo .mr-panel { margin-top: 0; padding: 12px; min-width: 0; } .mr-duo h3 { font-size: 13px; margin-bottom: 2px; } .mr-duo svg { width: 100%; height: auto; display: block; margin-top: 8px; }
+.mr-undo { margin-top: 10px; }
+.mr-fin-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; } .mr-fin-nav strong { color: var(--lime); font-size: 18px; } .mr-fin-nav small { flex: 1; }
+.mr-shelf { display: grid; grid-template-columns: repeat(auto-fill, minmax(74px, 1fr)); gap: 12px 10px; }
+.mr-fin { border: 0; background: none; padding: 0; text-align: left; font: inherit; color: inherit; cursor: pointer; min-width: 0; }
+.mr-fin .cover { width: 100%; border-radius: 8px; } .mr-fin .cover.no-image { padding: 6px; } .mr-fin .cover.no-image .cover-initial { font-size: 26px; } .mr-fin .cover.no-image::after { display: none; }
+.mr-fin small { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 5px; font-size: 11px; line-height: 1.25; font-weight: 600; }
+.mr-fin em { display: block; font-style: normal; color: var(--lime); font-size: 10.5px; }
+.mr-edit { margin-top: 12px; } .mr-edit summary { cursor: pointer; color: var(--muted); font-size: 12.5px; margin-bottom: 8px; }
+.hr-empty { margin: 4px 0 8px; }
+#reading-body, #reading-section { min-width: 0; max-width: 100%; }
+.mr-panel, .mr-duo > *, .mr-stats > * { min-width: 0; }
+@media (max-width: 620px) {
+  .mr-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mr-stats .stat-card:last-child { grid-column: auto; }
+  .mr-stats .stat-label { min-height: 0; }
+  .mr-panel { padding: 12px; } .mr-duo { gap: 8px; } .mr-duo .mr-panel { padding: 10px; }
+  .hr-card { width: min(250px, 86%); } .mr-shelf { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+.brand-mark { overflow: hidden; padding: 0; }
+.brand-mark img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: inherit; }
 .quick-actions { display: grid; gap: 8px; margin-top: 12px; }
 .quick-actions button { justify-content: flex-start; text-align: left; }
 .status-bar { display: flex; height: 12px; border-radius: 99px; overflow: hidden; background: var(--inset); gap: 2px; margin: 14px 0 12px; }
@@ -598,7 +647,7 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
   <main class="shell">
     <header class="topbar">
       <a class="brand" href="./" aria-label="Our Library home">
-        <span class="brand-mark">OL</span>
+        <span class="brand-mark"><img src="icon-192.png" alt="Our Library" width="40" height="40" onerror="this.replaceWith(document.createTextNode('OL'))"></span>
         <span><strong>Our Library</strong><small>Shared. Tracked. Always in sync.</small></span>
       </a>
       <div class="top-actions">
@@ -719,6 +768,7 @@ body { background: radial-gradient(1100px 600px at 85% -8%, rgba(var(--lime-rgb)
           </div>
           <div class="home-grid">
             <div class="home-main">
+              <article class="panel" id="home-reading"><div class="panel-head"><h2>Currently reading <span class="hr-count" id="home-reading-count"></span></h2><button class="text-button" type="button" data-goto="reading">My reading</button></div><div id="home-reading-list" class="hr-row"></div><div id="home-challenge"></div></article>
               <article class="panel hidden" id="owner-nudge"><div class="panel-head"><h2>Who owns what?</h2></div><p class="muted" id="owner-nudge-text"></p><div class="library-actions"><button class="secondary-button" type="button" id="owner-nudge-button">Set owners</button></div></article>
               <article class="panel">
                 <div class="panel-head"><h2>Needs attention</h2><button class="text-button" type="button" data-goto="borrowing">Open borrowing</button></div>
@@ -3044,7 +3094,8 @@ function drawReadingBox(box, bookId) {
   });
 }
 function renderReadingViews() {
-  renderBooks(); renderMyReading();
+  try { renderBooks(); } catch (error) { console.error(error); }
+  try { renderMyReading(); } catch (error) { console.error(error); }
   const box = $("#dialog-reading-box");
   if ($("#book-dialog").open && box && dialogBookId) drawReadingBox(box, dialogBookId);
 }
@@ -3129,54 +3180,93 @@ function challengePanel(year, finishedYear, finDate) {
   remove.addEventListener("click", async () => { if (!(await askConfirm(`Remove your ${year} challenge? Your books and reading log stay.`, "Remove"))) return; try { await deleteDoc(doc(db, "libraries", LIBRARY_ID, "challenges", id)); } catch (error) { readingSaveError(error); } });
   row.append(edit, remove); p.append(row); return p;
 }
+// ---- Stage 7E: Home "Currently reading" strip and slim challenge card (display only) ----
+function readingCardNode(r) {
+  const book = libraryCollections.books.find((x) => x.id === r.bookId); if (!book) return null;
+  const total = bookTotalPages(r.bookId), page = Number(r.currentPage) || 0, pct = total && page ? Math.min(100, Math.round(page * 100 / total)) : 0;
+  const card = document.createElement("button"); card.type = "button"; card.className = "hr-card";
+  card.dataset.action = "view-book"; card.dataset.id = r.bookId; card.setAttribute("aria-label", `Open ${book.title || "book"}`);
+  const info = document.createElement("div"); info.className = "hr-info";
+  info.append(mk("strong", "", book.title || "Untitled book"));
+  if (book.author) info.append(mk("small", "hr-author", book.author));
+  info.append(progressBarNode(pct), mk("small", "hr-meta", page ? (total ? `p. ${page} / ${total} \u00b7 ${pct}%` : `Page ${page}`) : "Not started yet"));
+  card.append(makeCover(book), info); return card;
+}
+function renderHomeReading() {
+  const box = $("#home-reading"); if (!box || !currentUser) return;
+  const mine = readingItems.filter((r) => r.userId === currentUser.uid);
+  const reading = mine.filter((r) => r.status === "reading").sort((x, y) => (y.updatedAt?.toMillis?.() || 0) - (x.updatedAt?.toMillis?.() || 0));
+  const year = new Date().getFullYear();
+  const ch = challengeItems.find((c) => c.id === `${currentUser.uid}_${year}`);
+  box.classList.remove("hidden");
+  const count = $("#home-reading-count"); if (count) count.textContent = reading.length ? String(reading.length) : "";
+  const list = $("#home-reading-list"); list.replaceChildren();
+  if (!reading.length) list.append(mk("p", "muted hr-empty", "Nothing marked as Reading yet. Open a book and set its status to Reading to see it here."));
+  reading.slice(0, 8).forEach((r) => { const card = readingCardNode(r); if (card) list.append(card); });
+  const cbox = $("#home-challenge"); cbox.replaceChildren();
+  if (ch && Number(ch.goalBooks) > 0) {
+    const goal = Number(ch.goalBooks);
+    const done = mine.filter((r) => r.status === "finished" && timestampToDateInput(r.finishedAt || r.updatedAt).startsWith(String(year))).length;
+    const head = document.createElement("div"); head.className = "hr-challenge-head";
+    head.append(mk("span", "", `${year} challenge`), mk("b", "", `${done} / ${goal} books`));
+    cbox.append(head, progressBarNode(Math.min(100, Math.round(done * 100 / goal))));
+  }
+}
 function renderMyReading() {
+  try { renderHomeReading(); } catch (error) { console.error(error); }
   const root = $("#reading-body"); if (!root || !currentUser) return; root.replaceChildren();
   if (readingLogError) root.append(emptyNode(readingLogError));
-  const panel = (title) => { const p = mk("section", "mr-panel"); p.append(mk("h3", "", title)); root.append(p); return p; };
+  const panel = (title, parent = root) => { const p = mk("section", "mr-panel"); p.append(mk("h3", "", title)); parent.append(p); return p; };
   const map = pagesByDate(); const today = new Date(); const todayKey = localDateInputValue(today); const { current, longest } = readingStreaks(map);
   const monthKey = todayKey.slice(0, 7); let monthPages = 0, total = 0; map.forEach((v, k) => { total += v; if (k.startsWith(monthKey)) monthPages += v; });
   const mineAll = readingItems.filter((r) => r.userId === currentUser.uid);
   const finished = mineAll.filter((r) => r.status === "finished");
   const finDate = (r) => timestampToDateInput(r.finishedAt || r.updatedAt);
   const finishedYear = finished.filter((r) => finDate(r).startsWith(String(myReadingYear)));
-  const stats = mk("div", "report-stats"); root.append(stats); root.insertBefore(challengePanel(myReadingYear, finishedYear, finDate), stats);
-  [["Current streak", `${current} day${current === 1 ? "" : "s"}`, "days in a row with an update"], ["Longest streak", `${longest} day${longest === 1 ? "" : "s"}`, "your best run"], ["Pages this month", String(monthPages), "from your progress updates"], ["Pages per reading day", map.size ? String(Math.round(total / map.size)) : "0", "average"], [`Finished in ${myReadingYear}`, String(finishedYear.length), "finished books"]].forEach(([label, value, note]) => {
-    const card = mk("article", "stat-card"); card.append(mk("span", "stat-label", label), mk("strong", "", value), mk("small", "", note)); stats.append(card);
+  root.append(challengePanel(myReadingYear, finishedYear, finDate));
+  const stats = mk("div", "mr-stats"); root.append(stats);
+  [["Current streak", `${current} day${current === 1 ? "" : "s"}`], ["Longest streak", `${longest} day${longest === 1 ? "" : "s"}`], ["Pages this month", String(monthPages)], ["Pages per reading day", map.size ? String(Math.round(total / map.size)) : "0"]].forEach(([label, value]) => {
+    const card = mk("article", "stat-card"); card.append(mk("span", "stat-label", label), mk("strong", "", value)); stats.append(card);
   });
-  const reading = mineAll.filter((r) => r.status === "reading");
-  const now = panel("Currently reading");
+  const now = panel("Currently reading"); const reading = mineAll.filter((r) => r.status === "reading");
   if (!reading.length) now.append(mk("p", "muted", "Nothing marked as Reading. Open a book and set your status to Reading."));
-  reading.forEach((r) => { const t = bookTotalPages(r.bookId); const item = mk("div", "mr-item"); item.append(mk("strong", "", bookTitleOf(r.bookId))); if (Number(r.currentPage) > 0) { item.append(mk("div", "", "")); item.lastChild.append(progressBarNode(t ? Math.min(100, Math.round(r.currentPage * 100 / t)) : 0), mk("small", "", progressLine(r, t))); } else item.append(mk("small", "", " No progress entered yet")); now.append(item); });
-  const habit = panel("Your habit");
-  if (!readingLogItems.length) habit.append(mk("p", "muted", "Update your progress on a book you are reading and your habit will appear here."));
+  else { const row = mk("div", "hr-row"); reading.forEach((r) => { const c = readingCardNode(r); if (c) row.append(c); }); now.append(row); }
+  if (!readingLogItems.length) panel("Your habit").append(mk("p", "muted", "Update your progress on a book you are reading and your habit will appear here."));
   else {
-    const start = dayAt(today, -(((today.getDay() + 6) % 7) + 77)); const cell = 18, gap = 4; const weekly = [];
-    habit.append(mk("small", "", "Last 12 weeks, one square per day (darker means more pages)"));
+    const duo = mk("div", "mr-duo"); root.append(duo);
+    const start = dayAt(today, -(((today.getDay() + 6) % 7) + 77)); const cell = 11, gap = 3; const weekly = [];
+    const hp = panel("Reading habit", duo); hp.append(mk("small", "muted", "Last 12 weeks"));
     const heat = svgNode("svg", { viewBox: `0 0 ${12 * (cell + gap)} ${7 * (cell + gap)}`, role: "img", "aria-label": "Calendar of pages read per day over the last 12 weeks" });
     const max = Math.max(1, ...[...map.values()]);
     for (let c = 0; c < 12; c++) { let sum = 0; for (let r = 0; r < 7; r++) {
       const d = dayAt(start, c * 7 + r); if (d > today) continue; const pages = map.get(localDateInputValue(d)) || 0; sum += pages;
       const level = pages === 0 ? 0 : Math.ceil(pages / max * 4);
-      const rect = svgNode("rect", { x: c * (cell + gap), y: r * (cell + gap), width: cell, height: cell, rx: 4, fill: level ? "rgb(var(--lime-rgb))" : "currentColor", "fill-opacity": level ? [0, .25, .5, .75, 1][level] : .1 });
+      const rect = svgNode("rect", { x: c * (cell + gap), y: r * (cell + gap), width: cell, height: cell, rx: 3, fill: level ? "rgb(var(--lime-rgb))" : "currentColor", "fill-opacity": level ? [0, .25, .5, .75, 1][level] : .1 });
       rect.append(svgNode("title", {}, `${dayLabel(d)}: ${pages} page${pages === 1 ? "" : "s"}`)); heat.append(rect);
     } weekly.push({ d: dayAt(start, c * 7), sum }); }
-    habit.append(heat);
-    habit.append(mk("small", "", "Pages per week (last 12 weeks)"));
-    const wmax = Math.max(1, ...weekly.map((w) => w.sum)); const bars = svgNode("svg", { viewBox: "0 0 288 100", role: "img", "aria-label": "Pages read per week over the last 12 weeks" });
-    weekly.forEach((w, i) => { const h = Math.round(w.sum / wmax * 80); const rect = svgNode("rect", { x: i * 24 + 3, y: 85 - h, width: 18, height: Math.max(h, w.sum ? 2 : 0), rx: 3, fill: "rgb(var(--lime-rgb))" }); rect.append(svgNode("title", {}, `Week of ${dayLabel(w.d)}: ${w.sum} pages`)); bars.append(rect); });
-    bars.append(svgNode("text", { x: 0, y: 98, "font-size": 9, fill: "currentColor" }, dayLabel(weekly[0].d)), svgNode("text", { x: 288, y: 98, "font-size": 9, "text-anchor": "end", fill: "currentColor" }, "this week")); habit.append(bars);
-    const undo = mk("button", "secondary-button", "Undo last update"); undo.type = "button"; undo.addEventListener("click", undoLastReadingUpdate); habit.append(undo);
+    hp.append(heat);
+    const wp = panel("Pages per week", duo); wp.classList.add("alt"); wp.append(mk("small", "muted", "Last 12 weeks"));
+    const wmax = Math.max(1, ...weekly.map((w) => w.sum)); const bars = svgNode("svg", { viewBox: "0 0 168 94", role: "img", "aria-label": "Pages read per week over the last 12 weeks" });
+    weekly.forEach((w, i) => { const h = Math.round(w.sum / wmax * 78); const rect = svgNode("rect", { x: i * 14 + 1, y: 82 - h, width: 11, height: Math.max(h, w.sum ? 2 : 0), rx: 3, fill: "rgb(var(--lime-rgb))", "fill-opacity": i === 11 ? 1 : .6 }); rect.append(svgNode("title", {}, `Week of ${dayLabel(w.d)}: ${w.sum} pages`)); bars.append(rect); });
+    bars.append(svgNode("text", { x: 1, y: 93, "font-size": 8, fill: "currentColor", "fill-opacity": .55 }, "12 wks ago"), svgNode("text", { x: 167, y: 93, "font-size": 8, "text-anchor": "end", fill: "currentColor", "fill-opacity": .55 }, "now")); wp.append(bars);
+    const undo = mk("button", "secondary-button mr-undo", "Undo last update"); undo.type = "button"; undo.addEventListener("click", undoLastReadingUpdate); root.append(undo);
   }
   const fin = panel(`Books finished in ${myReadingYear}`);
-  const nav = mk("div", "row"); const prev = mk("button", "secondary-button", "‹"); const next = mk("button", "secondary-button", "›"); prev.type = next.type = "button"; prev.setAttribute("aria-label", "Previous year"); next.setAttribute("aria-label", "Next year");
-  prev.addEventListener("click", () => { myReadingYear -= 1; renderMyReading(); }); next.addEventListener("click", () => { myReadingYear += 1; renderMyReading(); }); next.disabled = myReadingYear >= today.getFullYear(); nav.append(prev, mk("strong", "", String(myReadingYear)), next); fin.append(nav);
-  const perMonth = Array(12).fill(0); finishedYear.forEach((r) => { perMonth[Number(finDate(r).slice(5, 7)) - 1] += 1; });
-  const mmax = Math.max(1, ...perMonth); const mbars = svgNode("svg", { viewBox: "0 0 288 100", role: "img", "aria-label": `Books finished per month in ${myReadingYear}` });
-  perMonth.forEach((n, i) => { const h = Math.round(n / mmax * 70); const rect = svgNode("rect", { x: i * 24 + 3, y: 80 - h, width: 18, height: Math.max(h, n ? 2 : 0), rx: 3, fill: "rgb(var(--lime-rgb))" }); rect.append(svgNode("title", {}, `${new Date(myReadingYear, i, 1).toLocaleDateString(undefined, { month: "long" })}: ${n} book${n === 1 ? "" : "s"}`)); mbars.append(rect, svgNode("text", { x: i * 24 + 12, y: 94, "font-size": 9, "text-anchor": "middle", fill: "currentColor" }, "JFMAMJJASOND"[i])); });
-  fin.append(mbars);
+  const nav = mk("div", "mr-fin-nav"); const prev = mk("button", "secondary-button", "‹"); const next = mk("button", "secondary-button", "›"); prev.type = next.type = "button"; prev.setAttribute("aria-label", "Previous year"); next.setAttribute("aria-label", "Next year");
+  prev.addEventListener("click", () => { myReadingYear -= 1; renderMyReading(); }); next.addEventListener("click", () => { myReadingYear += 1; renderMyReading(); }); next.disabled = myReadingYear >= today.getFullYear();
+  nav.append(prev, mk("strong", "", String(finishedYear.length)), mk("small", "muted", finishedYear.length === 1 ? "book" : "books"), next); fin.append(nav);
   if (!finishedYear.length) fin.append(mk("p", "muted", "No finished books in this year."));
-  [...finishedYear].sort((a, b) => finDate(b).localeCompare(finDate(a))).slice(0, 60).forEach((r) => fin.append(finishedRow(r, finDate(r))));
+  const grid = mk("div", "mr-shelf"); fin.append(grid);
+  const sorted = [...finishedYear].sort((x, y) => finDate(y).localeCompare(finDate(x))).slice(0, 60);
+  sorted.forEach((r) => {
+    const book = libraryCollections.books.find((x) => x.id === r.bookId); if (!book) return;
+    const [yy, mm, dd] = finDate(r).split("-").map(Number); const when = yy ? new Date(yy, mm - 1, dd || 1).toLocaleDateString(undefined, { month: "short", day: "numeric" }) : "";
+    const item = document.createElement("button"); item.type = "button"; item.className = "mr-fin"; item.dataset.action = "view-book"; item.dataset.id = r.bookId; item.setAttribute("aria-label", `Open ${book.title || "book"}`);
+    item.append(makeCover(book), mk("small", "", book.title || "Untitled book"), mk("em", "", when)); grid.append(item);
+  });
+  if (sorted.length) { const det = document.createElement("details"); det.className = "mr-edit"; det.append(mk("summary", "", "Edit finish dates")); sorted.forEach((r) => det.append(finishedRow(r, finDate(r)))); fin.append(det); }
 }
+
 function wishlistPayload(source) {
   const data = { title: clean(source.title).slice(0, 180), updatedAt: serverTimestamp(), updatedBy: currentUser.uid };
   const text = (key, max, value) => { const v = clean(value).slice(0, max); if (v) data[key] = v; };
@@ -3362,7 +3452,7 @@ function reportBars(container, entries, options = {}) {
     const row = document.createElement("div"); row.className = "bar-row";
     const label = document.createElement("span"); label.className = "bar-label"; label.textContent = entry.label; label.title = entry.label;
     const track = document.createElement("span"); track.className = "bar-track";
-    const fill = document.createElement("i"); fill.className = `bar-fill${entry.tone ? " " + entry.tone : ""}`;
+    const fill = document.createElement("i"); fill.className = `bar-fill${entry.tone ? " " + entry.tone : ""}`; if (entry.color) fill.style.background = entry.color;
     fill.style.width = `${entry.count ? Math.max(4, Math.round((entry.count / max) * 100)) : 0}%`;
     track.append(fill);
     const value = document.createElement("span"); value.className = "bar-value";
@@ -3434,7 +3524,7 @@ function renderReports() {
   const languageName = { bn: "Bengali", en: "English", other: "Other" };
   const languageEntries = reportTally(books, (book) => languageName[book.language] || "Not set");
   reportDonut($("#rep-language-donut"), languageEntries, (entry, index) => LANG_DONUT_PALETTE[index % LANG_DONUT_PALETTE.length], "books");
-  reportBars($("#rep-language"), languageEntries, { total: books.length, showPercent: true, empty: "Add books to see the language mix." });
+  reportBars($("#rep-language"), languageEntries.map((entry, index) => ({ ...entry, color: LANG_DONUT_PALETTE[index % LANG_DONUT_PALETTE.length] })), { total: books.length, showPercent: true, empty: "Add books to see the language mix." });
 
   // genre
   const genreEntries = reportTally(books, (book) => clean(book.genre) || "No genre");

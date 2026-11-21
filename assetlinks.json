@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.ahmadnabeel97_commits.twa",
+        "sha256_cert_fingerprints": ["A1:01:DA:03:00:B4:92:2E:29:A6:C1:CB:08:19:01:9B:31:6A:F2:9E:3F:29:D2:25:78:3A:27:17:B0:AD:24:41"]
+      }
+    }]
